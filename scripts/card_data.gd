@@ -29,3 +29,4 @@ enum SenseType { NONE, TASTE, TOUCH, SMELL, HEARING, VISION }
 
 @export var recipes: Array[CombinationRecipe] = []
 @export var exploration_config: ExplorationConfig = null
+@export var dialogue_config: DialogueConfig = null

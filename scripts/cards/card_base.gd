@@ -132,12 +132,17 @@ func _gui_input(event):
 		if card_data and card_data.exploration_config:
 			EventBus.exploration_requested.emit(card_data.exploration_config)
 			return
+		if card_data and card_data.dialogue_config:
+			EventBus.dialogue_requested.emit(card_data.dialogue_config, card_data.card_name)
+			return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		_pressed_self = true
 		_drag_start_pos = get_global_mouse_position()
 		_press_effect()
 
 func _input(event):
+	if get_parent() != _container:
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 		_pressed_self = false
 		if is_dragging:

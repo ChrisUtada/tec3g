@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="DialogueConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/dialogue/dialogue_config.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+dialogue_id = "dlg_junior_investigator"
+title = "初级调查员"
+start_node_id = "start"
+dialogue_data = {
+"start": {"text": "我是调查员。这里的一切都太古怪了……\n你愿意帮我调查真相吗？", "next_node_id": "help"},
+"help": {"text": "我们需要更多线索。如果你找到什么，请告诉我。", "next_node_id": "warn"},
+"warn": {"text": "小心那些腐化的东西……它们比看起来危险得多。"}
+}

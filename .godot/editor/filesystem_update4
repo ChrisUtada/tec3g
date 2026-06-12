@@ -17,3 +17,5 @@ res://resources/cards/CHAR_tec.tres
 res://resources/cards/CHAR_zhu_sui.tres
 res://scripts/card_data.gd
 res://scripts/dialogue/dialogue_panel.gd
+res://resources/dialogues/dlg_junior_investigator.tres
+res://scripts/dialogue/dialogue_config.gd

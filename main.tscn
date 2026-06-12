@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b6wybpctw4mrs" path="res://main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/exploration/exploration_panel.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/dialogue/dialogue_panel.tscn" id="3"]
 
 [node name="Main" type="Node2D" unique_id=1044766152]
 script = ExtResource("1")
@@ -77,6 +78,7 @@ vertical_alignment = 1
 
 [node name="ExplorationPanel" parent="GameBoard" instance=ExtResource("2")]
 
+[node name="DialoguePanel" parent="GameBoard" instance=ExtResource("3")]
 
 [node name="LogLabel" type="Label" parent="GameBoard/UI" unique_id=1986489816]
 layout_mode = 1

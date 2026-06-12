@@ -84,5 +84,10 @@ func mark_drop_consumed(recipe: CombinationRecipe) -> void:
 	_drop_remaining[recipe.result_id] -= 1
 
 
+# ── Dialogue Events ──
+signal dialogue_requested(config, character_name)
+signal dialogue_closed()
+
+
 # ── Spawn Request ──
 signal spawn_card_requested(data, position)

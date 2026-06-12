@@ -69,15 +69,13 @@ func _build_slots() -> void:
 		_slots.append(slot)
 
 func _clear_slots() -> void:
-	var index := 0
 	for slot in _slots:
 		var card = slot.remove_card()
 		if card:
 			var container = EventBus.get_card_container()
 			card.reparent(container)
-			card.position = Vector2(400 + index * 40, 500)
+			card.global_position = Vector2(randi_range(200, 600), randi_range(300, 600))
 		slot.queue_free()
-		index += 1
 	_slots.clear()
 
 func on_card_dropped(card) -> bool:
@@ -167,7 +165,7 @@ func _return_cards() -> void:
 		if card:
 			var container = EventBus.get_card_container()
 			card.reparent(container, false)
-			card.global_position = Vector2(panel_left - 180, 400 + randi_range(0, 80))
+			card.global_position = Vector2(panel_left - 180 + randi_range(-40, 40), 400 + randi_range(-80, 80))
 		slot.unlock()
 
 func _kill_tween(t: Tween) -> void:
