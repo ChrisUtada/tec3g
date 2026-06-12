@@ -57,13 +57,23 @@ func get_card_by_id(id: String):
 
 func get_cards_by_tag(tag: String) -> Array:
 	var result: Array = []
-	for card in _all_cards:
+	var i := 0
+	while i < _all_cards.size():
+		var card = _all_cards[i]
+		if not is_instance_valid(card):
+			_all_cards.remove_at(i)
+			continue
 		if tag in card.card_data.tags:
 			result.append(card)
+		i += 1
 	return result
 
 func get_all_cards() -> Array:
-	return _all_cards.duplicate()
+	var result: Array = []
+	for card in _all_cards:
+		if is_instance_valid(card):
+			result.append(card)
+	return result
 
 
 # ── Drop Consumption ──
