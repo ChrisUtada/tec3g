@@ -6,10 +6,3 @@
 script = ExtResource("1")
 dialogue_id = "dlg_tec"
 title = "TEC"
-start_node_id = "start"
-dialogue_data = {
-"start": {"text": "我是 TEC，虚数之树的第一片叶子。\n你需要我为你打造什么？", "next_node_id": "ask"},
-"ask": {"text": "你想要打造什么类型的物品？", "options": [{"text": "武器", "next_node_id": "weapon"}, {"text": "工具", "next_node_id": "tool"}]},
-"weapon": {"text": "武器……为了什么而战？我会为你铸造。"},
-"tool": {"text": "工具……这才是创造的本质。"}
-}

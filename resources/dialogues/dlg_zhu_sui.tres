@@ -6,10 +6,3 @@
 script = ExtResource("1")
 dialogue_id = "dlg_zhu_sui"
 title = "朱穗"
-start_node_id = "start"
-dialogue_data = {
-"start": {"text": "……你来了。", "next_node_id": "explain"},
-"explain": {"text": "这个世界正在腐化。你必须找到源头。", "options": [{"text": "源头在哪？", "next_node_id": "answer"}, {"text": "我该怎么做？", "next_node_id": "advice"}]},
-"answer": {"text": "在花园的中心。但那被某种力量守护着。"},
-"advice": {"text": "收集线索，组合工具。你自然会明白。"}
-}

@@ -1,6 +1,7 @@
 extends Control
 
 var _config: DialogueConfig
+var _dialogue_data: Dictionary = {}
 var _slot = null
 var _current_node_id: String = ""
 var _started := false
@@ -33,6 +34,7 @@ func get_panel_left() -> float:
 
 func open(config: DialogueConfig, character_name: String) -> void:
 	_config = config
+	_dialogue_data = _load_json("res://resources/dialogues/" + config.dialogue_id + ".json")
 	_current_node_id = ""
 	_started = false
 	title_label.text = character_name
@@ -199,6 +201,13 @@ func _clear_branches() -> void:
 	action_btn.show()
 
 func _get_node(node_id: String) -> Dictionary:
-	if _config == null:
+	return _dialogue_data.get(node_id, {})
+
+func _load_json(path: String) -> Dictionary:
+	if path.is_empty():
 		return {}
-	return _config.dialogue_data.get(node_id, {})
+	var text = FileAccess.get_file_as_string(path)
+	if text.is_empty():
+		return {}
+	var json = JSON.parse_string(text)
+	return json if json is Dictionary else {}

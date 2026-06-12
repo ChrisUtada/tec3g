@@ -19,3 +19,6 @@ res://scripts/card_data.gd
 res://scripts/dialogue/dialogue_panel.gd
 res://resources/dialogues/dlg_junior_investigator.tres
 res://scripts/dialogue/dialogue_config.gd
+res://resources/dialogues/dlg_tec.tres
+res://resources/dialogues/dlg_junior_investigator.json
+res://resources/dialogues/dlg_zhu_sui.json
