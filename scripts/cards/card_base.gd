@@ -232,6 +232,11 @@ func start_corruption() -> void:
 			_fatigue_card,
 			global_position
 		)
+		var container = EventBus.get_card_container()
+		for child in get_children():
+			if child is Control and child.is_in_group("cards"):
+				child.reparent(container)
+				child.global_position = global_position + Vector2(0, 80)
 		queue_free()
 	)
 
