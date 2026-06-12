@@ -21,16 +21,16 @@ func _plant_hunter() -> ExplorationConfig:
 	branch1.required_cards = [
 		_slot(["ITEM_sdt"], "需要手电筒"),
 		_slot(["ITEM_coin"], "需要因果律"),
-	]
-	branch1.result_recipes = [_drop(preload("res://resources/cards/ITEM_plant.tres"), 1, 1, 1.0, 1, false, "采集植物")]
+	] as Array[PanelSlotConfig]
+	branch1.result_recipes = [_drop(preload("res://resources/cards/ITEM_plant.tres"), 1, 1, 1.0, 1, false, "采集植物")] as Array[DropRecipe]
 	c.branch_recipes.append(branch1)
 
 	var branch2 = SlotBranchRecipe.new()
 	branch2.branch_name = "调查"
 	branch2.required_cards = [
 		_slot(["CHAR_junior_investigator"], "需要初级调查员"),
-	]
-	branch2.result_recipes = [_drop(preload("res://resources/cards/ITEM_shadow.tres"), 1, 1, 1.0, 0, false, "黑影")]
+	] as Array[PanelSlotConfig]
+	branch2.result_recipes = [_drop(preload("res://resources/cards/ITEM_shadow.tres"), 1, 1, 1.0, 0, false, "黑影")] as Array[DropRecipe]
 	c.branch_recipes.append(branch2)
 
 	return c
