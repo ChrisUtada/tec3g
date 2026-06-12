@@ -13,8 +13,8 @@ var _pressed_self := false
 const STACK_OFFSET := Vector2(0, 30)
 const MIN_DRAG_DISTANCE := 10.0
 
-@onready var background: ColorRect = $Background
-@onready var border: ColorRect = $Border
+@onready var panel: Panel = $Panel
+@onready var hover_overlay: ColorRect = $HoverOverlay
 @onready var title_label: Label = $Title
 @onready var desc_label: Label = $Description
 @onready var type_label: Label = $TypeLabel
@@ -23,7 +23,6 @@ const MIN_DRAG_DISTANCE := 10.0
 var _hover_tween: Tween
 var _press_tween: Tween
 var _is_hovered := false
-var _orig_border_color: Color
 var _corruption_bar: Control
 
 
@@ -56,7 +55,7 @@ func _on_mouse_entered():
 	_kill_tween(_hover_tween)
 	_hover_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_hover_tween.tween_property(self, "scale", Vector2(1.05, 1.05), 0.12)
-	_hover_tween.parallel().tween_property(border, "color", border.color.lightened(0.4), 0.12)
+	_hover_tween.parallel().tween_property(hover_overlay, "color:a", 0.12, 0.12)
 
 func _on_mouse_exited():
 	_is_hovered = false
@@ -65,7 +64,7 @@ func _on_mouse_exited():
 		return
 	_hover_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_hover_tween.tween_property(self, "scale", Vector2.ONE, 0.1)
-	_hover_tween.parallel().tween_property(border, "color", _orig_border_color, 0.1)
+	_hover_tween.parallel().tween_property(hover_overlay, "color:a", 0.0, 0.1)
 
 func _press_effect():
 	_kill_tween(_press_tween)
@@ -92,9 +91,19 @@ func set_card_data(data: CardData) -> void:
 func _refresh_visual() -> void:
 	if card_data == null:
 		return
-	background.color = card_data.bg_color
-	border.color = card_data.border_color
-	_orig_border_color = card_data.border_color
+	var s = StyleBoxFlat.new()
+	s.bg_color = card_data.bg_color
+	s.border_width_all = 2
+	s.border_color = card_data.border_color
+	s.corner_radius_top_left = 8
+	s.corner_radius_top_right = 8
+	s.corner_radius_bottom_right = 8
+	s.corner_radius_bottom_left = 8
+	s.shadow_size = 6
+	s.shadow_color = Color(0, 0, 0, 0.3)
+	s.shadow_offset = Vector2(2, 2)
+	panel.add_theme_stylebox_override("panel", s)
+	hover_overlay.color = Color(card_data.border_color, 0)
 	title_label.text = card_data.card_name
 	title_label.modulate = card_data.text_color
 	desc_label.text = card_data.description
@@ -183,7 +192,7 @@ func start_drag() -> void:
 	_prev_z_index = z_index
 	z_index = 100
 	scale = Vector2.ONE
-	border.color = _orig_border_color
+	hover_overlay.color.a = 0.0
 	if _corruption_bar:
 		_corruption_bar.pause()
 	EventBus.card_drag_started.emit(self)
@@ -197,7 +206,7 @@ func _end_drag():
 	is_dragging = false
 	z_index = _prev_z_index
 	scale = Vector2.ONE
-	border.color = _orig_border_color
+	hover_overlay.color.a = 0.0
 	if _corruption_bar:
 		_corruption_bar.resume()
 	EventBus.card_drag_ended.emit(self)
