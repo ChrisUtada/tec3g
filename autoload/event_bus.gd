@@ -109,5 +109,9 @@ signal dialogue_closed()
 signal spawn_card_requested(data, position)
 
 
+# ── Corruption ──
+signal corruption_triggered(card_id)
+
+
 # ── Favorability ──
 signal favorability_changed(card_id, old_value, new_value, delta)

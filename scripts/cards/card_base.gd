@@ -273,10 +273,12 @@ func start_corruption() -> void:
 	_corruption_bar = bar
 	bar.attach_to(self, card_data.corruption_time, func():
 		_corruption_bar = null
-		EventBus.spawn_card_requested.emit(
-			_fatigue_card,
-			global_position
-		)
+		EventBus.corruption_triggered.emit(card_data.card_id)
+		if card_data.corruption_spawn_fatigue:
+			EventBus.spawn_card_requested.emit(
+				_fatigue_card,
+				global_position
+			)
 		var container = EventBus.get_card_container()
 		for child in get_children():
 			if child is Control and child.is_in_group("cards"):

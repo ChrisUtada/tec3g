@@ -10,6 +10,7 @@ func _ready():
 	EventBus.dialogue_requested.connect(_on_dialogue_requested)
 	EventBus.exploration_closed.connect(_on_panel_closed)
 	EventBus.dialogue_closed.connect(_on_panel_closed)
+	EventBus.corruption_triggered.connect(_on_corruption_triggered)
 
 
 func register_exploration_panel(panel) -> void:
@@ -29,6 +30,10 @@ func _on_exploration_requested(config) -> void:
 	_current_panel = "exploration"
 	if _exploration_panel:
 		_exploration_panel.open(config)
+
+func _on_corruption_triggered(card_id: String) -> void:
+	if _current_panel == "exploration" and _exploration_panel:
+		_exploration_panel.close()
 
 func _on_dialogue_requested(config, character_name) -> void:
 	if _current_panel == "exploration" and _exploration_panel:

@@ -11,3 +11,5 @@ res://scripts/exploration/exploration_panel.gd
 res://scenes/cards/card_base.tscn
 res://resources/cards/CHAR_zhu_sui.tres
 res://scripts/card_data.gd
+res://autoload/event_bus.gd
+res://scripts/exploration/slot_branch_recipe.gd
