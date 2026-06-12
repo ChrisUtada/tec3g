@@ -112,10 +112,6 @@ func _refresh_visual() -> void:
 	if card_data.art:
 		art_rect.texture = card_data.art
 		art_rect.show()
-		if card_data.art_overlay_text:
-			move_child(art_rect, type_label.get_index() + 1)
-		else:
-			move_child(art_rect, 1)
 	else:
 		art_rect.texture = null
 		art_rect.hide()

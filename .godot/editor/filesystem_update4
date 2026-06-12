@@ -10,4 +10,3 @@ res://scripts/exploration/exploration_config.gd
 res://scripts/exploration/exploration_panel.gd
 res://scenes/cards/card_base.tscn
 res://resources/cards/CHAR_zhu_sui.tres
-res://scripts/card_data.gd

@@ -15,5 +15,4 @@ bg_color = Color(0.25, 0.15, 0.1, 1.0)
 border_color = Color(0.65, 0.4, 0.2, 1.0)
 icon = "📜"
 art = ExtResource("3")
-art_overlay_text = true
 dialogue_config = ExtResource("2")
