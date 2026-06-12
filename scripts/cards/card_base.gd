@@ -93,7 +93,7 @@ func _refresh_visual() -> void:
 		return
 	var s = StyleBoxFlat.new()
 	s.bg_color = card_data.bg_color
-	s.border_width_all = 2
+	s.set_border_width_all(2)
 	s.border_color = card_data.border_color
 	s.corner_radius_top_left = 8
 	s.corner_radius_top_right = 8
