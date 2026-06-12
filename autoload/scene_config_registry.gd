@@ -1,11 +1,11 @@
 extends Node
 
-var _configs: Dictionary = {}  # scene_card_id -> ExplorationConfig
+var _configs: Dictionary = {}
 
 func _ready():
 	_configs["SCENE_plant_hunter"] = _plant_hunter()
 
-func get(card_id: String) -> ExplorationConfig:
+func get_config(card_id: String) -> ExplorationConfig:
 	return _configs.get(card_id)
 
 func _plant_hunter() -> ExplorationConfig:
@@ -18,26 +18,28 @@ func _plant_hunter() -> ExplorationConfig:
 
 	var branch1 = SlotBranchRecipe.new()
 	branch1.branch_name = "采集"
-	branch1.required_cards = _reqs(["ITEM_sdt"], "需要手电筒", ["ITEM_coin"], "需要因果律")
+	branch1.required_cards = [
+		_slot(["ITEM_sdt"], "需要手电筒"),
+		_slot(["ITEM_coin"], "需要因果律"),
+	]
 	branch1.result_recipes = [_drop(preload("res://resources/cards/ITEM_plant.tres"), 1, 1, 1.0, 1, false, "采集植物")]
 	c.branch_recipes.append(branch1)
 
 	var branch2 = SlotBranchRecipe.new()
 	branch2.branch_name = "调查"
-	branch2.required_cards = _reqs(["CHAR_junior_investigator"], "需要初级调查员")
+	branch2.required_cards = [
+		_slot(["CHAR_junior_investigator"], "需要初级调查员"),
+	]
 	branch2.result_recipes = [_drop(preload("res://resources/cards/ITEM_shadow.tres"), 1, 1, 1.0, 0, false, "黑影")]
 	c.branch_recipes.append(branch2)
 
 	return c
 
-static func _reqs(args) -> Array:
-	var arr: Array[PanelSlotConfig] = []
-	for i in range(0, args.size(), 2):
-		var s = PanelSlotConfig.new()
-		s.accept_card_ids = args[i]
-		s.hint = args[i + 1]
-		arr.append(s)
-	return arr
+static func _slot(ids: Array, hint: String) -> PanelSlotConfig:
+	var s = PanelSlotConfig.new()
+	s.accept_card_ids = ids
+	s.hint = hint
+	return s
 
 static func _drop(card: CardData, min_c: int, max_c: int, w: float, drops: int, stackable: bool, label: String) -> DropRecipe:
 	var r = DropRecipe.new()
