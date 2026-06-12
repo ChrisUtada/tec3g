@@ -27,6 +27,6 @@ enum SenseType { NONE, TASTE, TOUCH, SMELL, HEARING, VISION }
 @export var is_gift: bool = false
 @export var art: Texture2D = null
 
-@export var recipes: Array[CombinationRecipe] = []
+@export var recipes: Array[StackRecipe] = []
 @export var exploration_config: ExplorationConfig = null
 @export var dialogue_config: DialogueConfig = null

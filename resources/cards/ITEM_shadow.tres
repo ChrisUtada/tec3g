@@ -1,15 +1,15 @@
-[gd_resource type="Resource" script_class="CardData" format=3]
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://cdfgik083sc87"]
 
 [ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://bm1qvcaikfkc" path="res://scripts/favorability_drop.gd" id="1_gxo7t"]
 
 [resource]
 script = ExtResource("1")
 card_id = "ITEM_shadow"
 card_name = "黑影"
 description = "一个神秘的黑影，似乎在窥视着什么。5秒后将消失。"
-card_type = 0
 tags = Array[String](["shadow"])
-bg_color = Color(0.05, 0.05, 0.1, 1.0)
-border_color = Color(0.3, 0.2, 0.5, 1.0)
+bg_color = Color(0.05, 0.05, 0.1, 1)
+border_color = Color(0.3, 0.2, 0.5, 1)
 icon = "👤"
 corruption_time = 5

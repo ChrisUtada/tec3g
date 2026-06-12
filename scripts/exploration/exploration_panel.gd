@@ -171,12 +171,14 @@ func _on_explore_end() -> void:
 			continue
 		if fatigue_count > 0 and randf() >= drop_multiplier:
 			continue
-		var existing = EventBus.get_card_by_id(recipe.result_id)
-		if is_instance_valid(existing) and existing.is_inside_tree():
-			continue
+		if not recipe.stackable:
+			var rid = recipe.result_card.card_id if recipe.result_card else ""
+			if not rid.is_empty():
+				var existing = EventBus.get_card_by_id(rid)
+				if is_instance_valid(existing) and existing.is_inside_tree():
+					continue
 		EventBus.mark_drop_consumed(recipe)
-		var path = "res://resources/cards/" + recipe.result_id + ".tres"
-		var data = load(path) as CardData
+		var data = recipe.result_card
 		if data == null:
 			continue
 		var count = randi_range(recipe.min_count, recipe.max_count)

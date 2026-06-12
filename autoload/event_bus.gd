@@ -79,19 +79,25 @@ func get_all_cards() -> Array:
 # ── Drop Consumption ──
 var _drop_remaining: Dictionary = {}  # result_id -> 剩余次数
 
-func can_drop(recipe: CombinationRecipe) -> bool:
+func can_drop(recipe) -> bool:
 	if recipe.max_drops == 0:
 		return true
-	if not _drop_remaining.has(recipe.result_id):
-		_drop_remaining[recipe.result_id] = recipe.max_drops
-	return _drop_remaining[recipe.result_id] > 0
+	var rid = recipe.result_card.card_id if recipe.result_card else ""
+	if rid.is_empty():
+		return true
+	if not _drop_remaining.has(rid):
+		_drop_remaining[rid] = recipe.max_drops
+	return _drop_remaining[rid] > 0
 
-func mark_drop_consumed(recipe: CombinationRecipe) -> void:
+func mark_drop_consumed(recipe) -> void:
 	if recipe.max_drops == 0:
 		return
-	if not _drop_remaining.has(recipe.result_id):
-		_drop_remaining[recipe.result_id] = recipe.max_drops
-	_drop_remaining[recipe.result_id] -= 1
+	var rid = recipe.result_card.card_id if recipe.result_card else ""
+	if rid.is_empty():
+		return
+	if not _drop_remaining.has(rid):
+		_drop_remaining[rid] = recipe.max_drops
+	_drop_remaining[rid] -= 1
 
 
 # ── Dialogue Events ──

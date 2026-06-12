@@ -1,73 +1,58 @@
-[gd_resource type="Resource" format=3]
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://bwdhmd7c8e44c"]
 
-[ext_resource type="Script" path="res://scripts/card_data.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/exploration/exploration_config.gd" id="2"]
-[ext_resource type="Script" path="res://scripts/combination_recipe.gd" id="3"]
-[ext_resource type="Script" path="res://scripts/panel_slot_config.gd" id="4"]
-[ext_resource type="Script" path="res://scripts/exploration/slot_branch_recipe.gd" id="5"]
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://cjimvugji4o8d" path="res://scripts/exploration/exploration_config.gd" id="2"]
+[ext_resource type="Script" uid="uid://dxvk4ws27yqf7" path="res://scripts/panel_slot_config.gd" id="3"]
+[ext_resource type="Resource" path="res://resources/recipes/r_plant_drop.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/recipes/r_shadow.tres" id="5"]
+[ext_resource type="Script" uid="uid://vwuc0jc38voh" path="res://scripts/exploration/slot_branch_recipe.gd" id="6"]
+[ext_resource type="Script" uid="uid://bm1qvcaikfkc" path="res://scripts/favorability_drop.gd" id="7"]
+[ext_resource type="Script" path="res://scripts/drop_recipe.gd" id="8"]
 
 [sub_resource type="Resource" id="req_sdt"]
-script = ExtResource("4")
+script = ExtResource("3")
 accept_card_ids = Array[String](["ITEM_sdt"])
 hint = "需要手电筒"
 
 [sub_resource type="Resource" id="req_coin"]
-script = ExtResource("4")
+script = ExtResource("3")
 accept_card_ids = Array[String](["ITEM_coin"])
 hint = "需要因果律"
 
+[sub_resource type="Resource" id="branch_collect"]
+script = ExtResource("6")
+branch_name = "采集"
+required_cards = Array[ExtResource("3")]([SubResource("req_sdt"), SubResource("req_coin")])
+result_recipes = Array[ExtResource("8")]([ExtResource("4")])
+
 [sub_resource type="Resource" id="req_investigator"]
-script = ExtResource("4")
+script = ExtResource("3")
 accept_card_ids = Array[String](["CHAR_junior_investigator"])
 hint = "需要初级调查员"
 
-[sub_resource type="Resource" id="r_plant"]
-script = ExtResource("3")
-target_id = ""
-result_id = "ITEM_plant"
-min_count = 1
-max_count = 1
-weight = 1.0
-max_drops = 1
-
-[sub_resource type="Resource" id="r_shadow"]
-script = ExtResource("3")
-target_id = ""
-result_id = "ITEM_shadow"
-min_count = 1
-max_count = 1
-weight = 1.0
-max_drops = 0
-
-[sub_resource type="Resource" id="branch_collect"]
-script = ExtResource("5")
-branch_name = "采集"
-required_cards = [SubResource("req_sdt"), SubResource("req_coin")]
-result_recipes = [SubResource("r_plant")]
-
 [sub_resource type="Resource" id="branch_investigate"]
-script = ExtResource("5")
+script = ExtResource("6")
 branch_name = "调查"
-required_cards = [SubResource("req_investigator")]
-result_recipes = [SubResource("r_shadow")]
+required_cards = Array[ExtResource("3")]([SubResource("req_investigator")])
+result_recipes = Array[ExtResource("8")]([ExtResource("5")])
 
 [sub_resource type="Resource" id="exp_conf"]
 script = ExtResource("2")
 scene_card_id = "SCENE_plant_hunter"
 scene_name = "植物学家的花园"
-scene_description = "由 TEC 引导进入的异界花园。植物学家在此失踪。\n放入合适的卡牌探索隐藏的秘密。"
-slot_count = 3
-explore_duration = 3.0
-branch_recipes = [SubResource("branch_collect"), SubResource("branch_investigate")]
+scene_description = "由 TEC 引导进入的异界花园。植物学家在此失踪。
+放入合适的卡牌探索隐藏的秘密。"
+branch_recipes = Array[ExtResource("6")]([SubResource("branch_collect"), SubResource("branch_investigate")])
 
 [resource]
 script = ExtResource("1")
 card_id = "SCENE_plant_hunter"
 card_name = "场景：植物学家的花园"
-description = "由 TEC 引导进入的异界花园。植物学家在此失踪。\n双击打开探索面板。"
+description = "由 TEC 引导进入的异界花园。植物学家在此失踪。
+双击打开探索面板。"
 card_type = 4
-tags = ["scene"]
-bg_color = Color(0.1, 0.4, 0.25, 1.0)
-border_color = Color(0.2, 0.7, 0.45, 1.0)
+tags = Array[String](["scene"])
+bg_color = Color(0.1, 0.4, 0.25, 1)
+border_color = Color(0.2, 0.7, 0.45, 1)
 icon = "🌿"
 exploration_config = SubResource("exp_conf")

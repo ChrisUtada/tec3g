@@ -2,38 +2,11 @@
 
 [ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
 [ext_resource type="Script" uid="uid://bm1qvcaikfkc" path="res://scripts/favorability_drop.gd" id="1_eddy4"]
-[ext_resource type="Script" uid="uid://bvy8686ol1pv1" path="res://scripts/combination_recipe.gd" id="2"]
-
-[sub_resource type="Resource" id="r_peek"]
-script = ExtResource("2")
-target_id = "LOGIC_observe"
-result_id = "ITEM_peek_truth"
-max_count = 2
-
-[sub_resource type="Resource" id="r_coin"]
-script = ExtResource("2")
-target_id = "LOGIC_observe"
-result_id = "ITEM_coin"
-max_count = 3
-weight = 0.4
-
-[sub_resource type="Resource" id="r_plant"]
-script = ExtResource("2")
-target_id = "ITEM_coin"
-result_id = "ITEM_plant"
-min_count = 1
-max_count = 1
-weight = 1.0
-max_drops = 1
-
-[sub_resource type="Resource" id="r_corrupt"]
-script = ExtResource("2")
-target_id = "ITEM_peek_truth"
-result_id = "ITEM_corrupted_sample"
-min_count = 1
-max_count = 1
-weight = 1.0
-max_drops = 1
+[ext_resource type="Script" path="res://scripts/stack_recipe.gd" id="1_oyk1x"]
+[ext_resource type="Resource" path="res://resources/recipes/r_peek.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/recipes/r_coin.tres" id="3"]
+[ext_resource type="Resource" path="res://resources/recipes/r_plant_stack.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/recipes/r_corrupt.tres" id="5"]
 
 [resource]
 script = ExtResource("1")
@@ -44,4 +17,4 @@ tags = Array[String](["item", "gift"])
 consumable = true
 icon = "🔦"
 is_gift = true
-recipes = Array[ExtResource("2")]([SubResource("r_peek"), SubResource("r_coin"), SubResource("r_plant"), SubResource("r_corrupt")])
+recipes = Array[ExtResource("1_oyk1x")]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5")])

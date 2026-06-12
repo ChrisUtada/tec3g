@@ -20,24 +20,23 @@ func _on_card_broken(card):
 func _on_card_stacked(bottom, top):
 	if bottom.card_data == null or top.card_data == null:
 		return
-	var hits: Array[CombinationRecipe] = []
+	var hits: Array[StackRecipe] = []
 	for r in bottom.card_data.recipes:
-		if r.target_id == top.card_data.card_id and EventBus.can_drop(r):
+		if r.target_card and r.target_card.card_id == top.card_data.card_id and EventBus.can_drop(r):
 			hits.append(r)
 	if hits.is_empty():
 		for r in top.card_data.recipes:
-			if r.target_id == bottom.card_data.card_id and EventBus.can_drop(r):
+			if r.target_card and r.target_card.card_id == bottom.card_data.card_id and EventBus.can_drop(r):
 				hits.append(r)
 	if hits.is_empty():
 		return
 	_do_combine(bottom, top, hits)
 
-func _do_combine(bottom, top, hits: Array[CombinationRecipe]) -> void:
+func _do_combine(bottom, top, hits: Array[StackRecipe]) -> void:
 	var chosen = _weighted_pick(hits)
 	if chosen == null:
 		return
-	var path = "res://resources/cards/" + chosen.result_id + ".tres"
-	var data = load(path) as CardData
+	var data = chosen.result_card
 	if data == null:
 		return
 	var count = randi_range(chosen.min_count, chosen.max_count)
@@ -58,7 +57,7 @@ func _do_combine(bottom, top, hits: Array[CombinationRecipe]) -> void:
 		_combo_top = null
 	)
 
-static func _weighted_pick(hits: Array[CombinationRecipe]) -> CombinationRecipe:
+static func _weighted_pick(hits: Array[StackRecipe]) -> StackRecipe:
 	if hits.is_empty():
 		return null
 	if hits.size() == 1:
