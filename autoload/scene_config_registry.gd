@@ -35,7 +35,7 @@ func _plant_hunter() -> ExplorationConfig:
 
 	return c
 
-static func _slot(ids: Array, hint: String) -> PanelSlotConfig:
+static func _slot(ids: Array[String], hint: String) -> PanelSlotConfig:
 	var s = PanelSlotConfig.new()
 	s.accept_card_ids = ids
 	s.hint = hint
