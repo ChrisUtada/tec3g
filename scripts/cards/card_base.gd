@@ -18,6 +18,7 @@ const MIN_DRAG_DISTANCE := 10.0
 @onready var title_label: Label = $Title
 @onready var desc_label: Label = $Description
 @onready var type_label: Label = $TypeLabel
+@onready var favor_label: Label = $FavorLabel
 @onready var art_rect: TextureRect = $Art
 
 var _hover_tween: Tween
@@ -33,6 +34,7 @@ func _ready():
 	_container = EventBus.get_card_container()
 	add_to_group("cards")
 	EventBus.register_card(self)
+	EventBus.favorability_changed.connect(_on_favorability_changed)
 	_refresh_visual()
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
@@ -109,6 +111,12 @@ func _refresh_visual() -> void:
 	desc_label.text = card_data.description
 	type_label.text = _type_text(card_data.card_type, card_data.icon)
 	type_label.modulate = card_data.border_color
+	if card_data.card_type == CardData.CardType.CHAR:
+		favor_label.show()
+		favor_label.text = "❤ %d/%d" % [card_data.favorability, card_data.max_favorability]
+	else:
+		favor_label.hide()
+
 	if card_data.art:
 		art_rect.texture = card_data.art
 		art_rect.show()
@@ -128,6 +136,27 @@ static func _type_text(t: CardData.CardType, icon: String) -> String:
 	if icon.is_empty():
 		return tag
 	return "%s %s" % [icon, tag]
+
+
+# ── Favorability ──
+
+func _on_favorability_changed(card_id: String, old_val: int, new_val: int, delta: int) -> void:
+	if card_data and card_data.card_id == card_id:
+		favor_label.text = "❤ %d/%d" % [new_val, card_data.max_favorability]
+		_show_heart_popup(delta)
+
+func _show_heart_popup(delta: int) -> void:
+	var heart = Label.new()
+	heart.text = "❤ +%d" % delta
+	heart.add_theme_font_size_override("font_size", 20)
+	heart.modulate = Color(1, 0.2, 0.2, 1)
+	heart.position = Vector2(size.x / 2 - 30, -40)
+	heart.z_index = 200
+	add_child(heart)
+	var t = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	t.tween_property(heart, "position:y", -80, 0.6)
+	t.parallel().tween_property(heart, "modulate:a", 0.0, 0.6)
+	t.tween_callback(heart.queue_free)
 
 
 # ── Slot API (for CardSlot) ──

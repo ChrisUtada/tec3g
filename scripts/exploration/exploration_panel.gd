@@ -156,6 +156,7 @@ func _on_explore_end() -> void:
 	if _config.rest_mode:
 		_handle_rest()
 		return
+	_handle_favorability()
 	var active_recipes = _get_active_recipes()
 	_return_cards()
 	_check_ready()
@@ -226,6 +227,23 @@ func _match_slots(reqs: Array) -> bool:
 		if not found:
 			return false
 	return true
+
+func _handle_favorability() -> void:
+	if _config.branch_recipes.is_empty():
+		return
+	for branch in _config.branch_recipes:
+		if not _match_slots(branch.required_cards):
+			continue
+		if branch.add_favorability > 0 and branch.favorability_target_slot >= 0 and branch.favorability_target_slot < _slots.size():
+			var target_slot = _slots[branch.favorability_target_slot]
+			if target_slot and not target_slot.is_empty():
+				var card = target_slot.placed_card
+				if card and card.card_data:
+					var old_val = card.card_data.favorability
+					var new_val = mini(old_val + branch.add_favorability, card.card_data.max_favorability)
+					card.card_data.favorability = new_val
+					EventBus.favorability_changed.emit(card.card_data.card_id, old_val, new_val, branch.add_favorability)
+		return
 
 func _return_cards() -> void:
 	var panel_left = get_panel_left()

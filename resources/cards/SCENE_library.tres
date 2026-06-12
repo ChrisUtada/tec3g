@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+card_id = "SCENE_library"
+card_name = "场景：图书馆"
+description = "布满灰尘的古老图书馆，书架上的典籍散发着腐朽的气息。
+双击打开探索面板。"
+card_type = 4
+tags = Array[String](["scene"])
+bg_color = Color(0.15, 0.12, 0.3, 1)
+border_color = Color(0.4, 0.3, 0.7, 1)
+corruption_time = 20
+icon = "📚"

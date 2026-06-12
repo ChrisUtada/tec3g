@@ -21,6 +21,7 @@ enum SenseType { NONE, TASTE, TOUCH, SMELL, HEARING, VISION }
 @export var recycle_value: int = 0
 @export var interact_text: String = ""
 @export var favorability: int = 0
+@export var max_favorability: int = 100
 @export var corruption_time: int = 0
 @export var fatigue_trigger: bool = false
 @export var is_gift: bool = false

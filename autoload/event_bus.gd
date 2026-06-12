@@ -107,3 +107,7 @@ signal dialogue_closed()
 
 # ── Spawn Request ──
 signal spawn_card_requested(data, position)
+
+
+# ── Favorability ──
+signal favorability_changed(card_id, old_value, new_value, delta)

@@ -5,6 +5,7 @@ var _configs: Dictionary = {}
 func _ready():
 	_configs["SCENE_plant_hunter"] = _plant_hunter()
 	_configs["LOGIC_rest"] = _rest()
+	_configs["SCENE_library"] = _library()
 
 func get_config(card_id: String) -> ExplorationConfig:
 	return _configs.get(card_id)
@@ -52,6 +53,25 @@ static func _drop(card: CardData, min_c: int, max_c: int, w: float, drops: int, 
 	r.stackable = stackable
 	r.label = label
 	return r
+
+func _library() -> ExplorationConfig:
+	var c = ExplorationConfig.new()
+	c.scene_card_id = "SCENE_library"
+	c.scene_name = "图书馆"
+	c.scene_description = "让初级调查员陪同朱穗在图书馆中研读典籍。"
+	c.slot_count = 2
+	c.explore_duration = 5.0
+
+	var branch = SlotBranchRecipe.new()
+	branch.branch_name = "研读"
+	branch.required_cards = [
+		_slot(["CHAR_junior_investigator"], "需要初级调查员"),
+		_slot(["CHAR_zhu_sui"], "需要朱穗"),
+	] as Array[PanelSlotConfig]
+	branch.add_favorability = 10
+	branch.favorability_target_slot = 1
+	c.branch_recipes.append(branch)
+	return c
 
 func _rest() -> ExplorationConfig:
 	var c = ExplorationConfig.new()
