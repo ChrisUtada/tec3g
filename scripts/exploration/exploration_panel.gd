@@ -152,10 +152,10 @@ func _on_start() -> void:
 
 func _on_explore_end() -> void:
 	_exploring = false
+	var active_recipes = _get_active_recipes()
 	_return_cards()
 	progress_fill.size.x = 0
 	_check_ready()
-	var active_recipes = _get_active_recipes()
 	var base_pos = Vector2(get_panel_left() - 200, 500)
 	var fatigue_count = EventBus.get_cards_by_tag("fatigue").size()
 	var drop_multiplier = max(0.0, 1.0 - fatigue_count * 0.2)
