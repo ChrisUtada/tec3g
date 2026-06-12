@@ -129,8 +129,8 @@ func exit_slot() -> void:
 
 func _gui_input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
-		if card_data and card_data.exploration_config:
-			EventBus.exploration_requested.emit(card_data.exploration_config)
+		if card_data and SceneConfigRegistry.get(card_data.card_id):
+			EventBus.exploration_requested.emit(SceneConfigRegistry.get(card_data.card_id))
 			return
 		if card_data and card_data.dialogue_config:
 			EventBus.dialogue_requested.emit(card_data.dialogue_config, card_data.card_name)

@@ -1,9 +1,0 @@
-[gd_resource type="Resource" script_class="DropRecipe" format=3]
-
-[ext_resource type="Script" path="res://scripts/drop_recipe.gd" id="1"]
-[ext_resource type="Resource" uid="uid://cdfgik083sc87" path="res://resources/cards/ITEM_shadow.tres" id="2"]
-
-[resource]
-script = ExtResource("1")
-result_card = ExtResource("2")
-label = "黑影"

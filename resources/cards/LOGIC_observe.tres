@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="CardData" format=3 uid="uid://drch4g1ut3id4"]
 
 [ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
-[ext_resource type="Script" uid="uid://bm1qvcaikfkc" path="res://scripts/favorability_drop.gd" id="1_ua6vm"]
 
 [resource]
 script = ExtResource("1")

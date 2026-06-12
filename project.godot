@@ -18,6 +18,8 @@ config/features=PackedStringArray("4.6", "Forward Plus")
 [autoload]
 
 EventBus="*res://autoload/event_bus.gd"
+SceneConfigRegistry="*res://autoload/scene_config_registry.gd"
+RecipeRegistry="*res://autoload/recipe_registry.gd"
 CardManager="*res://autoload/card_manager.gd"
 PanelManager="*res://autoload/panel_manager.gd"
 ProgressService="*res://autoload/progress_service.gd"

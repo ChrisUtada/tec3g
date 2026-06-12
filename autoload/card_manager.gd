@@ -21,11 +21,11 @@ func _on_card_stacked(bottom, top):
 	if bottom.card_data == null or top.card_data == null:
 		return
 	var hits: Array[StackRecipe] = []
-	for r in bottom.card_data.recipes:
+	for r in RecipeRegistry.get_recipes(bottom.card_data.card_id):
 		if r.target_card and r.target_card.card_id == top.card_data.card_id and EventBus.can_drop(r):
 			hits.append(r)
 	if hits.is_empty():
-		for r in top.card_data.recipes:
+		for r in RecipeRegistry.get_recipes(top.card_data.card_id):
 			if r.target_card and r.target_card.card_id == bottom.card_data.card_id and EventBus.can_drop(r):
 				hits.append(r)
 	if hits.is_empty():
