@@ -27,6 +27,7 @@ var _corruption_bar: Control
 
 
 const _bar_scene = preload("res://scenes/progress_bar_2d.tscn")
+const _fatigue_card = preload("res://resources/cards/ITEM_fatigue.tres")
 
 func _ready():
 	_container = EventBus.get_card_container()
@@ -227,6 +228,10 @@ func start_corruption() -> void:
 	_corruption_bar = bar
 	bar.attach_to(self, card_data.corruption_time, func():
 		_corruption_bar = null
+		EventBus.spawn_card_requested.emit(
+			_fatigue_card,
+			global_position
+		)
 		queue_free()
 	)
 
