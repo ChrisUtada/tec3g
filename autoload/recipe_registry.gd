@@ -9,6 +9,9 @@ func _ready():
 		_recipe([preload("res://resources/cards/ITEM_coin.tres")] as Array[CardData], preload("res://resources/cards/ITEM_plant.tres"), 1, 1, 1.0, 1, "种出植物"),
 		_recipe([preload("res://resources/cards/ITEM_peek_truth.tres")] as Array[CardData], preload("res://resources/cards/ITEM_corrupted_sample.tres"), 1, 1, 1.0, 1, "腐化"),
 	])
+	_register("LOGIC_capture", [
+		_recipe([preload("res://resources/cards/CHAR_zhu_sui.tres")] as Array[CardData], preload("res://resources/cards/ITEM_handwritten_note.tres"), 1, 1, 1.0, 1, "捕获→手写笔记"),
+	])
 
 func get_recipes(card_id: String) -> Array:
 	return _recipes.get(card_id, [])
