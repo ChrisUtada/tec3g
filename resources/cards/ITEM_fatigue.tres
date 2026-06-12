@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+card_id = "ITEM_fatigue"
+card_name = "疲劳"
+description = "探索消耗了大量精力，掉落概率降低。"
+card_type = 5
+tags = Array[String](["fatigue"])
+bg_color = Color(0.3, 0.2, 0.1, 1.0)
+border_color = Color(0.5, 0.3, 0.1, 1.0)
+icon = "💤"

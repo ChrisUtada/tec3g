@@ -94,9 +94,15 @@ func on_card_dropped(card) -> bool:
 	return false
 
 func _is_card_valid(card) -> bool:
-	for req in _config.required_cards:
-		if req.matches(card):
-			return true
+	if _config.branch_recipes.is_empty():
+		for req in _config.required_cards:
+			if req.matches(card):
+				return true
+		return false
+	for branch in _config.branch_recipes:
+		for req in branch.required_cards:
+			if req.matches(card):
+				return true
 	return false
 
 func _on_card_removed(slot, card) -> void:
@@ -105,6 +111,15 @@ func _on_card_removed(slot, card) -> void:
 	_check_ready()
 
 func _check_ready() -> void:
+	if not _config.branch_recipes.is_empty():
+		for branch in _config.branch_recipes:
+			if _match_slots(branch.required_cards):
+				start_btn.disabled = false
+				status_label.text = "准备就绪，可以开始探索"
+				return
+		start_btn.disabled = true
+		status_label.text = "放入卡牌到槽位中…"
+		return
 	var reqs = _config.required_cards
 	for req in reqs:
 		var found := false
@@ -140,9 +155,21 @@ func _on_explore_end() -> void:
 	_return_cards()
 	progress_fill.size.x = 0
 	_check_ready()
+	var active_recipes = _get_active_recipes()
 	var base_pos = Vector2(get_panel_left() - 200, 500)
-	for recipe in _config.result_recipes:
+	var fatigue_count = EventBus.get_cards_by_tag("fatigue").size()
+	var drop_multiplier = max(0.0, 1.0 - fatigue_count * 0.2)
+	if randf() < 0.25:
+		EventBus.spawn_card_requested.emit(
+			load("res://resources/cards/ITEM_fatigue.tres"),
+			base_pos + Vector2(-60, 0)
+		)
+		status_label.text = "获得: 疲劳"
+		await get_tree().create_timer(0.3).timeout
+	for recipe in active_recipes:
 		if not EventBus.can_drop(recipe):
+			continue
+		if fatigue_count > 0 and randf() >= drop_multiplier:
 			continue
 		EventBus.mark_drop_consumed(recipe)
 		var path = "res://resources/cards/" + recipe.result_id + ".tres"
@@ -157,6 +184,25 @@ func _on_explore_end() -> void:
 			await get_tree().create_timer(0.3).timeout
 	status_label.text = "探索完成，可重新放入卡牌"
 	EventBus.exploration_completed.emit()
+
+func _get_active_recipes() -> Array:
+	if _config.branch_recipes.is_empty():
+		return _config.result_recipes
+	for branch in _config.branch_recipes:
+		if _match_slots(branch.required_cards):
+			return branch.result_recipes
+	return _config.result_recipes
+
+func _match_slots(reqs: Array) -> bool:
+	for req in reqs:
+		var found := false
+		for slot in _slots:
+			if not slot.is_empty() and req.matches(slot.placed_card):
+				found = true
+				break
+		if not found:
+			return false
+	return true
 
 func _return_cards() -> void:
 	var panel_left = get_panel_left()

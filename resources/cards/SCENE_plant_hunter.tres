@@ -4,15 +4,7 @@
 [ext_resource type="Script" path="res://scripts/exploration/exploration_config.gd" id="2"]
 [ext_resource type="Script" path="res://scripts/combination_recipe.gd" id="3"]
 [ext_resource type="Script" path="res://scripts/panel_slot_config.gd" id="4"]
-
-[sub_resource type="Resource" id="r_drop"]
-script = ExtResource("3")
-target_id = ""
-result_id = "ITEM_plant"
-min_count = 1
-max_count = 1
-weight = 1.0
-max_drops = 1
+[ext_resource type="Script" path="res://scripts/exploration/slot_branch_recipe.gd" id="5"]
 
 [sub_resource type="Resource" id="req_sdt"]
 script = ExtResource("4")
@@ -24,15 +16,49 @@ script = ExtResource("4")
 accept_card_ids = Array[String](["ITEM_coin"])
 hint = "需要因果律"
 
+[sub_resource type="Resource" id="req_investigator"]
+script = ExtResource("4")
+accept_card_ids = Array[String](["CHAR_junior_investigator"])
+hint = "需要初级调查员"
+
+[sub_resource type="Resource" id="r_plant"]
+script = ExtResource("3")
+target_id = ""
+result_id = "ITEM_plant"
+min_count = 1
+max_count = 1
+weight = 1.0
+max_drops = 1
+
+[sub_resource type="Resource" id="r_shadow"]
+script = ExtResource("3")
+target_id = ""
+result_id = "ITEM_shadow"
+min_count = 1
+max_count = 1
+weight = 1.0
+max_drops = 1
+
+[sub_resource type="Resource" id="branch_collect"]
+script = ExtResource("5")
+branch_name = "采集"
+required_cards = [SubResource("req_sdt"), SubResource("req_coin")]
+result_recipes = [SubResource("r_plant")]
+
+[sub_resource type="Resource" id="branch_investigate"]
+script = ExtResource("5")
+branch_name = "调查"
+required_cards = [SubResource("req_investigator")]
+result_recipes = [SubResource("r_shadow")]
+
 [sub_resource type="Resource" id="exp_conf"]
 script = ExtResource("2")
 scene_card_id = "SCENE_plant_hunter"
 scene_name = "植物学家的花园"
 scene_description = "由 TEC 引导进入的异界花园。植物学家在此失踪。\n放入合适的卡牌探索隐藏的秘密。"
 slot_count = 3
-required_cards = [SubResource("req_sdt"), SubResource("req_coin")]
 explore_duration = 3.0
-result_recipes = [SubResource("r_drop")]
+branch_recipes = [SubResource("branch_collect"), SubResource("branch_investigate")]
 
 [resource]
 script = ExtResource("1")
