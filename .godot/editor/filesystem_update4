@@ -1,2 +1,3 @@
 res://autoload/scene_config_registry.gd
 res://scripts/cards/card_base.gd
+res://scripts/stack_recipe.gd

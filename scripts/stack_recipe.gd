@@ -1,6 +1,6 @@
 class_name StackRecipe extends Resource
 
-@export var target_card: CardData = null
+@export var target_cards: Array[CardData] = []
 @export var result_card: CardData = null
 @export_range(1, 100) var min_count: int = 1
 @export_range(1, 100) var max_count: int = 1
