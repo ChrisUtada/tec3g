@@ -24,6 +24,7 @@ enum SenseType { NONE, TASTE, TOUCH, SMELL, HEARING, VISION }
 @export var max_favorability: int = 100
 @export var corruption_time: int = 0
 @export var corruption_spawn_fatigue: bool = true
+@export var corruption_bar_label: String = ""
 @export var fatigue_trigger: bool = false
 @export var is_gift: bool = false
 @export var art: Texture2D = null

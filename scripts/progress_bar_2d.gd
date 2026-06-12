@@ -11,6 +11,9 @@ func _ready():
 func set_fill_color(c: Color) -> void:
 	_pending_color = c
 
+func set_label(text: String) -> void:
+	$BarLabel.text = text
+
 func start(pos: Vector2, duration: float, on_complete: Callable) -> void:
 	custom_minimum_size = Vector2(80, 8)
 	size = Vector2(80, 8)

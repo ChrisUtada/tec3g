@@ -271,6 +271,8 @@ func start_corruption() -> void:
 	var bar = _bar_scene.instantiate()
 	bar.set_fill_color(Color(0.8, 0.15, 0.15))
 	_corruption_bar = bar
+	if not card_data.corruption_bar_label.is_empty():
+		bar.set_label(card_data.corruption_bar_label)
 	bar.attach_to(self, card_data.corruption_time, func():
 		_corruption_bar = null
 		EventBus.corruption_triggered.emit(card_data.card_id)

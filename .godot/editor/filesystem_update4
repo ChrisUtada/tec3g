@@ -13,3 +13,4 @@ res://resources/cards/CHAR_zhu_sui.tres
 res://scripts/card_data.gd
 res://autoload/event_bus.gd
 res://scripts/exploration/slot_branch_recipe.gd
+res://autoload/panel_manager.gd
