@@ -25,5 +25,6 @@ enum SenseType { NONE, TASTE, TOUCH, SMELL, HEARING, VISION }
 @export var fatigue_trigger: bool = false
 @export var is_gift: bool = false
 @export var art: Texture2D = null
+@export var art_overlay_text: bool = false
 
 @export var dialogue_config: DialogueConfig = null
