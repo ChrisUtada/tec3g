@@ -152,9 +152,12 @@ func _on_start() -> void:
 
 func _on_explore_end() -> void:
 	_exploring = false
+	progress_fill.size.x = 0
+	if _config.rest_mode:
+		_handle_rest()
+		return
 	var active_recipes = _get_active_recipes()
 	_return_cards()
-	progress_fill.size.x = 0
 	_check_ready()
 	var base_pos = Vector2(get_panel_left() - 200, 500)
 	var fatigue_count = EventBus.get_cards_by_tag("fatigue").size()
@@ -188,6 +191,21 @@ func _on_explore_end() -> void:
 			status_label.text = "获得: %s" % data.card_name
 			await get_tree().create_timer(0.3).timeout
 	status_label.text = "探索完成，可重新放入卡牌"
+	EventBus.exploration_completed.emit()
+
+func _handle_rest() -> void:
+	var panel_left = get_panel_left()
+	for slot in _slots:
+		var card = slot.remove_card()
+		if card:
+			if "fatigue" in card.card_data.tags:
+				card.queue_free()
+			else:
+				var container = EventBus.get_card_container()
+				card.reparent(container, false)
+				card.global_position = Vector2(panel_left - 180 + randi_range(-40, 40), 400 + randi_range(-80, 80))
+		slot.unlock()
+	status_label.text = "休息完成，疲劳已消除"
 	EventBus.exploration_completed.emit()
 
 func _get_active_recipes() -> Array:

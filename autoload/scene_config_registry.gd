@@ -4,6 +4,7 @@ var _configs: Dictionary = {}
 
 func _ready():
 	_configs["SCENE_plant_hunter"] = _plant_hunter()
+	_configs["LOGIC_rest"] = _rest()
 
 func get_config(card_id: String) -> ExplorationConfig:
 	return _configs.get(card_id)
@@ -51,3 +52,17 @@ static func _drop(card: CardData, min_c: int, max_c: int, w: float, drops: int, 
 	r.stackable = stackable
 	r.label = label
 	return r
+
+func _rest() -> ExplorationConfig:
+	var c = ExplorationConfig.new()
+	c.scene_card_id = "LOGIC_rest"
+	c.scene_name = "休息处"
+	c.scene_description = "让调查员休息，消除疲劳。"
+	c.slot_count = 2
+	c.explore_duration = 5.0
+	c.rest_mode = true
+	c.required_cards = [
+		_slot(["CHAR_junior_investigator"], "需要初级调查员"),
+		_slot(["ITEM_fatigue"], "需要疲劳卡"),
+	] as Array[PanelSlotConfig]
+	return c
