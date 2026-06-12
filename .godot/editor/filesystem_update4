@@ -6,3 +6,7 @@ res://autoload/recipe_registry.gd
 res://main.tscn
 res://resources/cards/ITEM_shadow.tres
 res://main.gd
+res://scripts/exploration/exploration_config.gd
+res://scripts/exploration/exploration_panel.gd
+res://scenes/cards/card_base.tscn
+res://resources/cards/CHAR_zhu_sui.tres

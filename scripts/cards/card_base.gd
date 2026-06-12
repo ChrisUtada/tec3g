@@ -18,6 +18,7 @@ const MIN_DRAG_DISTANCE := 10.0
 @onready var title_label: Label = $Title
 @onready var desc_label: Label = $Description
 @onready var type_label: Label = $TypeLabel
+@onready var art_rect: TextureRect = $Art
 
 var _hover_tween: Tween
 var _press_tween: Tween
@@ -99,6 +100,12 @@ func _refresh_visual() -> void:
 	desc_label.text = card_data.description
 	type_label.text = _type_text(card_data.card_type, card_data.icon)
 	type_label.modulate = card_data.border_color
+	if card_data.art:
+		art_rect.texture = card_data.art
+		art_rect.show()
+	else:
+		art_rect.texture = null
+		art_rect.hide()
 
 static func _type_text(t: CardData.CardType, icon: String) -> String:
 	var tag := ""
