@@ -5,3 +5,4 @@ res://autoload/card_manager.gd
 res://autoload/recipe_registry.gd
 res://main.tscn
 res://resources/cards/ITEM_shadow.tres
+res://main.gd

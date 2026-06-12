@@ -8,6 +8,7 @@ func _ready():
 		_recipe([preload("res://resources/cards/LOGIC_observe.tres")] as Array[CardData], preload("res://resources/cards/ITEM_coin.tres"), 1, 3, 0.4, 0, "因果律之币"),
 		_recipe([preload("res://resources/cards/ITEM_coin.tres")] as Array[CardData], preload("res://resources/cards/ITEM_plant.tres"), 1, 1, 1.0, 1, "种出植物"),
 		_recipe([preload("res://resources/cards/ITEM_peek_truth.tres")] as Array[CardData], preload("res://resources/cards/ITEM_corrupted_sample.tres"), 1, 1, 1.0, 1, "腐化"),
+		_recipe([preload("res://resources/cards/ITEM_shadow.tres")] as Array[CardData], null, 1, 1, 1.0, 0, "净化黑影", true),
 	])
 	_register("LOGIC_capture", [
 		_recipe([preload("res://resources/cards/CHAR_zhu_sui.tres")] as Array[CardData], preload("res://resources/cards/ITEM_handwritten_note.tres"), 1, 1, 1.0, 1, "捕获→手写笔记"),
@@ -19,7 +20,7 @@ func get_recipes(card_id: String) -> Array:
 func _register(card_id: String, recipes: Array) -> void:
 	_recipes[card_id] = recipes
 
-static func _recipe(targets: Array[CardData], result: CardData, min_c: int, max_c: int, w: float, drops: int, label: String) -> StackRecipe:
+static func _recipe(targets: Array[CardData], result: CardData, min_c: int, max_c: int, w: float, drops: int, label: String, destroy: bool = false) -> StackRecipe:
 	var r = StackRecipe.new()
 	r.target_cards = targets
 	r.result_card = result
@@ -27,5 +28,6 @@ static func _recipe(targets: Array[CardData], result: CardData, min_c: int, max_
 	r.max_count = max_c
 	r.weight = w
 	r.max_drops = drops
+	r.destroys_target = destroy
 	r.label = label
 	return r

@@ -38,15 +38,31 @@ func _do_combine(root, top, hits: Array[StackRecipe]) -> void:
 	var chosen = _weighted_pick(hits)
 	if chosen == null:
 		return
-	var data = chosen.result_card
-	if data == null:
-		return
-	var count = randi_range(chosen.min_count, chosen.max_count)
 	var base_pos = root.global_position + Vector2(180, 0)
 	_combo_bottom = root
 	_combo_top = top
 	_combo_bar = _bar_scene.instantiate()
 	_combo_bar.set_fill_color(Color(0.3, 0.8, 0.3))
+
+	if chosen.destroys_target:
+		_combo_bar.attach_to(root, 3.0, func():
+			EventBus.mark_drop_consumed(chosen)
+			var container = EventBus.get_card_container()
+			for child in root.get_children():
+				if child is Control and child.is_in_group("cards"):
+					child.reparent(container)
+					child.global_position = root.global_position + Vector2(0, 80)
+			_combo_bar = null
+			_combo_bottom = null
+			_combo_top = null
+			root.queue_free()
+		)
+		return
+
+	var data = chosen.result_card
+	if data == null:
+		return
+	var count = randi_range(chosen.min_count, chosen.max_count)
 	_combo_bar.attach_to(root, 3.0, func():
 		EventBus.mark_drop_consumed(chosen)
 		for i in range(count):
