@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://brpx0gyrhq3sj"]
+
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://bm1qvcaikfkc" path="res://scripts/favorability_drop.gd" id="1_uqisa"]
+[ext_resource type="Script" uid="uid://bvy8686ol1pv1" path="res://scripts/combination_recipe.gd" id="2_4jer5"]
+
+[resource]
+script = ExtResource("1")
+card_id = "ITEM_coin"
+card_name = "因果律"
+description = "可用于改变事件概率或购买特殊物品的因果货币。"
+tags = Array[String](["item", "currency"])
+consumable = true
+bg_color = Color(0.8, 0.7, 0.15, 1)
+border_color = Color(0.9, 0.8, 0.3, 1)
+icon = "✦"

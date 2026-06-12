@@ -1,0 +1,14 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://scripts/card_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+card_id = "ITEM_handwritten_note"
+card_name = "手写笔记"
+description = "沾满泥土的手写笔记，字迹潦草难辨。"
+card_type = 2
+tags = ["item", "clue"]
+bg_color = Color(0.4, 0.35, 0.2, 1.0)
+border_color = Color(0.6, 0.55, 0.35, 1.0)
+icon = "📝"

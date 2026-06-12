@@ -1,0 +1,98 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scripts/exploration/exploration_panel.gd" id="1"]
+
+[node name="ExplorationPanel" type="Control"]
+script = ExtResource("1")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Panel" type="Control" parent="."]
+layout_mode = 0
+offset_left = 1520
+offset_top = 0
+offset_right = 1920
+offset_bottom = 1080
+
+[node name="Bg" type="ColorRect" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.12, 0.18, 0.95)
+
+[node name="Title" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 20
+offset_top = 20
+offset_right = 380
+offset_bottom = 60
+theme_override_font_sizes/font_size = 20
+text = "探索"
+horizontal_alignment = 0
+
+[node name="Desc" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 20
+offset_top = 70
+offset_right = 380
+offset_bottom = 130
+theme_override_font_sizes/font_size = 12
+autowrap_mode = 2
+text = "描述"
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1.0)
+
+[node name="SlotContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 20
+offset_top = 150
+offset_right = 380
+offset_bottom = 660
+theme_override_constants/separation = 10
+
+[node name="ProgressBar" type="ColorRect" parent="Panel"]
+layout_mode = 0
+offset_left = 20
+offset_top = 680
+offset_right = 380
+offset_bottom = 700
+color = Color(0.2, 0.2, 0.3, 1.0)
+
+[node name="Fill" type="ColorRect" parent="Panel/ProgressBar"]
+layout_mode = 0
+size = Vector2(0, 20)
+color = Color(0.3, 0.7, 0.3, 1.0)
+
+[node name="StartBtn" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 100
+offset_top = 720
+offset_right = 300
+offset_bottom = 760
+text = "开始探索"
+disabled = true
+
+[node name="CloseBtn" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 340
+offset_top = 10
+offset_right = 380
+offset_bottom = 40
+text = "X"
+
+[node name="StatusLabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 20
+offset_top = 780
+offset_right = 380
+offset_bottom = 820
+theme_override_font_sizes/font_size = 13
+text = ""
+horizontal_alignment = 1

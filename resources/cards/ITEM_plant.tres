@@ -1,0 +1,14 @@
+[gd_resource type="Resource" format=3]
+
+[ext_resource type="Script" path="res://scripts/card_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+card_id = "ITEM_plant"
+card_name = "奇异植物"
+description = "从植物学家的花园中带回的异界植物样本。"
+card_type = 2
+tags = ["item"]
+bg_color = Color(0.15, 0.45, 0.2, 1.0)
+border_color = Color(0.25, 0.65, 0.35, 1.0)
+icon = "🌱"

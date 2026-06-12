@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://drch4g1ut3id4"]
+
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://bm1qvcaikfkc" path="res://scripts/favorability_drop.gd" id="1_ua6vm"]
+[ext_resource type="Script" uid="uid://bvy8686ol1pv1" path="res://scripts/combination_recipe.gd" id="2_0frlm"]
+
+[resource]
+script = ExtResource("1")
+card_id = "LOGIC_observe"
+card_name = "观测"
+description = "拖放到任意卡牌上，查看该卡牌的叙事信息。此卡不会被消耗。"
+card_type = 3
+tags = Array[String](["logic", "observe"])
+bg_color = Color(0.25, 0.15, 0.5, 1)
+border_color = Color(0.55, 0.35, 0.9, 1)
+icon = "👁"

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+card_id = "CHAR_junior_investigator"
+card_name = "初级调查员"
+description = "刚从调查员学院毕业的新人。虽然经验不足，但对异常事件有着敏锐的嗅觉。"
+card_type = 1
+tags = Array[String](["char", "investigator"])
+bg_color = Color(0.3, 0.25, 0.15, 1.0)
+border_color = Color(0.7, 0.55, 0.25, 1.0)
+icon = "🔍"

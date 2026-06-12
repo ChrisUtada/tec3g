@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+card_id = "CHAR_zhu_sui"
+card_name = "朱穗"
+description = "沉默寡言的考古学家，对失落的文明有着超乎常人的执着。手上戴着一枚来历不明的古铜戒指。"
+card_type = 1
+tags = Array[String](["char", "archaeologist"])
+bg_color = Color(0.25, 0.15, 0.1, 1.0)
+border_color = Color(0.65, 0.4, 0.2, 1.0)
+icon = "📜"

@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://1vfwpxm4jb0o"]
+
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://bm1qvcaikfkc" path="res://scripts/favorability_drop.gd" id="1_eddy4"]
+[ext_resource type="Script" uid="uid://bvy8686ol1pv1" path="res://scripts/combination_recipe.gd" id="2"]
+
+[sub_resource type="Resource" id="r_peek"]
+script = ExtResource("2")
+target_id = "LOGIC_observe"
+result_id = "ITEM_peek_truth"
+max_count = 2
+
+[sub_resource type="Resource" id="r_coin"]
+script = ExtResource("2")
+target_id = "LOGIC_observe"
+result_id = "ITEM_coin"
+max_count = 3
+weight = 0.4
+
+[sub_resource type="Resource" id="r_plant"]
+script = ExtResource("2")
+target_id = "ITEM_coin"
+result_id = "ITEM_plant"
+min_count = 1
+max_count = 1
+weight = 1.0
+max_drops = 1
+
+[sub_resource type="Resource" id="r_corrupt"]
+script = ExtResource("2")
+target_id = "ITEM_peek_truth"
+result_id = "ITEM_corrupted_sample"
+min_count = 1
+max_count = 1
+weight = 1.0
+max_drops = 1
+
+[resource]
+script = ExtResource("1")
+card_id = "ITEM_sdt"
+card_name = "手电筒"
+description = "强干涉物理光源。空间跃迁的基础。"
+tags = Array[String](["item", "gift"])
+consumable = true
+icon = "🔦"
+is_gift = true
+recipes = Array[ExtResource("2")]([SubResource("r_peek"), SubResource("r_coin"), SubResource("r_plant"), SubResource("r_corrupt")])

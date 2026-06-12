@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+card_id = "CHAR_tec"
+card_name = "TEC"
+description = "制作你所用到的工具。在虚数之树诞生之前就在此了。"
+card_type = 1
+tags = Array[String](["char", "tec"])
+bg_color = Color(0.05, 0.15, 0.3, 1.0)
+border_color = Color(0.1, 0.5, 0.9, 1.0)
+icon = "⚙"
+recycle_value = 99
