@@ -37,7 +37,7 @@ result_id = "ITEM_shadow"
 min_count = 1
 max_count = 1
 weight = 1.0
-max_drops = 1
+max_drops = 0
 
 [sub_resource type="Resource" id="branch_collect"]
 script = ExtResource("5")

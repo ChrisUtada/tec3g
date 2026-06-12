@@ -1,1 +1,3 @@
 res://scripts/exploration/exploration_panel.gd
+res://autoload/event_bus.gd
+res://resources/cards/SCENE_plant_hunter.tres
