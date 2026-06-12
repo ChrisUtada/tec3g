@@ -22,7 +22,7 @@ layout_mode = 0
 offset_right = 160.0
 offset_bottom = 220.0
 mouse_filter = 2
-expand_mode = 0
+expand_mode = 3
 stretch_mode = 5
 
 [node name="Border" type="ColorRect" parent="." unique_id=1918545128]
