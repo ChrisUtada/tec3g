@@ -54,8 +54,7 @@ func _gui_input(event):
 			var card = remove_card()
 			if card:
 				var container = EventBus.get_card_container()
-				card.reparent(container, false)
-				card.global_position = get_global_mouse_position()
+				card.reparent(container, true)
 				EventBus.card_removed_from_slot.emit(self, card)
 				card.start_drag()
 

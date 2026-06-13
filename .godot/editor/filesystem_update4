@@ -14,3 +14,6 @@ res://scripts/card_data.gd
 res://autoload/event_bus.gd
 res://scripts/exploration/slot_branch_recipe.gd
 res://autoload/panel_manager.gd
+res://resources/cards/SCENE_library.tres
+res://scenes/progress_bar_2d.tscn
+res://scripts/progress_bar_2d.gd
