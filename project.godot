@@ -23,6 +23,7 @@ RecipeRegistry="*res://autoload/recipe_registry.gd"
 CardManager="*res://autoload/card_manager.gd"
 PanelManager="*res://autoload/panel_manager.gd"
 ProgressService="*res://autoload/progress_service.gd"
+SFX="*res://autoload/sfx.gd"
 
 [display]
 

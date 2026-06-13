@@ -19,8 +19,8 @@ var _tween: Tween
 
 func _ready():
 	visible = false
-	start_btn.pressed.connect(_on_start)
-	close_btn.pressed.connect(close)
+	start_btn.pressed.connect(func(): SFX.play_button(); _on_start())
+	close_btn.pressed.connect(func(): SFX.play_button(); close())
 	panel.position = Vector2(1920, 0)
 	EventBus.card_removed_from_slot.connect(_on_card_removed)
 	PanelManager.register_exploration_panel(self)
