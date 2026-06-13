@@ -17,3 +17,4 @@ res://autoload/panel_manager.gd
 res://resources/cards/SCENE_library.tres
 res://scenes/progress_bar_2d.tscn
 res://scripts/progress_bar_2d.gd
+res://scripts/exploration/card_slot.gd

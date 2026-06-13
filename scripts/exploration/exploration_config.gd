@@ -10,3 +10,4 @@ class_name ExplorationConfig extends Resource
 @export var result_recipes: Array[DropRecipe] = []
 @export var branch_recipes: Array[SlotBranchRecipe] = []
 @export var rest_mode: bool = false
+@export var start_btn_text: String = "开始探索"

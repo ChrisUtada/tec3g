@@ -41,6 +41,7 @@ func open(config: ExplorationConfig) -> void:
 	desc_label.text = config.scene_description
 	_build_slots()
 	visible = true
+	start_btn.text = config.start_btn_text
 	start_btn.disabled = true
 	status_label.text = "放入卡牌到槽位中…"
 	EventBus.register_drop_handler(self)
