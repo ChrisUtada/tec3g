@@ -9,7 +9,7 @@ var _audio_player: AudioStreamPlayer
 @onready var image_rect: TextureRect = $DimBg/ContentPanel/ImageRect
 @onready var audio_row: Control = $DimBg/ContentPanel/AudioRow
 @onready var play_btn: Button = $DimBg/ContentPanel/AudioRow/PlayBtn
-@onready var text_label: Label = $DimBg/ContentPanel/TextLabel
+@onready var text_label: Label = $DimBg/ContentPanel/ScrollContainer/TextLabel
 @onready var scroll: ScrollContainer = $DimBg/ContentPanel/ScrollContainer
 
 func _ready():

@@ -20,10 +20,10 @@ color = Color(0, 0, 0, 0.5)
 
 [node name="ContentPanel" type="Panel" parent="DimBg"]
 layout_mode = 0
-offset_left = -200
-offset_top = -250
-offset_right = 200
-offset_bottom = 250
+offset_left = 760
+offset_top = 240
+offset_right = 1160
+offset_bottom = 840
 mouse_filter = 1
 
 [node name="CloseBtn" type="Button" parent="DimBg/ContentPanel"]
