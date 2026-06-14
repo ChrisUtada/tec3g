@@ -5,7 +5,32 @@
   },
   "help": {
 	"text": "我们需要更多线索。如果你找到什么，请告诉我。",
+	"next_node_id": "zhu_sui_check"
+  },
+  "zhu_sui_check": {
+	"text": "你需要去哪里看看吗？",
+	"required_card_id": "CHAR_zhu_sui",
+	"options": [
+	  { "text": "你想去哪里？", "next_node_id": "where_to_go" }
+	],
 	"next_node_id": "warn"
+  },
+  "where_to_go": {
+	"text": "你想去哪里？",
+	"options": [
+	  { "text": "TEC总部", "next_node_id": "tec_hq" },
+	  { "text": "图书馆", "next_node_id": "library_choice" }
+	]
+  },
+  "tec_hq": {
+	"text": "TEC总部是个好选择。"
+  },
+  "library_choice": {
+	"text": "朱穗：我很喜欢图书馆。",
+	"actions": [
+	  { "type": "favorability", "target_id": "CHAR_zhu_sui", "amount": 10 },
+	  { "type": "spawn_card", "card_id": "SCENE_library" }
+	]
   },
   "warn": {
 	"text": "小心那些腐化的东西……它们比看起来危险得多。"

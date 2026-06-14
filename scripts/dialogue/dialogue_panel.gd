@@ -135,10 +135,34 @@ func _start_dialogue() -> void:
 	_show_node(node)
 
 func _show_node(node: Dictionary) -> void:
+	var req_id = node.get("required_card_id", "")
+	var slot_card_id = ""
+	if _slot and not _slot.is_empty() and _slot.placed_card and _slot.placed_card.card_data:
+		slot_card_id = _slot.placed_card.card_data.card_id
+	if not req_id.is_empty() and slot_card_id != req_id:
+		_clear_branches()
+		var fallback = node.get("next_node_id", "")
+		if not fallback.is_empty():
+			var next = _get_node(fallback)
+			if not next.is_empty():
+				_current_node_id = fallback
+				_show_node(next)
+				return
+		action_btn.text = "结束对话"
+		action_btn.disabled = false
+		return
+
+	_execute_actions(node.get("actions", []))
+
 	text_label.text = node.get("text", "")
 	var options = node.get("options", [])
-	if options.size() > 0:
-		_show_branches(options)
+	var filtered: Array = []
+	for opt in options:
+		var opt_req = opt.get("required_card_id", "")
+		if opt_req.is_empty() or opt_req == slot_card_id:
+			filtered.append(opt)
+	if filtered.size() > 0:
+		_show_branches(filtered)
 	else:
 		_clear_branches()
 		var next_id = node.get("next_node_id", "")
@@ -183,6 +207,33 @@ func _on_branch_selected(option_data: Dictionary) -> void:
 		return
 	_current_node_id = next_id
 	_show_node(next_node)
+
+func _execute_actions(actions: Array) -> void:
+	for action in actions:
+		var type = action.get("type", "")
+		match type:
+			"favorability":
+				var target_id = action.get("target_id", "")
+				var amount = action.get("amount", 0)
+				var card = EventBus.get_card_by_id(target_id)
+				if card and card.card_data:
+					var old = card.card_data.favorability
+					var new_val = mini(old + amount, card.card_data.max_favorability)
+					card.card_data.favorability = new_val
+					EventBus.favorability_changed.emit(target_id, old, new_val, amount)
+			"spawn_card":
+				var card_id = action.get("card_id", "")
+				if not card_id.is_empty():
+					var data = load("res://resources/cards/" + card_id + ".tres")
+					if data:
+						CardManager.spawn_card(data, _random_spawn_pos())
+
+func _random_spawn_pos() -> Vector2:
+	var panel_left = get_panel_left()
+	return Vector2(
+		max(panel_left - 200 + randi_range(-60, 60), 30),
+		300 + randi_range(-120, 120)
+	)
 
 func _show_branches(options: Array) -> void:
 	_clear_branches()
