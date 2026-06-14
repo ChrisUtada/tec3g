@@ -2,6 +2,8 @@ extends Control
 
 var _content: MultimediaContent
 var _audio_player: AudioStreamPlayer
+var _dragging := false
+var _drag_offset := Vector2.ZERO
 
 @onready var dim_bg: ColorRect = $DimBg
 @onready var content_panel: Control = $DimBg/ContentPanel
@@ -75,5 +77,17 @@ func _close():
 	queue_free()
 
 func _input(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed and not _dragging:
+			var local = content_panel.get_local_mouse_position()
+			if Rect2(Vector2.ZERO, content_panel.size).has_point(local):
+				_dragging = true
+				_drag_offset = get_global_mouse_position() - content_panel.global_position
+		elif not event.pressed:
+			_dragging = false
+
+	if event is InputEventMouseMotion and _dragging:
+		content_panel.global_position = get_global_mouse_position() - _drag_offset
+
 	if event.is_action_pressed("ui_cancel") and visible:
 		_close()

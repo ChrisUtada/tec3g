@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="MultimediaContent" format=3]
+
+[ext_resource type="Script" uid="uid://c5q33hhahyj2b" path="res://scripts/multimedia_content.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+text = "物品鉴定报告
+
+编号：I-077
+名称：手电筒
+状态：可用，轻微异常
+
+说明：
+这是一把普通的手电筒，但它的光束在特定环境下会呈现出不属于可见光谱的颜色。
+初步判断与██地区的事件残留有关。
+
+建议：可作为通用探测工具使用。
+
+——分析部
+"

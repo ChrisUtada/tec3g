@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CardData" format=3 uid="uid://1vfwpxm4jb0o"]
 
 [ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/multimedia/mm_sdt.tres" id="2"]
 
 [resource]
 script = ExtResource("1")
@@ -11,3 +12,4 @@ tags = Array[String](["item", "gift"])
 consumable = true
 icon = "🔦"
 is_gift = true
+multimedia_content = ExtResource("2")

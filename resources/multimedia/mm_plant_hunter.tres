@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="MultimediaContent" format=3]
+
+[ext_resource type="Script" uid="uid://c5q33hhahyj2b" path="res://scripts/multimedia_content.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+text = "植物学家的最后一封邮件
+
+发件人：Dr. ████
+收件人：TEC
+主题：它活了
+
+它活了。
+那些孢子不是普通的植物孢子。
+它们在思考。
+它们在等待。
+
+我把样本放在3号培养箱里。
+如果你看到这封邮件，不要打开3号箱。
+不要。
+
+——████
+"
