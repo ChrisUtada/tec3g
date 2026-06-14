@@ -45,8 +45,9 @@ func open(content: MultimediaContent) -> void:
 func _resize_and_center():
 	await get_tree().process_frame
 	var vp = get_viewport().size
-	var content_h = text_label.position.y + text_label.get_content_height()
-	text_label.size.y = text_label.get_content_height()
+	var text_h = text_label.get_minimum_size().y
+	text_label.size.y = text_h
+	var content_h = text_label.position.y + text_h
 	if image_rect.visible:
 		content_h = max(content_h, image_rect.position.y + image_rect.size.y)
 	if audio_row.visible:
