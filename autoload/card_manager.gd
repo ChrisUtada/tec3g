@@ -88,6 +88,7 @@ func _do_observation(target, observe_card) -> void:
 	_combo_bottom = target
 	_combo_top = observe_card
 	bar.attach_to(target, 3.0, func():
+		bar.queue_free()
 		_combo_bar = null
 		_combo_bottom = null
 		_combo_top = null

@@ -63,6 +63,7 @@ offset_left = 10
 offset_top = 360
 offset_right = 390
 offset_bottom = 490
+scroll_vertical_enabled = false
 
 [node name="TextLabel" type="Label" parent="DimBg/ContentPanel/ScrollContainer"]
 layout_mode = 0

@@ -21,3 +21,5 @@ res://scripts/exploration/card_slot.gd
 res://autoload/sfx.gd
 res://resources/dialogues/dlg_junior_investigator.json
 res://scripts/dialogue/dialogue_panel.gd
+res://scenes/multimedia_panel.tscn
+res://scripts/multimedia_panel.gd
