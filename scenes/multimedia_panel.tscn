@@ -57,18 +57,12 @@ offset_right = 290
 offset_bottom = 40
 text = "▶ 播放语音"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="DimBg/ContentPanel"]
+[node name="TextLabel" type="Label" parent="DimBg/ContentPanel"]
 layout_mode = 0
 offset_left = 10
 offset_top = 360
 offset_right = 390
-offset_bottom = 490
-scroll_vertical_enabled = false
-
-[node name="TextLabel" type="Label" parent="DimBg/ContentPanel/ScrollContainer"]
-layout_mode = 0
-offset_right = 380
-offset_bottom = 130
-custom_minimum_size = Vector2(380, 130)
+offset_bottom = 700
 theme_override_font_sizes/font_size = 13
 autowrap_mode = 2
+vertical_alignment = 0

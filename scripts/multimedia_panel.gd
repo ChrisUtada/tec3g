@@ -9,9 +9,7 @@ var _audio_player: AudioStreamPlayer
 @onready var image_rect: TextureRect = $DimBg/ContentPanel/ImageRect
 @onready var audio_row: Control = $DimBg/ContentPanel/AudioRow
 @onready var play_btn: Button = $DimBg/ContentPanel/AudioRow/PlayBtn
-@onready var text_label: Label = $DimBg/ContentPanel/ScrollContainer/TextLabel
-@onready var scroll: ScrollContainer = $DimBg/ContentPanel/ScrollContainer
-
+@onready var text_label: Label = $DimBg/ContentPanel/TextLabel
 func _ready():
 	close_btn.pressed.connect(_close)
 	play_btn.pressed.connect(_toggle_audio)
@@ -42,13 +40,21 @@ func open(content: MultimediaContent) -> void:
 	else:
 		audio_row.hide()
 
-	_center_panel()
+	_resize_and_center()
 
-func _center_panel():
+func _resize_and_center():
 	await get_tree().process_frame
 	var vp = get_viewport().size
-	var cs = content_panel.size
-	content_panel.position = Vector2((vp.x - cs.x) * 0.5, (vp.y - cs.y) * 0.5)
+	var content_h = text_label.position.y + text_label.get_content_height()
+	text_label.size.y = text_label.get_content_height()
+	if image_rect.visible:
+		content_h = max(content_h, image_rect.position.y + image_rect.size.y)
+	if audio_row.visible:
+		content_h = max(content_h, audio_row.position.y + audio_row.size.y)
+	content_h = mini(content_h + 20, vp.y - 40)
+	content_panel.custom_minimum_size.y = content_h
+	content_panel.size.y = content_h
+	content_panel.position = Vector2((vp.x - content_panel.size.x) * 0.5, (vp.y - content_h) * 0.5)
 
 func _toggle_audio():
 	if _audio_player == null:
