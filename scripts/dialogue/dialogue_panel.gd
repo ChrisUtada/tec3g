@@ -125,44 +125,29 @@ func _start_dialogue() -> void:
 	await get_tree().process_frame
 	if _slot.placed_card and _slot.placed_card.get_parent() == _slot:
 		_slot.placed_card.enter_slot()
-	var node = _get_node(_config.start_node_id)
+	var start_id = _config.start_node_id
+	var topics = _dialogue_data.get("topics", {})
+	if _slot.placed_card and _slot.placed_card.card_data:
+		var cid = _slot.placed_card.card_data.card_id
+		if topics.has(cid):
+			start_id = topics[cid]
+		elif topics.has("_default"):
+			start_id = topics["_default"]
+	var node = _get_node(start_id)
 	if node.is_empty():
 		text_label.text = "无话可说"
 		action_btn.text = "结束对话"
 		action_btn.disabled = false
 		return
-	_current_node_id = _config.start_node_id
+	_current_node_id = start_id
 	_show_node(node)
 
 func _show_node(node: Dictionary) -> void:
-	var req_id = node.get("required_card_id", "")
-	var slot_card_id = ""
-	if _slot and not _slot.is_empty() and _slot.placed_card and _slot.placed_card.card_data:
-		slot_card_id = _slot.placed_card.card_data.card_id
-	if not req_id.is_empty() and slot_card_id != req_id:
-		_clear_branches()
-		var fallback = node.get("next_node_id", "")
-		if not fallback.is_empty():
-			var next = _get_node(fallback)
-			if not next.is_empty():
-				_current_node_id = fallback
-				_show_node(next)
-				return
-		action_btn.text = "结束对话"
-		action_btn.disabled = false
-		return
-
 	_execute_actions(node.get("actions", []))
-
 	text_label.text = node.get("text", "")
 	var options = node.get("options", [])
-	var filtered: Array = []
-	for opt in options:
-		var opt_req = opt.get("required_card_id", "")
-		if opt_req.is_empty() or opt_req == slot_card_id:
-			filtered.append(opt)
-	if filtered.size() > 0:
-		_show_branches(filtered)
+	if options.size() > 0:
+		_show_branches(options)
 	else:
 		_clear_branches()
 		var next_id = node.get("next_node_id", "")

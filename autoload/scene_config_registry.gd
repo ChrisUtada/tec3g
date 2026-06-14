@@ -58,19 +58,18 @@ func _library() -> ExplorationConfig:
 	var c = ExplorationConfig.new()
 	c.scene_card_id = "SCENE_library"
 	c.scene_name = "图书馆"
-	c.scene_description = "让初级调查员陪同朱穗在图书馆中研读典籍。"
-	c.slot_count = 2
+	c.scene_description = "和朱穗一起在图书馆中研读典籍。"
+	c.slot_count = 1
 	c.explore_duration = 5.0
 	c.start_btn_text = "开始阅读"
 
 	var branch = SlotBranchRecipe.new()
 	branch.branch_name = "研读"
 	branch.required_cards = [
-		_slot(["CHAR_junior_investigator"], "需要初级调查员"),
 		_slot(["CHAR_zhu_sui"], "需要朱穗"),
 	] as Array[PanelSlotConfig]
 	branch.add_favorability = 10
-	branch.favorability_target_slot = 1
+	branch.favorability_target_slot = 0
 	c.branch_recipes.append(branch)
 	return c
 

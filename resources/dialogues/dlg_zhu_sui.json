@@ -1,4 +1,8 @@
 {
+  "topics": {
+	"_default": "topic_curious",
+	"CHAR_junior_investigator": "where_to_go"
+  },
   "start": {
 	"text": "……你来了。",
 	"next_node_id": "explain"
@@ -15,5 +19,25 @@
   },
   "advice": {
 	"text": "收集线索，组合工具。你自然会明白。"
+  },
+  "topic_curious": {
+	"text": "（朱穗看了看你手里的东西。）\n有意思。但我不确定它和这里的事有关。"
+  },
+  "where_to_go": {
+	"text": "（你提起了初级调查员的事。）\n你想去哪里？",
+	"options": [
+	  { "text": "图书馆", "next_node_id": "library_choice" },
+	  { "text": "TEC总部", "next_node_id": "tec_hq" }
+	]
+  },
+  "library_choice": {
+	"text": "朱穗：我很喜欢图书馆。",
+	"actions": [
+	  { "type": "favorability", "target_id": "CHAR_zhu_sui", "amount": 10 },
+	  { "type": "spawn_card", "card_id": "SCENE_library" }
+	]
+  },
+  "tec_hq": {
+	"text": "朱穗：下次吧。"
   }
 }

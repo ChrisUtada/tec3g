@@ -23,3 +23,6 @@ res://resources/dialogues/dlg_junior_investigator.json
 res://scripts/dialogue/dialogue_panel.gd
 res://scenes/multimedia_panel.tscn
 res://scripts/multimedia_panel.gd
+res://resources/cards/CHAR_junior_investigator.tres
+res://resources/cards/ITEM_sdt.tres
+res://resources/cards/SCENE_plant_hunter.tres
