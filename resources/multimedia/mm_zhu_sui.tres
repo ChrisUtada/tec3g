@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="MultimediaContent" format=3]
+
+[ext_resource type="Script" uid="uid://c5q33hhahyj2b" path="res://scripts/multimedia_content.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+text = "朱穗的考古笔记（节选）
+
+第三十七次考察记录——
+
+这枚古铜戒指上的纹路与我在遗迹中见到的壁画完全一致。
+那种螺旋形的图案，不像是任何已知文明的产物。
+TEC说这可能是'钥匙'。
+但我总觉得，它更像是一个封印。
+
+如果有人在看这份笔记，请你记住：
+不要试图激活它。
+至少，不要在这里。"

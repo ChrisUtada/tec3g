@@ -20,6 +20,12 @@ func _on_card_broken(card):
 func _on_card_stacked(bottom, top):
 	if bottom.card_data == null or top.card_data == null:
 		return
+
+	# 观测卡堆叠 → 多媒体弹窗
+	if top.card_data.card_id == "LOGIC_observe" and bottom.card_data.multimedia_content:
+		_do_observation(bottom, top)
+		return
+
 	var root = _get_stack_root(bottom)
 	var stack_ids = _collect_stack_ids(root)
 	var hits: Array[StackRecipe] = []
@@ -73,6 +79,21 @@ func _do_combine(root, top, hits: Array[StackRecipe]) -> void:
 		_combo_bar = null
 		_combo_bottom = null
 		_combo_top = null
+	)
+
+func _do_observation(target, observe_card) -> void:
+	var bar = _bar_scene.instantiate()
+	bar.set_fill_color(Color(0.5, 0.3, 1.0))
+	_combo_bar = bar
+	_combo_bottom = target
+	_combo_top = observe_card
+	bar.attach_to(target, 3.0, func():
+		_combo_bar = null
+		_combo_bottom = null
+		_combo_top = null
+		var panel = preload("res://scenes/multimedia_panel.tscn").instantiate()
+		get_tree().current_scene.add_child(panel)
+		panel.open(target.card_data.multimedia_content)
 	)
 
 static func _get_stack_root(card: Control) -> Control:

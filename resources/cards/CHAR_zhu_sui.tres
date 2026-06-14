@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/dialogues/dlg_zhu_sui.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/multimedia/mm_zhu_sui.tres" id="3"]
 
 [resource]
 script = ExtResource("1")
@@ -13,4 +14,5 @@ tags = Array[String](["char", "archaeologist"])
 bg_color = Color(0.25, 0.15, 0.1, 1)
 border_color = Color(0.65, 0.4, 0.2, 1)
 icon = "📜"
+multimedia_content = ExtResource("3")
 dialogue_config = ExtResource("2")

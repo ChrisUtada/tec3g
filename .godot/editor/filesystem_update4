@@ -19,3 +19,5 @@ res://scenes/progress_bar_2d.tscn
 res://scripts/progress_bar_2d.gd
 res://scripts/exploration/card_slot.gd
 res://autoload/sfx.gd
+res://resources/dialogues/dlg_junior_investigator.json
+res://scripts/dialogue/dialogue_panel.gd
