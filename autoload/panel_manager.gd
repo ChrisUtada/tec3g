@@ -16,7 +16,9 @@ func _on_exploration_requested(config, result) -> void:
 	panel.open(config, result)
 
 func _on_dialogue_requested(config, character_name, topic_card_id) -> void:
+	_close_group("dialogue_panel")
 	var panel = _dialogue_scene.instantiate()
+	panel.add_to_group("dialogue_panel")
 	get_tree().current_scene.add_child(panel)
 	panel.open(config, character_name, topic_card_id)
 
