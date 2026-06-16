@@ -174,13 +174,6 @@ func exit_slot() -> void:
 # ── Drag & Stack ──
 
 func _gui_input(event):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
-		if card_data and SceneConfigRegistry.get_config(card_data.card_id):
-			EventBus.exploration_requested.emit(SceneConfigRegistry.get_config(card_data.card_id))
-			return
-		if card_data and card_data.dialogue_config:
-			EventBus.dialogue_requested.emit(card_data.dialogue_config, card_data.card_name)
-			return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		_pressed_self = true
 		_drag_start_pos = get_global_mouse_position()

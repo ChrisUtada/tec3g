@@ -1,28 +1,19 @@
 extends Control
 
 var _config: ExplorationConfig
-var _slots: Array = []
-var _exploring := false
-var _tween: Tween
+var _result: Dictionary = {}
 
 @onready var panel: Control = $Panel
 @onready var title_label: Label = $Panel/Title
 @onready var desc_label: Label = $Panel/Desc
-@onready var slot_container: Control = $Panel/SlotContainer
-@onready var progress_bar: ColorRect = $Panel/ProgressBar
-@onready var progress_fill: ColorRect = $Panel/ProgressBar/Fill
-@onready var start_btn: Button = $Panel/StartBtn
-@onready var status_label: Label = $Panel/StatusLabel
+@onready var result_container: VBoxContainer = $Panel/ResultContainer
 @onready var close_btn: Button = $Panel/CloseBtn
-@onready var slot_scene = preload("res://scenes/exploration/card_slot.tscn")
 
 
 func _ready():
 	visible = false
-	start_btn.pressed.connect(func(): SFX.play_button(); _on_start())
-	close_btn.pressed.connect(func(): SFX.play_button(); close())
+	close_btn.pressed.connect(close)
 	panel.position = Vector2(1920, 0)
-	EventBus.card_removed_from_slot.connect(_on_card_removed)
 	PanelManager.register_exploration_panel(self)
 
 func _input(event):
@@ -32,230 +23,67 @@ func _input(event):
 func get_panel_left() -> float:
 	return panel.global_position.x
 
-func open(config: ExplorationConfig) -> void:
+func open(config: ExplorationConfig, result: Dictionary) -> void:
 	_config = config
-	_exploring = false
-	progress_fill.size.x = 0
-	_kill_tween(_tween)
+	_result = result
 	title_label.text = config.scene_name
 	desc_label.text = config.scene_description
-	_build_slots()
+	_populate_results(result)
 	visible = true
-	start_btn.text = config.start_btn_text
-	start_btn.disabled = true
-	status_label.text = "放入卡牌到槽位中…"
-	EventBus.register_drop_handler(self)
-	_kill_tween(_tween)
-	_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	_tween.tween_property(panel, "position:x", 1920 - panel.size.x, 0.3)
+	_close_btn_focus()
+	var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(panel, "position:x", 1920 - panel.size.x, 0.3)
+
+func _close_btn_focus() -> void:
+	await get_tree().process_frame
+	close_btn.grab_focus()
+
+func _populate_results(result: Dictionary) -> void:
+	for child in result_container.get_children():
+		child.queue_free()
+
+	if result.get("rest", false):
+		var lbl = Label.new()
+		lbl.text = "休息完成，疲劳已消除。"
+		lbl.add_theme_font_size_override("font_size", 18)
+		result_container.add_child(lbl)
+		close_btn.text = "关闭"
+		return
+
+	var branch_name = result.get("branch_name", "")
+	if not branch_name.is_empty():
+		var lbl = Label.new()
+		lbl.text = "触发分支: " + branch_name
+		lbl.add_theme_font_size_override("font_size", 18)
+		result_container.add_child(lbl)
+
+	var drops = result.get("drops", [])
+	if drops.size() > 0:
+		var hdr = Label.new()
+		hdr.text = "\n获得物品:"
+		hdr.add_theme_font_size_override("font_size", 16)
+		result_container.add_child(hdr)
+		for d in drops:
+			var item = Label.new()
+			item.text = "  • " + d
+			result_container.add_child(item)
+
+	if result.get("fatigue", false):
+		var f = Label.new()
+		f.text = "\n获得了 [疲劳]"
+		f.modulate = Color(1, 0.5, 0.5)
+		result_container.add_child(f)
+
+	if drops.is_empty() and not result.get("fatigue", false):
+		var empty = Label.new()
+		empty.text = "\n探索完成，但无所获。"
+		result_container.add_child(empty)
+
+	close_btn.text = "关闭"
 
 func close() -> void:
-	EventBus.unregister_drop_handler()
-	_kill_tween(_tween)
-	_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	_tween.tween_property(panel, "position:x", 1920, 0.25)
-	await _tween.finished
-	_clear_slots()
+	var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	tween.tween_property(panel, "position:x", 1920, 0.25)
+	await tween.finished
 	visible = false
 	EventBus.exploration_closed.emit()
-
-func _build_slots() -> void:
-	_clear_slots()
-	var count = _config.slot_count
-	var cfgs = _config.slot_configs
-	for i in range(count):
-		var slot = slot_scene.instantiate()
-		slot.set_config(cfgs[i] if i < cfgs.size() else null)
-		slot_container.add_child(slot)
-		_slots.append(slot)
-
-func _clear_slots() -> void:
-	for slot in _slots:
-		var card = slot.remove_card()
-		if card:
-			var container = EventBus.get_card_container()
-			card.reparent(container)
-			card.global_position = Vector2(randi_range(200, 600), randi_range(300, 600))
-		slot.queue_free()
-	_slots.clear()
-
-func on_card_dropped(card) -> bool:
-	if _exploring:
-		return false
-	if not _is_card_valid(card):
-		return false
-	var mouse_pos = get_viewport().get_mouse_position()
-	for slot in _slots:
-		var slot_rect = Rect2(slot.global_position, slot.size)
-		if slot_rect.has_point(mouse_pos) and slot.is_empty():
-			slot.place_card(card)
-			EventBus.card_placed_in_slot.emit(slot, card)
-			_check_ready()
-			return true
-	return false
-
-func _is_card_valid(card) -> bool:
-	if _config.branch_recipes.is_empty():
-		for req in _config.required_cards:
-			if req.matches(card):
-				return true
-		return false
-	for branch in _config.branch_recipes:
-		for req in branch.required_cards:
-			if req.matches(card):
-				return true
-	return false
-
-func _on_card_removed(slot, card) -> void:
-	if _config == null:
-		return
-	_check_ready()
-
-func _check_ready() -> void:
-	if not _config.branch_recipes.is_empty():
-		for branch in _config.branch_recipes:
-			if _match_slots(branch.required_cards):
-				start_btn.disabled = false
-				status_label.text = "准备就绪，可以开始探索"
-				return
-		start_btn.disabled = true
-		status_label.text = "放入卡牌到槽位中…"
-		return
-	var reqs = _config.required_cards
-	for req in reqs:
-		var found := false
-		for slot in _slots:
-			if not slot.is_empty() and req.matches(slot.placed_card):
-				found = true
-				break
-		if not found:
-			start_btn.disabled = true
-			status_label.text = "放入卡牌到槽位中…"
-			return
-	start_btn.disabled = false
-	status_label.text = "准备就绪，可以开始探索"
-
-func _on_start() -> void:
-	if _exploring:
-		return
-	_exploring = true
-	start_btn.disabled = true
-	status_label.text = "探索中…"
-	progress_fill.size.x = 0
-	for slot in _slots:
-		if not slot.is_empty():
-			slot.lock()
-	_kill_tween(_tween)
-	_tween = create_tween()
-	_tween.tween_property(progress_fill, "size:x", progress_bar.size.x, _config.explore_duration)
-	_tween.tween_callback(_on_explore_end)
-	EventBus.exploration_started.emit()
-
-func _on_explore_end() -> void:
-	_exploring = false
-	progress_fill.size.x = 0
-	if _config.rest_mode:
-		_handle_rest()
-		return
-	_handle_favorability()
-	var active_recipes = _get_active_recipes()
-	_return_cards()
-	_check_ready()
-	var base_pos = Vector2(get_panel_left() - 200, 500)
-	var fatigue_count = EventBus.get_cards_by_tag("fatigue").size()
-	var drop_multiplier = max(0.0, 1.0 - fatigue_count * 0.2)
-	if randf() < 0.25:
-		EventBus.spawn_card_requested.emit(
-			load("res://resources/cards/ITEM_fatigue.tres"),
-			base_pos + Vector2(-60, 0)
-		)
-		status_label.text = "获得: 疲劳"
-		await get_tree().create_timer(0.3).timeout
-	for recipe in active_recipes:
-		if not EventBus.can_drop(recipe):
-			continue
-		if fatigue_count > 0 and randf() >= drop_multiplier:
-			continue
-		if not recipe.stackable:
-			var rid = recipe.result_card.card_id if recipe.result_card else ""
-			if not rid.is_empty():
-				var existing = EventBus.get_card_by_id(rid)
-				if is_instance_valid(existing) and existing.is_inside_tree():
-					continue
-		EventBus.mark_drop_consumed(recipe)
-		var data = recipe.result_card
-		if data == null:
-			continue
-		var count = randi_range(recipe.min_count, recipe.max_count)
-		for i in range(count):
-			var pos = base_pos + Vector2(i * 30, 0)
-			EventBus.spawn_card_requested.emit(data, pos)
-			status_label.text = "获得: %s" % data.card_name
-			await get_tree().create_timer(0.3).timeout
-	status_label.text = "探索完成，可重新放入卡牌"
-	EventBus.exploration_completed.emit()
-
-func _handle_rest() -> void:
-	var panel_left = get_panel_left()
-	for slot in _slots:
-		var card = slot.remove_card()
-		if card:
-			if "fatigue" in card.card_data.tags:
-				card.queue_free()
-			else:
-				var container = EventBus.get_card_container()
-				card.reparent(container, false)
-				card.global_position = Vector2(panel_left - 180 + randi_range(-40, 40), 400 + randi_range(-80, 80))
-		slot.unlock()
-	status_label.text = "休息完成，疲劳已消除"
-	EventBus.exploration_completed.emit()
-
-func _get_active_recipes() -> Array:
-	if _config.branch_recipes.is_empty():
-		return _config.result_recipes
-	for branch in _config.branch_recipes:
-		if _match_slots(branch.required_cards):
-			return branch.result_recipes
-	return _config.result_recipes
-
-func _match_slots(reqs: Array) -> bool:
-	for req in reqs:
-		var found := false
-		for slot in _slots:
-			if not slot.is_empty() and req.matches(slot.placed_card):
-				found = true
-				break
-		if not found:
-			return false
-	return true
-
-func _handle_favorability() -> void:
-	if _config.branch_recipes.is_empty():
-		return
-	for branch in _config.branch_recipes:
-		if not _match_slots(branch.required_cards):
-			continue
-		if branch.add_favorability > 0 and branch.favorability_target_slot >= 0 and branch.favorability_target_slot < _slots.size():
-			var target_slot = _slots[branch.favorability_target_slot]
-			if target_slot and not target_slot.is_empty():
-				var card = target_slot.placed_card
-				if card and card.card_data:
-					var old_val = card.card_data.favorability
-					var new_val = mini(old_val + branch.add_favorability, card.card_data.max_favorability)
-					card.card_data.favorability = new_val
-					EventBus.favorability_changed.emit(card.card_data.card_id, old_val, new_val, branch.add_favorability)
-		return
-
-func _return_cards() -> void:
-	var panel_left = get_panel_left()
-	for slot in _slots:
-		var card = slot.remove_card()
-		if card:
-			var container = EventBus.get_card_container()
-			card.reparent(container, false)
-			card.global_position = Vector2(panel_left - 180 + randi_range(-40, 40), 400 + randi_range(-80, 80))
-		slot.unlock()
-
-func _kill_tween(t: Tween) -> void:
-	if t and t.is_valid():
-		t.kill()

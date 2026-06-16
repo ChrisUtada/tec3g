@@ -17,8 +17,6 @@ func _ready():
 	_success = _player(_load(success_path))
 
 	EventBus.card_drag_started.connect(func(_c): play_click())
-	EventBus.card_placed_in_slot.connect(func(_s, _c): play_drop())
-	EventBus.card_removed_from_slot.connect(func(_s, _c): play_click())
 	EventBus.card_stacked.connect(func(_b, _t): play_drop())
 	EventBus.card_broken.connect(func(_c): play_drop())
 	EventBus.card_combined.connect(func(_b, _t, _r): play_success())

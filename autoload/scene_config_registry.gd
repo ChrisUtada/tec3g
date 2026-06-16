@@ -77,12 +77,15 @@ func _rest() -> ExplorationConfig:
 	var c = ExplorationConfig.new()
 	c.scene_card_id = "LOGIC_rest"
 	c.scene_name = "休息处"
-	c.scene_description = "让调查员休息，消除疲劳。"
-	c.slot_count = 2
+	c.scene_description = "消除疲劳，恢复状态。"
+	c.slot_count = 1
 	c.explore_duration = 5.0
 	c.rest_mode = true
-	c.required_cards = [
-		_slot(["CHAR_junior_investigator"], "需要初级调查员"),
+
+	var branch = SlotBranchRecipe.new()
+	branch.branch_name = "休息"
+	branch.required_cards = [
 		_slot(["ITEM_fatigue"], "需要疲劳卡"),
 	] as Array[PanelSlotConfig]
+	c.branch_recipes.append(branch)
 	return c

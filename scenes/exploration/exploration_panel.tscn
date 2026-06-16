@@ -49,50 +49,18 @@ autowrap_mode = 2
 text = "描述"
 theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1.0)
 
-[node name="SlotContainer" type="VBoxContainer" parent="Panel"]
+[node name="ResultContainer" type="VBoxContainer" parent="Panel"]
 layout_mode = 0
 offset_left = 20
 offset_top = 150
 offset_right = 380
-offset_bottom = 660
-theme_override_constants/separation = 10
-
-[node name="ProgressBar" type="ColorRect" parent="Panel"]
-layout_mode = 0
-offset_left = 20
-offset_top = 680
-offset_right = 380
-offset_bottom = 700
-color = Color(0.2, 0.2, 0.3, 1.0)
-
-[node name="Fill" type="ColorRect" parent="Panel/ProgressBar"]
-layout_mode = 0
-size = Vector2(0, 20)
-color = Color(0.3, 0.7, 0.3, 1.0)
-
-[node name="StartBtn" type="Button" parent="Panel"]
-layout_mode = 0
-offset_left = 100
-offset_top = 720
-offset_right = 300
-offset_bottom = 760
-text = "开始探索"
-disabled = true
+offset_bottom = 800
+theme_override_constants/separation = 6
 
 [node name="CloseBtn" type="Button" parent="Panel"]
 layout_mode = 0
-offset_left = 340
-offset_top = 10
+offset_left = 320
+offset_top = 830
 offset_right = 380
-offset_bottom = 40
-text = "X"
-
-[node name="StatusLabel" type="Label" parent="Panel"]
-layout_mode = 0
-offset_left = 20
-offset_top = 780
-offset_right = 380
-offset_bottom = 820
-theme_override_font_sizes/font_size = 13
-text = ""
-horizontal_alignment = 1
+offset_bottom = 870
+text = "关闭"

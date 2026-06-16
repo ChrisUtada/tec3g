@@ -30,11 +30,7 @@ signal card_combined(bottom, top, result)
 
 
 # ── Exploration Events ──
-signal exploration_requested(config)
-signal card_placed_in_slot(slot, card)
-signal card_removed_from_slot(slot, card)
-signal exploration_started()
-signal exploration_completed()
+signal exploration_requested(config, result)
 signal exploration_closed()
 
 
@@ -101,7 +97,7 @@ func mark_drop_consumed(recipe) -> void:
 
 
 # ── Dialogue Events ──
-signal dialogue_requested(config, character_name)
+signal dialogue_requested(config, character_name, topic_card_id)
 signal dialogue_closed()
 
 
