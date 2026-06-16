@@ -1,8 +1,7 @@
 [gd_scene format=3 uid="uid://6cp1qm7jl0o0"]
 
 [ext_resource type="Script" uid="uid://b6wybpctw4mrs" path="res://main.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/exploration/exploration_panel.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/dialogue/dialogue_panel.tscn" id="3"]
+
 
 [node name="Main" type="Node2D" unique_id=1044766152]
 script = ExtResource("1")
@@ -90,6 +89,3 @@ theme_override_font_sizes/font_size = 12
 text = "游戏日志："
 vertical_alignment = 1
 
-[node name="ExplorationPanel" parent="GameBoard" unique_id=187842118 instance=ExtResource("2")]
-
-[node name="DialoguePanel" parent="GameBoard" unique_id=1248864527 instance=ExtResource("3")]
