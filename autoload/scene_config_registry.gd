@@ -15,7 +15,6 @@ func _plant_hunter() -> ExplorationConfig:
 	c.scene_card_id = "SCENE_plant_hunter"
 	c.scene_name = "植物学家的花园"
 	c.scene_description = "由 TEC 引导进入的异界花园。植物学家在此失踪。\n放入合适的卡牌探索隐藏的秘密。"
-	c.slot_count = 3
 	c.explore_duration = 3.0
 
 	var branch1 = SlotBranchRecipe.new()
@@ -59,7 +58,6 @@ func _library() -> ExplorationConfig:
 	c.scene_card_id = "SCENE_library"
 	c.scene_name = "图书馆"
 	c.scene_description = "和朱穗一起在图书馆中研读典籍。"
-	c.slot_count = 1
 	c.explore_duration = 5.0
 	c.start_btn_text = "开始阅读"
 
@@ -78,7 +76,6 @@ func _rest() -> ExplorationConfig:
 	c.scene_card_id = "LOGIC_rest"
 	c.scene_name = "休息处"
 	c.scene_description = "消除疲劳，恢复状态。"
-	c.slot_count = 1
 	c.explore_duration = 5.0
 	c.rest_mode = true
 
