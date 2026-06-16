@@ -9,6 +9,7 @@ var _drag_offset := Vector2.ZERO
 
 @onready var content_panel: Panel = $ContentPanel
 @onready var title_label: Label = $ContentPanel/Title
+@onready var subtitle_label: Label = $ContentPanel/Subtitle
 @onready var text_label: Label = $ContentPanel/TextLabel
 @onready var branch_container: VBoxContainer = $ContentPanel/BranchContainer
 @onready var action_btn: Button = $ContentPanel/ActionBtn
@@ -25,6 +26,13 @@ func open(config: DialogueConfig, character_name: String, topic_card_id: String)
 	_dialogue_data = _load_json("res://resources/dialogues/" + config.dialogue_id + ".json")
 	_current_node_id = ""
 	title_label.text = character_name
+	if topic_card_id.is_empty():
+		subtitle_label.hide()
+	else:
+		var topic_card = EventBus.get_card_by_id(topic_card_id)
+		var topic_name = topic_card.card_data.card_name if topic_card and topic_card.card_data else topic_card_id
+		subtitle_label.text = "← " + topic_name
+		subtitle_label.show()
 	text_label.text = ""
 	_clear_branches()
 	action_btn.text = "结束对话"
