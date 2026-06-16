@@ -4,6 +4,7 @@ var _combo_bar = null
 var _combo_bottom = null
 var _combo_top = null
 var _bar_scene = preload("res://scenes/progress_bar_2d.tscn")
+var _exploring := false
 
 var _dialogue_topic_card = null
 
@@ -16,6 +17,13 @@ func _ready():
 
 
 func _on_card_broken(card):
+	if _exploring:
+		_combo_bar.cancel()
+		_combo_bar = null
+		_combo_bottom = null
+		_combo_top = null
+		_exploring = false
+		return
 	if _combo_bar and card == _combo_top:
 		_combo_bar.cancel()
 		_combo_bar = null
@@ -74,9 +82,11 @@ func _try_exploration(root, config) -> void:
 
 	_combo_bottom = root
 	_combo_top = null
+	_exploring = true
 	_combo_bar = _bar_scene.instantiate()
 	_combo_bar.set_fill_color(Color(0.3, 0.8, 0.3))
 	_combo_bar.attach_to(root, config.explore_duration, func():
+		_exploring = false
 		_combo_bar.queue_free()
 		_combo_bar = null
 		_combo_bottom = null
