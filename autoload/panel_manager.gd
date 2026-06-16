@@ -1,45 +1,19 @@
 extends Node
 
-var _exploration_panel = null
-var _dialogue_panel = null
-var _current_panel: String = ""
+const _exploration_scene = preload("res://scenes/exploration/exploration_panel.tscn")
+const _dialogue_scene = preload("res://scenes/dialogue/dialogue_panel.tscn")
 
 
 func _ready():
 	EventBus.exploration_requested.connect(_on_exploration_requested)
 	EventBus.dialogue_requested.connect(_on_dialogue_requested)
-	EventBus.exploration_closed.connect(_on_panel_closed)
-	EventBus.dialogue_closed.connect(_on_panel_closed)
-	EventBus.corruption_triggered.connect(_on_corruption_triggered)
 
-
-func register_exploration_panel(panel) -> void:
-	_exploration_panel = panel
-
-func register_dialogue_panel(panel) -> void:
-	_dialogue_panel = panel
-
-func _on_panel_closed() -> void:
-	_current_panel = ""
-
-func _on_exploration_requested(config, result: Dictionary) -> void:
-	if _current_panel == "dialogue" and _dialogue_panel:
-		await _dialogue_panel.close()
-	elif _current_panel == "exploration" and _exploration_panel:
-		await _exploration_panel.close()
-	_current_panel = "exploration"
-	if _exploration_panel:
-		_exploration_panel.open(config, result)
-
-func _on_corruption_triggered(card_id: String) -> void:
-	if _current_panel == "exploration" and _exploration_panel:
-		_exploration_panel.close()
+func _on_exploration_requested(config, result) -> void:
+	var panel = _exploration_scene.instantiate()
+	get_tree().current_scene.add_child(panel)
+	panel.open(config, result)
 
 func _on_dialogue_requested(config, character_name, topic_card_id) -> void:
-	if _current_panel == "exploration" and _exploration_panel:
-		await _exploration_panel.close()
-	elif _current_panel == "dialogue" and _dialogue_panel:
-		await _dialogue_panel.close()
-	_current_panel = "dialogue"
-	if _dialogue_panel:
-		_dialogue_panel.open(config, character_name, topic_card_id)
+	var panel = _dialogue_scene.instantiate()
+	get_tree().current_scene.add_child(panel)
+	panel.open(config, character_name, topic_card_id)

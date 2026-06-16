@@ -4,28 +4,20 @@ var _config: DialogueConfig
 var _dialogue_data: Dictionary = {}
 var _current_node_id: String = ""
 var _topic_card_id: String = ""
+var _dragging := false
+var _drag_offset := Vector2.ZERO
 
-@onready var panel: Control = $Panel
-@onready var title_label: Label = $Panel/Title
-@onready var text_label: Label = $Panel/TextLabel
-@onready var branch_container: VBoxContainer = $Panel/BranchContainer
-@onready var action_btn: Button = $Panel/ActionBtn
-@onready var close_btn: Button = $Panel/CloseBtn
+@onready var content_panel: Panel = $ContentPanel
+@onready var title_label: Label = $ContentPanel/Title
+@onready var text_label: Label = $ContentPanel/TextLabel
+@onready var branch_container: VBoxContainer = $ContentPanel/BranchContainer
+@onready var action_btn: Button = $ContentPanel/ActionBtn
+@onready var close_btn: Button = $ContentPanel/CloseBtn
 
 
 func _ready():
-	visible = false
 	action_btn.pressed.connect(_on_action)
-	close_btn.pressed.connect(close)
-	panel.position = Vector2(1920, 0)
-	PanelManager.register_dialogue_panel(self)
-
-func _input(event):
-	if event.is_action_pressed("ui_cancel") and visible:
-		close()
-
-func get_panel_left() -> float:
-	return panel.global_position.x
+	close_btn.pressed.connect(_close)
 
 func open(config: DialogueConfig, character_name: String, topic_card_id: String) -> void:
 	_config = config
@@ -33,22 +25,25 @@ func open(config: DialogueConfig, character_name: String, topic_card_id: String)
 	_dialogue_data = _load_json("res://resources/dialogues/" + config.dialogue_id + ".json")
 	_current_node_id = ""
 	title_label.text = character_name
-	visible = true
 	text_label.text = ""
 	_clear_branches()
 	action_btn.text = "结束对话"
 	action_btn.disabled = true
-	var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(panel, "position:x", 1920 - panel.size.x, 0.3)
-	await tween.finished
+	_center_and_resize()
 	_start_dialogue()
 
-func close() -> void:
-	var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	tween.tween_property(panel, "position:x", 1920, 0.25)
-	await tween.finished
-	visible = false
+func _center_and_resize() -> void:
+	await get_tree().process_frame
+	var vp = get_viewport().size
+	var panel_w = mini(400, vp.x - 80)
+	var panel_h = mini(600, vp.y - 80)
+	content_panel.custom_minimum_size = Vector2(panel_w, panel_h)
+	content_panel.size = Vector2(panel_w, panel_h)
+	content_panel.position = Vector2((vp.x - panel_w) * 0.5, (vp.y - panel_h) * 0.5)
+
+func _close() -> void:
 	EventBus.dialogue_closed.emit()
+	queue_free()
 
 func _start_dialogue() -> void:
 	var start_id = _config.start_node_id
@@ -84,7 +79,7 @@ func _show_node(node: Dictionary) -> void:
 
 func _on_action() -> void:
 	if action_btn.text == "结束对话":
-		close()
+		_close()
 	elif not _current_node_id.is_empty():
 		_advance_dialogue()
 
@@ -144,10 +139,9 @@ func _execute_actions(actions: Array) -> void:
 						CardManager.spawn_card(data, _random_spawn_pos())
 
 func _random_spawn_pos() -> Vector2:
-	var panel_left = get_panel_left()
 	return Vector2(
-		max(panel_left - 200 + randi_range(-60, 60), 30),
-		300 + randi_range(-120, 120)
+		randi_range(200, 600),
+		randi_range(300, 600)
 	)
 
 func _show_branches(options: Array) -> void:
@@ -177,3 +171,19 @@ func _load_json(path: String) -> Dictionary:
 		return {}
 	var json = JSON.parse_string(text)
 	return json if json is Dictionary else {}
+
+func _input(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed and not _dragging:
+			var local = content_panel.get_local_mouse_position()
+			if Rect2(Vector2.ZERO, content_panel.size).has_point(local):
+				_dragging = true
+				_drag_offset = get_global_mouse_position() - content_panel.global_position
+		elif not event.pressed:
+			_dragging = false
+
+	if event is InputEventMouseMotion and _dragging:
+		content_panel.global_position = get_global_mouse_position() - _drag_offset
+
+	if event.is_action_pressed("ui_cancel") and visible:
+		_close()

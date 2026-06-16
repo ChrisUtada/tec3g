@@ -2,26 +2,18 @@ extends Control
 
 var _config: ExplorationConfig
 var _result: Dictionary = {}
+var _dragging := false
+var _drag_offset := Vector2.ZERO
 
-@onready var panel: Control = $Panel
-@onready var title_label: Label = $Panel/Title
-@onready var desc_label: Label = $Panel/Desc
-@onready var result_container: VBoxContainer = $Panel/ResultContainer
-@onready var close_btn: Button = $Panel/CloseBtn
+@onready var content_panel: Panel = $ContentPanel
+@onready var title_label: Label = $ContentPanel/Title
+@onready var desc_label: Label = $ContentPanel/Desc
+@onready var result_container: VBoxContainer = $ContentPanel/ResultContainer
+@onready var close_btn: Button = $ContentPanel/CloseBtn
 
 
 func _ready():
-	visible = false
-	close_btn.pressed.connect(close)
-	panel.position = Vector2(1920, 0)
-	PanelManager.register_exploration_panel(self)
-
-func _input(event):
-	if event.is_action_pressed("ui_cancel") and visible:
-		close()
-
-func get_panel_left() -> float:
-	return panel.global_position.x
+	close_btn.pressed.connect(_close)
 
 func open(config: ExplorationConfig, result: Dictionary) -> void:
 	_config = config
@@ -29,14 +21,19 @@ func open(config: ExplorationConfig, result: Dictionary) -> void:
 	title_label.text = config.scene_name
 	desc_label.text = config.scene_description
 	_populate_results(result)
-	visible = true
-	_close_btn_focus()
-	var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(panel, "position:x", 1920 - panel.size.x, 0.3)
+	_center_and_resize()
 
-func _close_btn_focus() -> void:
+func _center_and_resize() -> void:
 	await get_tree().process_frame
-	close_btn.grab_focus()
+	var vp = get_viewport().size
+	var total_h = 0
+	for child in result_container.get_children():
+		total_h += child.size.y + 6
+	var panel_h = mini(80 + total_h + 40, vp.y - 80)
+	var panel_w = mini(400, vp.x - 80)
+	content_panel.custom_minimum_size = Vector2(panel_w, panel_h)
+	content_panel.size = Vector2(panel_w, panel_h)
+	content_panel.position = Vector2((vp.x - panel_w) * 0.5, (vp.y - panel_h) * 0.5)
 
 func _populate_results(result: Dictionary) -> void:
 	for child in result_container.get_children():
@@ -47,7 +44,6 @@ func _populate_results(result: Dictionary) -> void:
 		lbl.text = "休息完成，疲劳已消除。"
 		lbl.add_theme_font_size_override("font_size", 18)
 		result_container.add_child(lbl)
-		close_btn.text = "关闭"
 		return
 
 	var branch_name = result.get("branch_name", "")
@@ -79,11 +75,21 @@ func _populate_results(result: Dictionary) -> void:
 		empty.text = "\n探索完成，但无所获。"
 		result_container.add_child(empty)
 
-	close_btn.text = "关闭"
+func _close() -> void:
+	queue_free()
 
-func close() -> void:
-	var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
-	tween.tween_property(panel, "position:x", 1920, 0.25)
-	await tween.finished
-	visible = false
-	EventBus.exploration_closed.emit()
+func _input(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed and not _dragging:
+			var local = content_panel.get_local_mouse_position()
+			if Rect2(Vector2.ZERO, content_panel.size).has_point(local):
+				_dragging = true
+				_drag_offset = get_global_mouse_position() - content_panel.global_position
+		elif not event.pressed:
+			_dragging = false
+
+	if event is InputEventMouseMotion and _dragging:
+		content_panel.global_position = get_global_mouse_position() - _drag_offset
+
+	if event.is_action_pressed("ui_cancel") and visible:
+		_close()

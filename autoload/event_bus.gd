@@ -31,7 +31,6 @@ signal card_combined(bottom, top, result)
 
 # ── Exploration Events ──
 signal exploration_requested(config, result)
-signal exploration_closed()
 
 
 # ── Card Registry ──
