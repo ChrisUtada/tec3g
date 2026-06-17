@@ -59,7 +59,6 @@ func _library() -> ExplorationConfig:
 	c.scene_name = "图书馆"
 	c.scene_description = "和朱穗一起在图书馆中研读典籍。"
 	c.explore_duration = 5.0
-	c.start_btn_text = "开始阅读"
 
 	var branch = SlotBranchRecipe.new()
 	branch.branch_name = "研读"
