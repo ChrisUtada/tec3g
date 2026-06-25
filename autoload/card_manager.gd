@@ -120,7 +120,7 @@ func _on_exploration_complete(root, config, branch) -> void:
 		})
 		return
 
-	var base_pos = Vector2(300, 920)
+	var base_pos = root.global_position + Vector2(180, 0)
 	var drops_info = []
 
 	if branch.add_favorability > 0:
@@ -151,7 +151,7 @@ func _on_exploration_complete(root, config, branch) -> void:
 	if randf() < 0.25:
 		EventBus.spawn_card_requested.emit(
 			load("res://resources/cards/ITEM_fatigue.tres"),
-			base_pos + Vector2(60, 0)
+			base_pos + Vector2(-60, 0)
 		)
 		fatigue_spawned = true
 
@@ -159,7 +159,7 @@ func _on_exploration_complete(root, config, branch) -> void:
 	for child in root.get_children():
 		if child is Control and child.is_in_group("cards"):
 			child.reparent(container)
-			child.global_position = Vector2(randi_range(300, 800), randi_range(920, 1020))
+			child.global_position = root.global_position + Vector2(randi_range(-60, 60), 80 + randi_range(-20, 20))
 
 	EventBus.exploration_requested.emit(config, {
 		"branch_name": branch.branch_name,
@@ -182,7 +182,7 @@ func _on_dialogue_closed() -> void:
 	if _dialogue_topic_card and is_instance_valid(_dialogue_topic_card) and _dialogue_topic_card.is_inside_tree():
 		var container = EventBus.get_card_container()
 		_dialogue_topic_card.reparent(container)
-		_dialogue_topic_card.global_position = Vector2(randi_range(300, 800), randi_range(920, 1020))
+		_dialogue_topic_card.global_position = Vector2(randi_range(200, 600), randi_range(300, 600))
 	_dialogue_topic_card = null
 
 
@@ -190,7 +190,7 @@ func _do_combine(root, top, hits: Array[StackRecipe]) -> void:
 	var chosen = _weighted_pick(hits)
 	if chosen == null:
 		return
-	var base_pos = Vector2(300, 920)
+	var base_pos = root.global_position + Vector2(180, 0)
 	_combo_bottom = root
 	_combo_top = top
 	_combo_bar = _bar_scene.instantiate()
@@ -203,7 +203,7 @@ func _do_combine(root, top, hits: Array[StackRecipe]) -> void:
 			for child in root.get_children():
 				if child is Control and child.is_in_group("cards"):
 					child.reparent(container)
-					child.global_position = Vector2(randi_range(300, 800), randi_range(920, 1020))
+					child.global_position = root.global_position + Vector2(0, 80)
 			_combo_bar = null
 			_combo_bottom = null
 			_combo_top = null
@@ -218,7 +218,7 @@ func _do_combine(root, top, hits: Array[StackRecipe]) -> void:
 	_combo_bar.attach_to(root, 3.0, func():
 		EventBus.mark_drop_consumed(chosen)
 		for i in range(count):
-			var pos = base_pos + Vector2(i * 40, 0)
+			var pos = base_pos + Vector2(i * 30, 0)
 			var new_card = spawn_card(data, pos)
 			EventBus.card_combined.emit(root, top, new_card)
 		_combo_bar.queue_free()

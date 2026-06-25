@@ -148,8 +148,8 @@ func _execute_actions(actions: Array) -> void:
 
 func _random_spawn_pos() -> Vector2:
 	return Vector2(
-		randi_range(300, 800),
-		randi_range(920, 1020)
+		randi_range(200, 600),
+		randi_range(300, 600)
 	)
 
 func _show_branches(options: Array) -> void:

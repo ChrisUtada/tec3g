@@ -41,7 +41,7 @@ offset_top = 5
 offset_right = 400
 offset_bottom = 25
 theme_override_font_sizes/font_size = 11
-text = "[ 暂存区 ]    新卡落在这里，常用卡拖到底部固定"
+text = "[ 暂存区 ]    把常用卡牌拖到这里存放"
 theme_override_colors/font_color = Color(0.4, 0.4, 0.5, 1.0)
 
 [node name="CardContainer" type="Control" parent="GameBoard" unique_id=1966715342]
