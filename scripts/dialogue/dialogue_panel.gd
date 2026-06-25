@@ -180,5 +180,3 @@ func _load_json(path: String) -> Dictionary:
 		return {}
 	var json = JSON.parse_string(text)
 	return json if json is Dictionary else {}
-
-

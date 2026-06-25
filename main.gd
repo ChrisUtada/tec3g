@@ -14,21 +14,22 @@ func _ready():
 	var junior = preload("res://resources/cards/CHAR_junior_investigator.tres")
 	var zhusui = preload("res://resources/cards/CHAR_zhu_sui.tres")
 
-	CardManager.spawn_card(sdt, Vector2(100, 80))
-	CardManager.spawn_card(observe, Vector2(330, 80))
-	CardManager.spawn_card(capture, Vector2(560, 80))
-	CardManager.spawn_card(rest, Vector2(790, 80))
-	CardManager.spawn_card(plant_hunter, Vector2(1020, 80))
-	CardManager.spawn_card(tec, Vector2(100, 350))
-	CardManager.spawn_card(junior, Vector2(330, 350))
-	CardManager.spawn_card(coin, Vector2(560, 350))
-	CardManager.spawn_card(peek, Vector2(790, 350))
-	CardManager.spawn_card(zhusui, Vector2(1020, 350))
+	CardManager.spawn_card(sdt, Vector2(300, 80))
+	CardManager.spawn_card(observe, Vector2(530, 80))
+	CardManager.spawn_card(capture, Vector2(760, 80))
+	CardManager.spawn_card(rest, Vector2(990, 80))
+	CardManager.spawn_card(plant_hunter, Vector2(1220, 80))
+	CardManager.spawn_card(tec, Vector2(300, 350))
+	CardManager.spawn_card(junior, Vector2(530, 350))
+	CardManager.spawn_card(coin, Vector2(760, 350))
+	CardManager.spawn_card(peek, Vector2(990, 350))
+	CardManager.spawn_card(zhusui, Vector2(1220, 350))
 
 	EventBus.card_stacked.connect(_on_card_stacked)
 	EventBus.card_broken.connect(_on_card_broken)
 	EventBus.card_combined.connect(_on_card_combined)
 	$GameBoard/BottomBar/OrganizeBtn.pressed.connect(_on_organize_pressed)
+	$GameBoard/BottomBar/StackToggleBtn.pressed.connect(_on_stack_toggle_pressed)
 
 func _on_card_stacked(bottom, top):
 	$GameBoard/UI/LogLabel.text = "%s 堆叠到 %s 上" % [top.card_data.card_name, bottom.card_data.card_name]
@@ -41,3 +42,7 @@ func _on_card_combined(bottom, top, result):
 
 func _on_organize_pressed():
 	CardManager.organize_board()
+
+func _on_stack_toggle_pressed():
+	CardManager.toggle_staging_layout()
+	$GameBoard/BottomBar/StackToggleBtn.text = "堆叠模式" if CardManager.staging_tiled else "平铺模式"

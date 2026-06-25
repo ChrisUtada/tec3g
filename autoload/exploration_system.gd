@@ -85,22 +85,17 @@ func _on_exploration_complete(root, config, branch) -> void:
 
 
 func _process_rest(root, config, branch) -> void:
-	var processed = false
+	var fatigue_count = 0
 	for child in root.get_children():
-		if child is Control and child.is_in_group("cards") and child.card_data:
-			if "fatigue" in child.card_data.tags:
-				child.queue_free()
-				processed = true
-				break
-	if not processed:
+		if child is Control and child.is_in_group("cards") and child.card_data and child.card_data.fatigue_trigger:
+			fatigue_count += 1
+	if fatigue_count == 0:
 		return
-	var has_more = false
 	for child in root.get_children():
-		if child is Control and child.is_in_group("cards") and child.card_data:
-			if "fatigue" in child.card_data.tags:
-				has_more = true
-				break
-	if has_more:
+		if child is Control and child.is_in_group("cards") and child.card_data and child.card_data.fatigue_trigger:
+			child.queue_free()
+			break
+	if fatigue_count > 1:
 		var bar = CardManager.BarScene.instantiate()
 		bar.set_fill_color(Color(0.3, 0.8, 0.3))
 		CardManager.combo_bar = bar

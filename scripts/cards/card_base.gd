@@ -16,45 +16,39 @@ const STACK_OFFSET := Vector2(0, 30)
 const MIN_DRAG_DISTANCE := 10.0
 const STAGING_Y := 820
 const STAGING_X_START := 300
-const STAGING_X_GAP := 40
+const BOARD_MIN_X := 280
+const SIDEBAR_GAP := 20
 
-@onready var panel: Panel = $Panel
 @onready var hover_overlay: ColorRect = $HoverOverlay
-@onready var title_label: Label = $Title
-@onready var desc_label: Label = $Description
-@onready var type_label: Label = $TypeLabel
-@onready var favor_label: Label = $FavorLabel
-@onready var art_rect: TextureRect = $Art
 
 var _hover_tween: Tween
 var _press_tween: Tween
 var _is_hovered := false
-var _corruption_bar: Control
 
-
-
-const _bar_scene = preload("res://scenes/progress_bar_2d.tscn")
-const _fatigue_card = preload("res://resources/cards/ITEM_fatigue.tres")
+var _staging_mode := false
 
 func _ready():
 	_container = EventBus.get_card_container()
 	add_to_group("cards")
 	EventBus.register_card(self)
 	EventBus.favorability_changed.connect(_on_favorability_changed)
-	_refresh_visual()
+	if card_data:
+		$Visual.refresh(card_data)
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
-	if card_data and card_data.corruption_time > 0:
-		start_corruption()
+	_try_start_corruption()
 
 func _enter_tree():
 	if card_data == null or _container == null:
 		return
 	EventBus.register_card(self)
-	_refresh_visual()
+	$Visual.refresh(card_data)
 
 func _exit_tree():
 	EventBus.unregister_card(self)
+
+
+# ── Hover / Press Tween ──
 
 func _on_mouse_entered():
 	_is_hovered = true
@@ -88,67 +82,26 @@ static func _kill_tween(t: Tween):
 	if t and t.is_valid():
 		t.kill()
 
+
+# ── Setup ──
+
 func setup(data: CardData) -> void:
 	card_data = data
+	_try_start_corruption()
 
 func set_card_data(data: CardData) -> void:
 	card_data = data
 	if is_node_ready():
-		_refresh_visual()
-
-func _refresh_visual() -> void:
-	if card_data == null:
-		return
-	var s = StyleBoxFlat.new()
-	s.bg_color = card_data.bg_color
-	s.set_border_width_all(2)
-	s.border_color = card_data.border_color
-	s.corner_radius_top_left = 8
-	s.corner_radius_top_right = 8
-	s.corner_radius_bottom_right = 8
-	s.corner_radius_bottom_left = 8
-	s.shadow_size = 6
-	s.shadow_color = Color(0, 0, 0, 0.3)
-	s.shadow_offset = Vector2(2, 2)
-	panel.add_theme_stylebox_override("panel", s)
-	hover_overlay.color = Color(card_data.border_color, 0)
-	title_label.text = card_data.card_name
-	title_label.modulate = card_data.text_color
-	desc_label.text = card_data.description
-	type_label.text = _type_text(card_data.card_type, card_data.icon)
-	type_label.modulate = card_data.border_color
-	if card_data.card_type == CardData.CardType.CHAR:
-		favor_label.show()
-		favor_label.text = "❤ %d/%d" % [card_data.favorability, card_data.max_favorability]
-	else:
-		favor_label.hide()
-
-	if card_data.art:
-		art_rect.texture = card_data.art
-		art_rect.show()
-	else:
-		art_rect.texture = null
-		art_rect.hide()
-
-static func _type_text(t: CardData.CardType, icon: String) -> String:
-	var tag := ""
-	match t:
-		CardData.CardType.ITEM:  tag = "物品"
-		CardData.CardType.CHAR:  tag = "人物"
-		CardData.CardType.CLUE:  tag = "线索"
-		CardData.CardType.LOGIC: tag = "指令"
-		CardData.CardType.SCENE: tag = "场景"
-		CardData.CardType.DEBUFF:tag = "状态"
-	if icon.is_empty():
-		return tag
-	return "%s %s" % [icon, tag]
+		$Visual.refresh(data)
+		_try_start_corruption()
 
 
 # ── Favorability ──
 
 func _on_favorability_changed(card_id: String, old_val: int, new_val: int, delta: int) -> void:
 	if card_data and card_data.card_id == card_id:
-		favor_label.text = "❤ %d/%d" % [new_val, card_data.max_favorability]
+		if card_data.card_type == CardData.CardType.CHAR:
+			$Visual.update_favor_display(new_val, card_data.max_favorability)
 		_show_heart_popup(delta)
 
 func _show_heart_popup(delta: int) -> void:
@@ -165,16 +118,11 @@ func _show_heart_popup(delta: int) -> void:
 	t.tween_callback(heart.queue_free)
 
 
-# ── Slot API (for CardSlot) ──
-func enter_slot() -> void:
-	scale = Vector2(0.6, 0.6)
-	z_index = 0
-	is_dragging = false
-	mouse_filter = MOUSE_FILTER_IGNORE
+# ── Corruption ──
 
-func exit_slot() -> void:
-	scale = Vector2.ONE
-	mouse_filter = MOUSE_FILTER_STOP
+func _try_start_corruption() -> void:
+	if is_node_ready() and card_data and card_data.corruption_time > 0:
+		$Corruption.start(card_data)
 
 
 # ── Drag & Stack ──
@@ -219,7 +167,7 @@ func start_drag() -> void:
 	if get_parent() != _container:
 		reparent(_container)
 		EventBus.card_broken.emit(self)
-	_set_staging_mode(false)
+	set_staging_mode(false)
 	drag_offset = get_global_mouse_position() - global_position
 	is_dragging = true
 	_has_moved = false
@@ -228,8 +176,7 @@ func start_drag() -> void:
 	z_index = 100
 	scale = Vector2.ONE
 	hover_overlay.color.a = 0.0
-	if _corruption_bar:
-		_corruption_bar.pause()
+	$Corruption.pause()
 	EventBus.card_drag_started.emit(self)
 
 func _start_drag():
@@ -243,8 +190,7 @@ func _end_drag():
 	z_index = _prev_z_index
 	scale = Vector2.ONE
 	hover_overlay.color.a = 0.0
-	if _corruption_bar:
-		_corruption_bar.resume()
+	$Corruption.resume()
 	EventBus.card_drag_ended.emit(self)
 	if _has_moved:
 		if _was_in_staging and global_position.y >= STAGING_Y - 60:
@@ -255,10 +201,15 @@ func _end_drag():
 			_board_from_staging()
 		else:
 			_try_stack()
-		if get_parent() == _container and global_position.y < STAGING_Y:
-			var overlap = (global_position.y + size.y) - STAGING_Y
-			if overlap > -10:
-				global_position.y = STAGING_Y - size.y - 10
+		if get_parent() == _container:
+			if global_position.y < STAGING_Y:
+				var overlap = (global_position.y + size.y) - STAGING_Y
+				if overlap > -10:
+					global_position.y = STAGING_Y - size.y - 10
+			if global_position.x < BOARD_MIN_X:
+				var eject_x = BOARD_MIN_X + SIDEBAR_GAP
+				var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+				tween.tween_property(self, "global_position:x", eject_x, 0.12)
 	else:
 		_release_effect()
 
@@ -266,41 +217,25 @@ func _board_from_staging() -> void:
 	var card_bottom = global_position.y + size.y
 	if card_bottom >= STAGING_Y - 20:
 		global_position.y = STAGING_Y - size.y - 20
+	if global_position.x < BOARD_MIN_X:
+		global_position.x = BOARD_MIN_X + SIDEBAR_GAP
 	if global_position.y < 0:
 		_snap_to_staging()
 		return
 	_try_stack()
 
-func start_corruption() -> void:
-	await get_tree().process_frame
-	var bar = _bar_scene.instantiate()
-	bar.set_fill_color(Color(0.8, 0.15, 0.15))
-	_corruption_bar = bar
-	if not card_data.corruption_bar_label.is_empty():
-		bar.set_label(card_data.corruption_bar_label)
-	bar.attach_to(self, card_data.corruption_time, func():
-		_corruption_bar = null
-		EventBus.corruption_triggered.emit(card_data.card_id)
-		if card_data.corruption_spawn_fatigue:
-			EventBus.spawn_card_requested.emit(
-				_fatigue_card,
-				global_position
-			)
-		var container = EventBus.get_card_container()
-		for child in get_children():
-			if child is Control and child.is_in_group("cards"):
-				child.reparent(container)
-				child.global_position = global_position + Vector2(0, 80)
-		queue_free()
-	)
 
-var _staging_mode := false
+# ── Staging Area ──
 
-func _set_staging_mode(enabled: bool) -> void:
+func set_staging_mode(enabled: bool) -> void:
 	_staging_mode = enabled
 	if enabled:
-		if _corruption_bar:
-			_corruption_bar.pause()
+		$Corruption.pause()
+
+func arrange_staging(x: float) -> void:
+	z_index = 0
+	var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "global_position", Vector2(x, STAGING_Y + 20), 0.12)
 
 func _snap_to_staging() -> void:
 	if card_data and card_data.corruption_time > 0:
@@ -308,33 +243,7 @@ func _snap_to_staging() -> void:
 		tween.tween_property(self, "global_position", Vector2(global_position.x, STAGING_Y - 300), 0.15)
 		_release_effect()
 		return
-	var cards = []
-	for card in _container.get_children():
-		if card is Control and card.is_in_group("cards") and card != self and card.global_position.y >= STAGING_Y:
-			cards.append(card)
-	cards.sort_custom(func(a, b): return a.global_position.x < b.global_position.x)
-
-	if _was_in_staging:
-		var insert_idx = cards.size()
-		var drop_center = global_position.x + size.x / 2
-		for i in range(cards.size()):
-			var mid_x = cards[i].global_position.x + cards[i].size.x / 2
-			if drop_center < mid_x:
-				insert_idx = i
-				break
-		cards.insert(insert_idx, self)
-	else:
-		cards.append(self)
-
-	var x = STAGING_X_START
-	for i in range(cards.size()):
-		var card = cards[i]
-		card._set_staging_mode(true)
-		card.z_index = 0
-		_container.move_child(card, _container.get_child_count() - 1)
-		var tween = card.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tween.tween_property(card, "global_position", Vector2(x, STAGING_Y + 20), 0.12)
-		x += STAGING_X_GAP
+	EventBus.staging_arrange_requested.emit(self, _was_in_staging)
 	_release_effect()
 
 func _try_stack():

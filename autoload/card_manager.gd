@@ -5,7 +5,12 @@ var combo_bottom = null
 var combo_top = null
 var exploring := false
 var dialogue_topic_card = null
+var staging_tiled := false
 
+const STAGING_Y := 820
+const STAGING_X_START := 300
+const STAGING_X_GAP := 40
+const TILE_X_GAP := 180
 const BarScene = preload("res://scenes/progress_bar_2d.tscn")
 
 
@@ -14,6 +19,7 @@ func _ready():
 	EventBus.spawn_card_requested.connect(_on_spawn_card_requested)
 	EventBus.card_broken.connect(_on_card_broken)
 	EventBus.dialogue_closed.connect(_on_dialogue_closed)
+	EventBus.staging_arrange_requested.connect(_on_staging_arrange_requested)
 
 
 func _on_card_broken(card):
@@ -63,6 +69,56 @@ func _on_dialogue_closed() -> void:
 	dialogue_topic_card = null
 
 
+func _on_staging_arrange_requested(dropped_card, was_in_staging: bool) -> void:
+	arrange_staging_area(dropped_card, was_in_staging)
+
+func arrange_staging_area(dropped_card: Control, was_in_staging: bool) -> void:
+	var container = EventBus.get_card_container()
+	var cards: Array[Control] = []
+	for card in container.get_children():
+		if card is Control and card.is_in_group("cards") and card != dropped_card and card.global_position.y >= STAGING_Y:
+			cards.append(card)
+	cards.sort_custom(func(a, b): return a.global_position.x < b.global_position.x)
+
+	if was_in_staging:
+		var insert_idx = cards.size()
+		var drop_center = dropped_card.global_position.x + dropped_card.size.x / 2
+		for i in range(cards.size()):
+			var mid_x = cards[i].global_position.x + cards[i].size.x / 2
+			if drop_center < mid_x:
+				insert_idx = i
+				break
+		cards.insert(insert_idx, dropped_card)
+	else:
+		cards.append(dropped_card)
+
+	var x = STAGING_X_START
+	var gap = TILE_X_GAP if staging_tiled else STAGING_X_GAP
+	for card in cards:
+		card.set_staging_mode(true)
+		card.arrange_staging(x)
+		container.move_child(card, container.get_child_count() - 1)
+		x += gap
+
+
+func toggle_staging_layout() -> void:
+	staging_tiled = not staging_tiled
+	var container = EventBus.get_card_container()
+	var cards: Array[Control] = []
+	for card in container.get_children():
+		if card is Control and card.is_in_group("cards") and card.global_position.y >= STAGING_Y:
+			cards.append(card)
+	cards.sort_custom(func(a, b): return a.global_position.x < b.global_position.x)
+
+	var x = STAGING_X_START
+	var gap = TILE_X_GAP if staging_tiled else STAGING_X_GAP
+	for card in cards:
+		card.set_staging_mode(true)
+		card.arrange_staging(x)
+		container.move_child(card, container.get_child_count() - 1)
+		x += gap
+
+
 func spawn_card(data: CardData, global_position: Vector2, source: Control = null) -> Control:
 	var scene = preload("res://scenes/cards/card_base.tscn")
 	var card = scene.instantiate()
@@ -82,13 +138,13 @@ func organize_board() -> void:
 	var scene_cards: Array[Control] = []
 	for card in container.get_children():
 		if card is Control and card.is_in_group("cards") and card.card_data:
-			if card.card_data.card_type == CardData.CardType.SCENE and card.global_position.y < 820:
+			if card.card_data.card_type == CardData.CardType.SCENE and card.global_position.y < STAGING_Y:
 				scene_cards.append(card)
 	for scene in scene_cards:
 		var spawns: Array[Control] = []
 		for card in container.get_children():
 			if card is Control and card.is_in_group("cards") and card.card_data:
-				if card.global_position.y >= 820:
+				if card.global_position.y >= STAGING_Y:
 					continue
 				if card.spawn_source == scene:
 					spawns.append(card)

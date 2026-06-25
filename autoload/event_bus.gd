@@ -100,3 +100,7 @@ signal corruption_triggered(card_id)
 
 # ── Favorability ──
 signal favorability_changed(card_id, old_value, new_value, delta)
+
+
+# ── Staging ──
+signal staging_arrange_requested(dropped_card, was_in_staging)

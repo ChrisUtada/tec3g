@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://c3miea3o8rage"]
 
 [ext_resource type="Script" uid="uid://d1efnjmetm0yr" path="res://scripts/cards/card_base.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/cards/visual_component.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/cards/corruption_component.gd" id="3"]
 
 [node name="CardBase" type="Control" unique_id=1696835157]
 custom_minimum_size = Vector2(160, 220)
@@ -68,3 +70,9 @@ offset_right = 152.0
 offset_bottom = 210.0
 theme_override_font_sizes/font_size = 10
 horizontal_alignment = 2
+
+[node name="Visual" type="Node" parent="."]
+script = ExtResource("2")
+
+[node name="Corruption" type="Node" parent="."]
+script = ExtResource("3")

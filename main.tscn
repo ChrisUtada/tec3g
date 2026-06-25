@@ -44,6 +44,15 @@ theme_override_font_sizes/font_size = 11
 text = "[ 暂存区 ]"
 theme_override_colors/font_color = Color(0.4, 0.4, 0.5, 1.0)
 
+[node name="StackToggleBtn" type="Button" parent="GameBoard/BottomBar"]
+layout_mode = 0
+offset_left = 1280
+offset_top = 10
+offset_right = 1440
+offset_bottom = 40
+theme_override_font_sizes/font_size = 12
+text = "平铺模式"
+
 [node name="OrganizeBtn" type="Button" parent="GameBoard/BottomBar"]
 layout_mode = 0
 offset_left = 1450
