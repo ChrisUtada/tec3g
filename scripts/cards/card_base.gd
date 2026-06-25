@@ -254,6 +254,10 @@ func _end_drag():
 		elif not _try_slot():
 			if not _try_eject():
 				_try_stack()
+		if get_parent() == _container and global_position.y < STAGING_Y:
+			var overlap = (global_position.y + size.y) - STAGING_Y
+			if overlap > -10:
+				global_position.y = STAGING_Y - size.y - 10
 	else:
 		_release_effect()
 
