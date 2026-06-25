@@ -12,6 +12,9 @@ var _pressed_self := false
 
 const STACK_OFFSET := Vector2(0, 30)
 const MIN_DRAG_DISTANCE := 10.0
+const STAGING_Y := 900
+const STAGING_X_START := 300
+const STAGING_X_GAP := 40
 
 @onready var panel: Panel = $Panel
 @onready var hover_overlay: ColorRect = $HoverOverlay
@@ -237,7 +240,9 @@ func _end_drag():
 		_corruption_bar.resume()
 	EventBus.card_drag_ended.emit(self)
 	if _has_moved:
-		if not _try_slot():
+		if global_position.y >= STAGING_Y:
+			_snap_to_staging()
+		elif not _try_slot():
 			if not _try_eject():
 				_try_stack()
 	else:
@@ -286,10 +291,26 @@ func start_corruption() -> void:
 		queue_free()
 	)
 
+func _snap_to_staging() -> void:
+	var all = []
+	for card in _container.get_children():
+		if card is Control and card.is_in_group("cards") and card != self and card.global_position.y >= STAGING_Y:
+			all.append(card)
+	all.append(self)
+	all.sort_custom(func(a, b): return a.global_position.x < b.global_position.x)
+	var x = STAGING_X_START
+	for card in all:
+		var tween = card.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(card, "global_position", Vector2(x, STAGING_Y + 20), 0.12)
+		x += STAGING_X_GAP
+	_release_effect()
+
 func _try_stack():
+	if global_position.y >= STAGING_Y:
+		return
 	var my_rect = Rect2(global_position, size)
 	for card in _container.get_children():
-		if card == self or not card.visible:
+		if card == self or not card.visible or card.global_position.y >= STAGING_Y:
 			continue
 		var card_rect = Rect2(card.global_position, card.size)
 		if my_rect.intersects(card_rect):
