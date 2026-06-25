@@ -242,7 +242,7 @@ func _end_drag():
 		_corruption_bar.resume()
 	EventBus.card_drag_ended.emit(self)
 	if _has_moved:
-		if global_position.y >= STAGING_Y:
+		if _was_in_staging or global_position.y >= STAGING_Y:
 			_snap_to_staging()
 		elif not _try_slot():
 			if not _try_eject():
@@ -313,7 +313,9 @@ func _snap_to_staging() -> void:
 		cards.append(self)
 
 	var x = STAGING_X_START
-	for card in cards:
+	for i in range(cards.size()):
+		var card = cards[i]
+		card.z_index = i
 		var tween = card.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(card, "global_position", Vector2(x, STAGING_Y + 20), 0.12)
 		x += STAGING_X_GAP
