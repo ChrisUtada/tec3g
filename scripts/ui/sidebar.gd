@@ -3,7 +3,7 @@ extends Control
 @onready var avatar_label: Label = $Panel/AvatarSection/IconLabel
 @onready var name_label: Label = $Panel/AvatarSection/NameLabel
 @onready var time_label: Label = $Panel/TimeSection/TimeLabel
-@onready var news_container: VBoxContainer = $Panel/NewsSection/NewsContainer
+@onready var news_container: VBoxContainer = $Panel/NewsSection/ScrollContainer/NewsContainer
 @onready var scroll: ScrollContainer = $Panel/NewsSection/ScrollContainer
 
 
