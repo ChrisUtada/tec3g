@@ -142,16 +142,17 @@ func _on_exploration_complete(root, config, branch) -> void:
 		var count = randi_range(recipe.min_count, recipe.max_count)
 		for i in range(count):
 			var pos = base_pos + Vector2(i * 30, 0)
-			EventBus.spawn_card_requested.emit(data, pos)
+			spawn_card(data, pos, root)
 			drops_info.append(data.card_name)
 
 	var fatigue_spawned = false
 	var fatigue_count = EventBus.get_cards_by_tag("fatigue").size()
 	var drop_multiplier = max(0.0, 1.0 - fatigue_count * 0.2)
 	if randf() < 0.25:
-		EventBus.spawn_card_requested.emit(
+		spawn_card(
 			load("res://resources/cards/ITEM_fatigue.tres"),
-			base_pos + Vector2(-60, 0)
+			base_pos + Vector2(-60, 0),
+			root
 		)
 		fatigue_spawned = true
 
@@ -291,11 +292,34 @@ static func _weighted_pick(hits: Array[StackRecipe]) -> StackRecipe:
 func _on_spawn_card_requested(data: CardData, global_position: Vector2) -> void:
 	spawn_card(data, global_position)
 
+func organize_board() -> void:
+	var container = EventBus.get_card_container()
+	var scene_cards: Array[Control] = []
+	for card in container.get_children():
+		if card is Control and card.is_in_group("cards") and card.card_data:
+			if card.card_data.card_type == CardData.CardType.SCENE and card.global_position.y < 820:
+				scene_cards.append(card)
+	for scene in scene_cards:
+		var spawns: Array[Control] = []
+		for card in container.get_children():
+			if card is Control and card.is_in_group("cards") and card.card_data:
+				if card.global_position.y >= 820:
+					continue
+				if card.spawn_source == scene:
+					spawns.append(card)
+		var target = scene
+		for s in spawns:
+			s.reparent(target)
+			s.position = Vector2(0, 30)
+			target = s
 
-func spawn_card(data: CardData, global_position: Vector2) -> Control:
+
+func spawn_card(data: CardData, global_position: Vector2, source: Control = null) -> Control:
 	var scene = preload("res://scenes/cards/card_base.tscn")
 	var card = scene.instantiate()
 	card.setup(data)
+	if source:
+		card.spawn_source = source
 	var container = EventBus.get_card_container()
 	container.add_child(card)
 	card.global_position = global_position

@@ -1,6 +1,7 @@
 extends Control
 
 var card_data: CardData : set = set_card_data
+var spawn_source: Control
 
 var drag_offset := Vector2.ZERO
 var is_dragging := false

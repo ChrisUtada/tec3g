@@ -28,6 +28,7 @@ func _ready():
 	EventBus.card_stacked.connect(_on_card_stacked)
 	EventBus.card_broken.connect(_on_card_broken)
 	EventBus.card_combined.connect(_on_card_combined)
+	$GameBoard/BottomBar/OrganizeBtn.pressed.connect(_on_organize_pressed)
 
 func _on_card_stacked(bottom, top):
 	$GameBoard/UI/LogLabel.text = "%s 堆叠到 %s 上" % [top.card_data.card_name, bottom.card_data.card_name]
@@ -37,3 +38,6 @@ func _on_card_broken(card):
 
 func _on_card_combined(bottom, top, result):
 	$GameBoard/UI/LogLabel.text = "%s + %s → %s 合成成功！" % [bottom.card_data.card_name, top.card_data.card_name, result.card_data.card_name]
+
+func _on_organize_pressed():
+	CardManager.organize_board()
