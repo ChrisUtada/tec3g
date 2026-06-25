@@ -249,11 +249,24 @@ func _end_drag():
 			_snap_to_staging()
 		elif not _was_in_staging and global_position.y >= STAGING_Y:
 			_snap_to_staging()
+		elif _was_in_staging:
+			_board_from_staging()
 		elif not _try_slot():
 			if not _try_eject():
 				_try_stack()
 	else:
 		_release_effect()
+
+func _board_from_staging() -> void:
+	var card_bottom = global_position.y + size.y
+	if card_bottom >= STAGING_Y - 20:
+		global_position.y = STAGING_Y - size.y - 20
+	if global_position.y < 0:
+		_snap_to_staging()
+		return
+	if not _try_slot():
+		if not _try_eject():
+			_try_stack()
 
 func _try_slot() -> bool:
 	var handler = EventBus.get_drop_handler()
