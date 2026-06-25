@@ -111,10 +111,6 @@ offset_right = 250
 offset_bottom = 830
 
 [node name="NewsContainer" type="VBoxContainer" parent="Panel/NewsSection/ScrollContainer"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 0
+custom_minimum_size = Vector2(230, 0)
 theme_override_constants/separation = 4
