@@ -38,21 +38,10 @@ color = Color(0.06, 0.06, 0.1, 0.9)
 layout_mode = 0
 offset_left = 10
 offset_top = 5
-offset_right = 300
+offset_right = 400
 offset_bottom = 25
 theme_override_font_sizes/font_size = 11
-text = "[ 暂存区 ]    新生成的卡牌落在这里"
-theme_override_colors/font_color = Color(0.4, 0.4, 0.5, 1.0)
-
-[node name="PinLabel" type="Label" parent="GameBoard/BottomBar"]
-layout_mode = 0
-offset_left = 1100
-offset_top = 5
-offset_right = 1640
-offset_bottom = 25
-theme_override_font_sizes/font_size = 11
-text = "[ 快捷位 ]    把常用卡拖到这里固定"
-horizontal_alignment = 2
+text = "[ 暂存区 ]    新卡落在这里，常用卡拖到底部固定"
 theme_override_colors/font_color = Color(0.4, 0.4, 0.5, 1.0)
 
 [node name="CardContainer" type="Control" parent="GameBoard" unique_id=1966715342]
