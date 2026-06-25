@@ -16,7 +16,7 @@ const MIN_DRAG_DISTANCE := 10.0
 const STAGING_Y := 820
 const STAGING_X_START := 300
 const STAGING_X_GAP := 40
-const PEEK_Y := 560
+const PEEK_OFFSET := -220
 
 @onready var panel: Panel = $Panel
 @onready var hover_overlay: ColorRect = $HoverOverlay
@@ -61,6 +61,9 @@ func _on_mouse_entered():
 	_is_hovered = true
 	if is_dragging:
 		return
+	if _staging_mode:
+		_peek(true)
+		return
 	_kill_tween(_hover_tween)
 	_hover_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_hover_tween.tween_property(self, "scale", Vector2(1.05, 1.05), 0.12)
@@ -70,6 +73,9 @@ func _on_mouse_exited():
 	_is_hovered = false
 	_kill_tween(_hover_tween)
 	if is_dragging:
+		return
+	if _staging_mode:
+		_peek(false)
 		return
 	_hover_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_hover_tween.tween_property(self, "scale", Vector2.ONE, 0.1)
@@ -200,8 +206,6 @@ func _input(event):
 		if is_dragging:
 			_end_drag()
 		else:
-			if _staging_mode:
-				_toggle_peek()
 			_release_effect()
 
 func _process(delta):
@@ -330,18 +334,20 @@ func _set_staging_mode(enabled: bool) -> void:
 		if _corruption_bar:
 			_corruption_bar.pause()
 
-func _toggle_peek() -> void:
-	_is_peeked = not _is_peeked
+func _peek(show: bool) -> void:
+	if show == _is_peeked:
+		return
+	_is_peeked = show
 	_kill_tween(_peek_tween)
 	_peek_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	if _is_peeked:
+	if show:
 		for card in _container.get_children():
 			if card is Control and card.is_in_group("cards") and card != self and card._is_peeked:
-				card._toggle_peek()
+				card._peek(false)
 		_container.move_child(self, _container.get_child_count() - 1)
-		_peek_tween.tween_property(self, "global_position:y", PEEK_Y, 0.15)
+		_peek_tween.tween_property(self, "global_position:y", STAGING_Y + PEEK_OFFSET, 0.12)
 	else:
-		_peek_tween.tween_property(self, "global_position:y", STAGING_Y + 20, 0.15)
+		_peek_tween.tween_property(self, "global_position:y", STAGING_Y + 20, 0.12)
 
 func _snap_to_staging() -> void:
 	_is_peeked = false
