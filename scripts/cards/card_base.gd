@@ -215,6 +215,7 @@ func start_drag() -> void:
 	if get_parent() != _container:
 		reparent(_container)
 		EventBus.card_broken.emit(self)
+	_set_staging_mode(false)
 	drag_offset = get_global_mouse_position() - global_position
 	is_dragging = true
 	_has_moved = false
@@ -242,7 +243,9 @@ func _end_drag():
 		_corruption_bar.resume()
 	EventBus.card_drag_ended.emit(self)
 	if _has_moved:
-		if _was_in_staging or global_position.y >= STAGING_Y:
+		if _was_in_staging and global_position.y >= STAGING_Y - 60:
+			_snap_to_staging()
+		elif not _was_in_staging and global_position.y >= STAGING_Y:
 			_snap_to_staging()
 		elif not _try_slot():
 			if not _try_eject():
@@ -293,6 +296,14 @@ func start_corruption() -> void:
 		queue_free()
 	)
 
+func _set_staging_mode(enabled: bool) -> void:
+	if enabled:
+		modulate = Color(0.65, 0.65, 0.65)
+		if _corruption_bar:
+			_corruption_bar.pause()
+	else:
+		modulate = Color.WHITE
+
 func _snap_to_staging() -> void:
 	var cards = []
 	for card in _container.get_children():
@@ -315,6 +326,7 @@ func _snap_to_staging() -> void:
 	var x = STAGING_X_START
 	for i in range(cards.size()):
 		var card = cards[i]
+		card._set_staging_mode(true)
 		card.z_index = i
 		var tween = card.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(card, "global_position", Vector2(x, STAGING_Y + 20), 0.12)
