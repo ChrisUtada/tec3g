@@ -4,7 +4,7 @@
 
 [node name="Sidebar" type="Control"]
 layout_mode = 1
-offset_right = 200.0
+offset_right = 280.0
 offset_bottom = 1080.0
 script = ExtResource("1")
 
@@ -19,97 +19,96 @@ color = Color(0.08, 0.08, 0.12, 0.95)
 
 [node name="AvatarSection" type="Control" parent="Panel"]
 layout_mode = 0
-offset_left = 10
-offset_top = 10
-offset_right = 190
-offset_bottom = 110
+offset_left = 15
+offset_top = 15
+offset_right = 265
+offset_bottom = 100
 
 [node name="IconLabel" type="Label" parent="Panel/AvatarSection"]
 layout_mode = 0
-offset_left = 60
-offset_top = 10
-offset_right = 140
-offset_bottom = 60
-theme_override_font_sizes/font_size = 32
+offset_left = 90
+offset_top = 0
+offset_right = 180
+offset_bottom = 50
+theme_override_font_sizes/font_size = 36
 text = "🧑"
 horizontal_alignment = 1
 
 [node name="NameLabel" type="Label" parent="Panel/AvatarSection"]
 layout_mode = 0
 offset_left = 0
-offset_top = 60
-offset_right = 190
-offset_bottom = 90
-theme_override_font_sizes/font_size = 14
+offset_top = 55
+offset_right = 250
+offset_bottom = 85
+theme_override_font_sizes/font_size = 16
 text = "调查员 T.E.C"
 horizontal_alignment = 1
 theme_override_colors/font_color = Color(0.5, 0.8, 1.0, 1.0)
 
 [node name="Separator1" type="HSeparator" parent="Panel"]
 layout_mode = 0
-offset_left = 10
-offset_top = 120
-offset_right = 190
-offset_bottom = 130
+offset_left = 15
+offset_top = 110
+offset_right = 265
+offset_bottom = 120
 
 [node name="TimeSection" type="Control" parent="Panel"]
 layout_mode = 0
-offset_left = 10
-offset_top = 140
-offset_right = 190
-offset_bottom = 210
+offset_left = 15
+offset_top = 130
+offset_right = 265
+offset_bottom = 200
 
 [node name="SectionLabel" type="Label" parent="Panel/TimeSection"]
 layout_mode = 0
 offset_left = 0
-offset_top = 0
-offset_right = 180
-offset_bottom = 20
-theme_override_font_sizes/font_size = 11
+offset_top = 5
+offset_right = 250
+offset_bottom = 25
+theme_override_font_sizes/font_size = 13
 text = "系统时间"
 theme_override_colors/font_color = Color(0.5, 0.5, 0.6, 1.0)
 
 [node name="TimeLabel" type="Label" parent="Panel/TimeSection"]
 layout_mode = 0
 offset_left = 0
-offset_top = 22
-offset_right = 180
-offset_bottom = 52
-theme_override_font_sizes/font_size = 14
+offset_top = 30
+offset_right = 250
+offset_bottom = 60
+theme_override_font_sizes/font_size = 20
 text = "00:00:00"
 theme_override_colors/font_color = Color(0.3, 0.8, 0.3, 1.0)
 
 [node name="Separator2" type="HSeparator" parent="Panel"]
 layout_mode = 0
-offset_left = 10
-offset_top = 220
-offset_right = 190
-offset_bottom = 230
+offset_left = 15
+offset_top = 210
+offset_right = 265
+offset_bottom = 220
 
 [node name="NewsSection" type="Control" parent="Panel"]
 layout_mode = 0
-offset_left = 10
-offset_top = 240
-offset_right = 190
+offset_left = 15
+offset_top = 230
+offset_right = 265
 offset_bottom = 1070
 
 [node name="SectionLabel" type="Label" parent="Panel/NewsSection"]
 layout_mode = 0
 offset_left = 0
-offset_top = 0
-offset_right = 180
-offset_bottom = 20
-theme_override_font_sizes/font_size = 11
+offset_top = 5
+offset_right = 250
+offset_bottom = 25
+theme_override_font_sizes/font_size = 13
 text = "TEC 新闻终端"
 theme_override_colors/font_color = Color(0.5, 0.5, 0.6, 1.0)
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Panel/NewsSection"]
 layout_mode = 0
 offset_left = 0
-offset_top = 25
-offset_right = 180
-offset_bottom = 820
-theme_override_constants/separation = 2
+offset_top = 30
+offset_right = 250
+offset_bottom = 830
 
 [node name="NewsContainer" type="VBoxContainer" parent="Panel/NewsSection/ScrollContainer"]
 layout_mode = 1
@@ -118,4 +117,4 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 3
+theme_override_constants/separation = 4

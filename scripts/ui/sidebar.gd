@@ -18,7 +18,7 @@ func add_news(text: String) -> void:
 	var ts = Time.get_time_string_from_system()
 	var lbl = Label.new()
 	lbl.text = "[%s] %s" % [ts, text]
-	lbl.add_theme_font_size_override("font_size", 11)
+	lbl.add_theme_font_size_override("font_size", 13)
 	lbl.autowrap_mode = 2
 	lbl.modulate = Color(0.7, 0.8, 0.9)
 	news_container.add_child(lbl)
