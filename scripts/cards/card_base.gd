@@ -305,6 +305,11 @@ func _set_staging_mode(enabled: bool) -> void:
 		modulate = Color.WHITE
 
 func _snap_to_staging() -> void:
+	if card_data and card_data.corruption_time > 0:
+		var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(self, "global_position", Vector2(global_position.x, STAGING_Y - 300), 0.15)
+		_release_effect()
+		return
 	var cards = []
 	for card in _container.get_children():
 		if card is Control and card.is_in_group("cards") and card != self and card.global_position.y >= STAGING_Y:
