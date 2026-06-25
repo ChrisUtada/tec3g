@@ -12,7 +12,7 @@ var _pressed_self := false
 
 const STACK_OFFSET := Vector2(0, 30)
 const MIN_DRAG_DISTANCE := 10.0
-const STAGING_Y := 900
+const STAGING_Y := 820
 const STAGING_X_START := 300
 const STAGING_X_GAP := 40
 

@@ -29,7 +29,7 @@ color = Color(0.1, 0.1, 0.15, 1)
 [node name="BottomBar" type="ColorRect" parent="GameBoard"]
 layout_mode = 0
 offset_left = 280
-offset_top = 900
+offset_top = 820
 offset_right = 1920
 offset_bottom = 1080
 color = Color(0.06, 0.06, 0.1, 0.9)
