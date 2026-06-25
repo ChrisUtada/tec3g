@@ -9,6 +9,7 @@ var _drag_start_pos := Vector2.ZERO
 var _has_moved := false
 var _prev_z_index := 0
 var _pressed_self := false
+var _was_in_staging := false
 
 const STACK_OFFSET := Vector2(0, 30)
 const MIN_DRAG_DISTANCE := 10.0
@@ -227,6 +228,7 @@ func start_drag() -> void:
 	EventBus.card_drag_started.emit(self)
 
 func _start_drag():
+	_was_in_staging = global_position.y >= STAGING_Y
 	start_drag()
 
 func _end_drag():
@@ -292,14 +294,26 @@ func start_corruption() -> void:
 	)
 
 func _snap_to_staging() -> void:
-	var all = []
+	var cards = []
 	for card in _container.get_children():
 		if card is Control and card.is_in_group("cards") and card != self and card.global_position.y >= STAGING_Y:
-			all.append(card)
-	all.append(self)
-	all.sort_custom(func(a, b): return a.global_position.x < b.global_position.x)
+			cards.append(card)
+	cards.sort_custom(func(a, b): return a.global_position.x < b.global_position.x)
+
+	if _was_in_staging:
+		var insert_idx = cards.size()
+		var drop_center = global_position.x + size.x / 2
+		for i in range(cards.size()):
+			var mid_x = cards[i].global_position.x + cards[i].size.x / 2
+			if drop_center < mid_x:
+				insert_idx = i
+				break
+		cards.insert(insert_idx, self)
+	else:
+		cards.append(self)
+
 	var x = STAGING_X_START
-	for card in all:
+	for card in cards:
 		var tween = card.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(card, "global_position", Vector2(x, STAGING_Y + 20), 0.12)
 		x += STAGING_X_GAP
