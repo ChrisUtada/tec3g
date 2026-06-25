@@ -26,6 +26,35 @@ color = Color(0.1, 0.1, 0.15, 1)
 
 [node name="Sidebar" parent="GameBoard" instance=ExtResource("2") unique_id=1966715343]
 
+[node name="BottomBar" type="ColorRect" parent="GameBoard"]
+layout_mode = 0
+offset_left = 280
+offset_top = 900
+offset_right = 1920
+offset_bottom = 1080
+color = Color(0.06, 0.06, 0.1, 0.9)
+
+[node name="StageLabel" type="Label" parent="GameBoard/BottomBar"]
+layout_mode = 0
+offset_left = 10
+offset_top = 5
+offset_right = 300
+offset_bottom = 25
+theme_override_font_sizes/font_size = 11
+text = "[ 暂存区 ]    新生成的卡牌落在这里"
+theme_override_colors/font_color = Color(0.4, 0.4, 0.5, 1.0)
+
+[node name="PinLabel" type="Label" parent="GameBoard/BottomBar"]
+layout_mode = 0
+offset_left = 1100
+offset_top = 5
+offset_right = 1640
+offset_bottom = 25
+theme_override_font_sizes/font_size = 11
+text = "[ 快捷位 ]    把常用卡拖到这里固定"
+horizontal_alignment = 2
+theme_override_colors/font_color = Color(0.4, 0.4, 0.5, 1.0)
+
 [node name="CardContainer" type="Control" parent="GameBoard" unique_id=1966715342]
 layout_mode = 1
 anchors_preset = 15
