@@ -16,6 +16,7 @@ const MIN_DRAG_DISTANCE := 10.0
 const STAGING_Y := 820
 const STAGING_X_START := 300
 const STAGING_X_GAP := 40
+const PEEK_Y := 560
 
 @onready var panel: Panel = $Panel
 @onready var hover_overlay: ColorRect = $HoverOverlay
@@ -29,6 +30,8 @@ var _hover_tween: Tween
 var _press_tween: Tween
 var _is_hovered := false
 var _corruption_bar: Control
+var _is_peeked := false
+var _peek_tween: Tween
 
 
 const _bar_scene = preload("res://scenes/progress_bar_2d.tscn")
@@ -197,6 +200,8 @@ func _input(event):
 		if is_dragging:
 			_end_drag()
 		else:
+			if _staging_mode:
+				_toggle_peek()
 			_release_effect()
 
 func _process(delta):
@@ -217,6 +222,8 @@ func start_drag() -> void:
 	if get_parent() != _container:
 		reparent(_container)
 		EventBus.card_broken.emit(self)
+	if _is_peeked:
+		_is_peeked = false
 	_set_staging_mode(false)
 	drag_offset = get_global_mouse_position() - global_position
 	is_dragging = true
@@ -323,7 +330,21 @@ func _set_staging_mode(enabled: bool) -> void:
 		if _corruption_bar:
 			_corruption_bar.pause()
 
+func _toggle_peek() -> void:
+	_is_peeked = not _is_peeked
+	_kill_tween(_peek_tween)
+	_peek_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	if _is_peeked:
+		for card in _container.get_children():
+			if card is Control and card.is_in_group("cards") and card != self and card._is_peeked:
+				card._toggle_peek()
+		_container.move_child(self, _container.get_child_count() - 1)
+		_peek_tween.tween_property(self, "global_position:y", PEEK_Y, 0.15)
+	else:
+		_peek_tween.tween_property(self, "global_position:y", STAGING_Y + 20, 0.15)
+
 func _snap_to_staging() -> void:
+	_is_peeked = false
 	if card_data and card_data.corruption_time > 0:
 		var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(self, "global_position", Vector2(global_position.x, STAGING_Y - 300), 0.15)
@@ -332,6 +353,8 @@ func _snap_to_staging() -> void:
 	var cards = []
 	for card in _container.get_children():
 		if card is Control and card.is_in_group("cards") and card != self and card.global_position.y >= STAGING_Y:
+			if card._is_peeked:
+				continue
 			cards.append(card)
 	cards.sort_custom(func(a, b): return a.global_position.x < b.global_position.x)
 
