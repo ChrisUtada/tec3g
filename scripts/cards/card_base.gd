@@ -16,7 +16,7 @@ const MIN_DRAG_DISTANCE := 10.0
 const STAGING_Y := 820
 const STAGING_X_START := 300
 const STAGING_X_GAP := 40
-const PEEK_OFFSET := -220
+const PEEK_OFFSET := -100
 
 @onready var panel: Panel = $Panel
 @onready var hover_overlay: ColorRect = $HoverOverlay
@@ -61,9 +61,6 @@ func _on_mouse_entered():
 	_is_hovered = true
 	if is_dragging:
 		return
-	if _staging_mode:
-		_peek(true)
-		return
 	_kill_tween(_hover_tween)
 	_hover_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_hover_tween.tween_property(self, "scale", Vector2(1.05, 1.05), 0.12)
@@ -73,9 +70,6 @@ func _on_mouse_exited():
 	_is_hovered = false
 	_kill_tween(_hover_tween)
 	if is_dragging:
-		return
-	if _staging_mode:
-		_peek(false)
 		return
 	_hover_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	_hover_tween.tween_property(self, "scale", Vector2.ONE, 0.1)
@@ -206,6 +200,8 @@ func _input(event):
 		if is_dragging:
 			_end_drag()
 		else:
+			if _staging_mode:
+				_peek(not _is_peeked)
 			_release_effect()
 
 func _process(delta):
