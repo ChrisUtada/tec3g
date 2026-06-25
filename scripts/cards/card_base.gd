@@ -334,7 +334,8 @@ func _snap_to_staging() -> void:
 	for i in range(cards.size()):
 		var card = cards[i]
 		card._set_staging_mode(true)
-		card.z_index = i
+		card.z_index = 0
+		_container.move_child(card, _container.get_child_count() - 1)
 		var tween = card.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 		tween.tween_property(card, "global_position", Vector2(x, STAGING_Y + 20), 0.12)
 		x += STAGING_X_GAP
