@@ -253,9 +253,8 @@ func _end_drag():
 			_snap_to_staging()
 		elif _was_in_staging:
 			_board_from_staging()
-		elif not _try_slot():
-			if not _try_eject():
-				_try_stack()
+		else:
+			_try_stack()
 		if get_parent() == _container and global_position.y < STAGING_Y:
 			var overlap = (global_position.y + size.y) - STAGING_Y
 			if overlap > -10:
@@ -270,29 +269,7 @@ func _board_from_staging() -> void:
 	if global_position.y < 0:
 		_snap_to_staging()
 		return
-	if not _try_slot():
-		if not _try_eject():
-			_try_stack()
-
-func _try_slot() -> bool:
-	var handler = EventBus.get_drop_handler()
-	if handler == null:
-		return false
-	if get_parent() != _container and get_parent() is Control and get_parent().is_in_group("cards"):
-		return false
-	return handler.on_card_dropped(self)
-
-func _try_eject() -> bool:
-	var handler = EventBus.get_drop_handler()
-	if handler == null:
-		return false
-	if handler.has_method("get_panel_left"):
-		var panel_left = handler.get_panel_left()
-		if global_position.x > panel_left:
-			global_position = Vector2(max(panel_left - size.x - 20, 0), global_position.y)
-			_release_effect()
-			return true
-	return false
+	_try_stack()
 
 func start_corruption() -> void:
 	await get_tree().process_frame

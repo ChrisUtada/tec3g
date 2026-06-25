@@ -1,17 +1,7 @@
 extends Node
 
 # ── Service Locator ──
-var _drop_handler = null
 var _card_container = null
-
-func register_drop_handler(h) -> void:
-	_drop_handler = h
-
-func unregister_drop_handler() -> void:
-	_drop_handler = null
-
-func get_drop_handler():
-	return _drop_handler
 
 func set_card_container(c) -> void:
 	_card_container = c

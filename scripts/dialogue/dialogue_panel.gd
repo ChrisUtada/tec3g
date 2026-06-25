@@ -1,13 +1,14 @@
-extends Control
+extends "res://scripts/ui/draggable_panel.gd"
 
 var _config: DialogueConfig
 var _dialogue_data: Dictionary = {}
 var _current_node_id: String = ""
 var _topic_card_id: String = ""
-var _dragging := false
-var _drag_offset := Vector2.ZERO
 
 @onready var content_panel: Panel = $ContentPanel
+
+func _get_content_panel() -> Control:
+	return $ContentPanel
 @onready var title_label: Label = $ContentPanel/Title
 @onready var subtitle_label: Label = $ContentPanel/Subtitle
 @onready var text_label: Label = $ContentPanel/TextLabel
@@ -180,18 +181,4 @@ func _load_json(path: String) -> Dictionary:
 	var json = JSON.parse_string(text)
 	return json if json is Dictionary else {}
 
-func _input(event):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed and not _dragging:
-			var local = content_panel.get_local_mouse_position()
-			if Rect2(Vector2.ZERO, content_panel.size).has_point(local):
-				_dragging = true
-				_drag_offset = get_global_mouse_position() - content_panel.global_position
-		elif not event.pressed:
-			_dragging = false
 
-	if event is InputEventMouseMotion and _dragging:
-		content_panel.global_position = get_global_mouse_position() - _drag_offset
-
-	if event.is_action_pressed("ui_cancel") and visible:
-		_close()
