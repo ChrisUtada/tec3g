@@ -179,6 +179,8 @@ func exit_slot() -> void:
 
 func _gui_input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
+		if _staging_mode:
+			return
 		if card_data and card_data.dialogue_config:
 			EventBus.dialogue_requested.emit(card_data.dialogue_config, card_data.card_name, "")
 			return
@@ -296,13 +298,13 @@ func start_corruption() -> void:
 		queue_free()
 	)
 
+var _staging_mode := false
+
 func _set_staging_mode(enabled: bool) -> void:
+	_staging_mode = enabled
 	if enabled:
-		modulate = Color(0.65, 0.65, 0.65)
 		if _corruption_bar:
 			_corruption_bar.pause()
-	else:
-		modulate = Color.WHITE
 
 func _snap_to_staging() -> void:
 	if card_data and card_data.corruption_time > 0:
