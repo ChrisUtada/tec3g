@@ -18,7 +18,8 @@ func _ready():
 
 func _on_card_broken(card):
 	if _exploring:
-		_combo_bar.cancel()
+		if _combo_bar:
+			_combo_bar.cancel()
 		_combo_bar = null
 		_combo_bottom = null
 		_combo_top = null
@@ -86,10 +87,8 @@ func _try_exploration(root, config) -> void:
 	_combo_bar = _bar_scene.instantiate()
 	_combo_bar.set_fill_color(Color(0.3, 0.8, 0.3))
 	_combo_bar.attach_to(root, config.explore_duration, func():
-		_exploring = false
 		_combo_bar.queue_free()
 		_combo_bar = null
-		_combo_bottom = null
 		_on_exploration_complete(root, config, branch)
 	)
 
@@ -108,17 +107,11 @@ func _branch_matches(branch, ingredient_ids: Array) -> bool:
 
 func _on_exploration_complete(root, config, branch) -> void:
 	if config.rest_mode:
-		for child in root.get_children():
-			if child is Control and child.is_in_group("cards") and child.card_data:
-				if "fatigue" in child.card_data.tags:
-					child.queue_free()
-		EventBus.exploration_requested.emit(config, {
-			"branch_name": branch.branch_name,
-			"drops": [],
-			"fatigue": false,
-			"rest": true
-		})
+		_process_rest(root, config, branch)
 		return
+
+	_exploring = false
+	_combo_bottom = null
 
 	var base_pos = root.global_position + Vector2(180, 0)
 	var drops_info = []
@@ -166,6 +159,41 @@ func _on_exploration_complete(root, config, branch) -> void:
 		"branch_name": branch.branch_name,
 		"drops": drops_info,
 		"fatigue": fatigue_spawned
+	})
+
+
+func _process_rest(root, config, branch) -> void:
+	var processed = false
+	for child in root.get_children():
+		if child is Control and child.is_in_group("cards") and child.card_data:
+			if "fatigue" in child.card_data.tags:
+				child.queue_free()
+				processed = true
+				break
+	if not processed:
+		return
+	var has_more = false
+	for child in root.get_children():
+		if child is Control and child.is_in_group("cards") and child.card_data:
+			if "fatigue" in child.card_data.tags:
+				has_more = true
+				break
+	if has_more:
+		_combo_bar = _bar_scene.instantiate()
+		_combo_bar.set_fill_color(Color(0.3, 0.8, 0.3))
+		_combo_bar.attach_to(root, config.explore_duration, func():
+			_combo_bar.queue_free()
+			_combo_bar = null
+			_process_rest(root, config, branch)
+		)
+		return
+	_exploring = false
+	_combo_bottom = null
+	EventBus.exploration_requested.emit(config, {
+		"branch_name": branch.branch_name,
+		"drops": [],
+		"fatigue": false,
+		"rest": true
 	})
 
 
