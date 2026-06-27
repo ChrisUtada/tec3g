@@ -33,7 +33,7 @@ func _on_card_combined(bottom, top, result):
 func _on_exploration(config, _result):
 	add_news("进入探索: %s" % config.scene_name)
 
-func _on_dialogue(_config, character_name, _topic_card_id):
+func _on_dialogue(_config, character_name, _topic_card_id, _root_card, _topic_card):
 	add_news("开始与 %s 对话" % character_name)
 
 func _on_corruption(_card_id):

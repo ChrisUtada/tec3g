@@ -28,6 +28,7 @@ ObservationSystem="*res://autoload/observation_system.gd"
 PanelManager="*res://autoload/panel_manager.gd"
 ProgressService="*res://autoload/progress_service.gd"
 SFX="*res://autoload/sfx.gd"
+SceneDesktopManager="*res://autoload/scene_desktop_manager.gd"
 
 [display]
 

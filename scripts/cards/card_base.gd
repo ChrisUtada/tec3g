@@ -131,8 +131,11 @@ func _gui_input(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
 		if _staging_mode:
 			return
+		if card_data and card_data.card_type == CardData.CardType.SCENE:
+			SceneDesktopManager.enter_scene(self)
+			return
 		if card_data and card_data.dialogue_config:
-			EventBus.dialogue_requested.emit(card_data.dialogue_config, card_data.card_name, "")
+			EventBus.dialogue_requested.emit(card_data.dialogue_config, card_data.card_name, "", self, null)
 			return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		_pressed_self = true
@@ -165,10 +168,19 @@ func _process(delta):
 
 func start_drag() -> void:
 	if get_parent() != _container:
+		var saved_gp = global_position
+		var saved_mouse = get_global_mouse_position()
 		reparent(_container)
+		global_position = saved_gp
+		drag_offset = saved_mouse - saved_gp
 		EventBus.card_broken.emit(self)
+	else:
+		drag_offset = get_global_mouse_position() - global_position
 	set_staging_mode(false)
-	drag_offset = get_global_mouse_position() - global_position
+	if global_position.x < BOARD_MIN_X:
+		global_position.x = BOARD_MIN_X + SIDEBAR_GAP
+	if global_position.y >= STAGING_Y:
+		global_position.y = STAGING_Y - size.y - 20
 	is_dragging = true
 	_has_moved = false
 	_drag_start_pos = global_position

@@ -9,6 +9,14 @@ func set_card_container(c) -> void:
 func get_card_container():
 	return _card_container
 
+var _staging_bar = null
+
+func set_staging_bar(b) -> void:
+	_staging_bar = b
+
+func get_staging_bar():
+	return _staging_bar
+
 
 # ── Card Events ──
 signal card_created(card)
@@ -34,7 +42,8 @@ func register_card(card) -> void:
 
 func unregister_card(card) -> void:
 	if card.card_data and not card.card_data.card_id.is_empty():
-		_cards_by_id.erase(card.card_data.card_id)
+		if _cards_by_id.get(card.card_data.card_id) == card:
+			_cards_by_id.erase(card.card_data.card_id)
 	_all_cards.erase(card)
 
 func get_card_by_id(id: String):
@@ -60,19 +69,28 @@ func get_all_cards() -> Array:
 			result.append(card)
 	return result
 
+func has_card_on_board(card_id: String) -> bool:
+	return _cards_by_id.has(card_id)
+
 
 # ── Drop Consumption ──
 var _drop_remaining: Dictionary = {}  # result_id -> 剩余次数
 
 func can_drop(recipe) -> bool:
-	if recipe.max_drops == 0:
+	var max = recipe.max_drops
+	if "unique" in recipe and recipe.unique and max == 0:
+		max = 1
+	if max == 0:
 		return true
 	var rid = recipe.result_card.card_id if recipe.result_card else ""
 	if rid.is_empty():
 		return true
 	if not _drop_remaining.has(rid):
-		_drop_remaining[rid] = recipe.max_drops
+		_drop_remaining[rid] = max
 	return _drop_remaining[rid] > 0
+
+func has_dropped_unique(card_id: String) -> bool:
+	return _drop_remaining.get(card_id, -1) == 0
 
 func mark_drop_consumed(recipe) -> void:
 	if recipe.max_drops == 0:
@@ -86,7 +104,7 @@ func mark_drop_consumed(recipe) -> void:
 
 
 # ── Dialogue Events ──
-signal dialogue_requested(config, character_name, topic_card_id)
+signal dialogue_requested(config, character_name, topic_card_id, root_card, topic_card)
 signal dialogue_closed()
 
 
@@ -100,6 +118,11 @@ signal corruption_triggered(card_id)
 
 # ── Favorability ──
 signal favorability_changed(card_id, old_value, new_value, delta)
+
+
+# ── Scene Desktop ──
+signal scene_desktop_entered(config)
+signal scene_desktop_exited()
 
 
 # ── Staging ──

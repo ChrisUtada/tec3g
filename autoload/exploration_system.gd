@@ -52,10 +52,14 @@ func _on_exploration_complete(root, config, branch) -> void:
 	for recipe in branch.result_recipes:
 		if not EventBus.can_drop(recipe):
 			continue
-		EventBus.mark_drop_consumed(recipe)
 		var data = recipe.result_card
 		if data == null:
 			continue
+		if recipe.unique and EventBus.has_dropped_unique(data.card_id):
+			continue
+		if recipe.no_duplicate and EventBus.has_card_on_board(data.card_id):
+			continue
+		EventBus.mark_drop_consumed(recipe)
 		var count = randi_range(recipe.min_count, recipe.max_count)
 		for i in range(count):
 			var pos = base_pos + Vector2(i * 30, 0)
@@ -116,6 +120,8 @@ func _process_rest(root, config, branch) -> void:
 
 
 static func _branch_matches(branch, ingredient_ids: Array) -> bool:
+	if ingredient_ids.size() != branch.required_cards.size():
+		return false
 	for req in branch.required_cards:
 		var found = false
 		for id in ingredient_ids:

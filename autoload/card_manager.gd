@@ -6,12 +6,22 @@ var combo_top = null
 var exploring := false
 var dialogue_topic_card = null
 var staging_tiled := false
+var obs_bar = null
+var obs_target = null
+var obs_card = null
+var open_panels: Dictionary = {}
 
 const STAGING_Y := 820
-const STAGING_X_START := 300
 const STAGING_X_GAP := 40
 const TILE_X_GAP := 180
+const STAGING_VISIBLE := 1418
+const STAGING_BAR_LEFT := 280
+const STAGING_FIRST_X := 300
 const BarScene = preload("res://scenes/progress_bar_2d.tscn")
+
+var _staging_bar: ColorRect
+var _staging_scrollbar: HScrollBar
+var _staging_scroll_offset := 0.0
 
 
 func _ready():
@@ -20,6 +30,43 @@ func _ready():
 	EventBus.card_broken.connect(_on_card_broken)
 	EventBus.dialogue_closed.connect(_on_dialogue_closed)
 	EventBus.staging_arrange_requested.connect(_on_staging_arrange_requested)
+	call_deferred("_setup_staging_area")
+
+
+func _setup_staging_area() -> void:
+	var container = EventBus.get_card_container()
+	if not container or _staging_bar:
+		return
+	_staging_bar = EventBus.get_staging_bar()
+	if not _staging_bar:
+		return
+
+	_staging_scrollbar = HScrollBar.new()
+	_staging_scrollbar.name = "StagingScrollbar"
+	_staging_scrollbar.value_changed.connect(_on_staging_scrolled)
+	_staging_scrollbar.visible = false
+	_staging_scrollbar.position = Vector2(0, _staging_bar.size.y - 20)
+	_staging_scrollbar.size = Vector2(STAGING_VISIBLE, 20)
+	_staging_bar.add_child(_staging_scrollbar)
+
+	container.resized.connect(_resize_staging_area)
+	arrange_all_staging()
+
+
+func _resize_staging_area() -> void:
+	if _staging_scrollbar and _staging_bar:
+		_staging_scrollbar.position.y = _staging_bar.size.y - 20
+
+
+func _on_staging_scrolled(value: float) -> void:
+	_staging_scroll_offset = value
+	if not _staging_bar:
+		return
+	for child in _staging_bar.get_children():
+		if child is Control and child.is_in_group("cards"):
+			var base_x = child.get_meta("staging_base_x", null)
+			if base_x != null:
+				child.position.x = base_x - _staging_scroll_offset
 
 
 func _on_card_broken(card):
@@ -36,16 +83,24 @@ func _on_card_broken(card):
 		combo_bar = null
 		combo_bottom = null
 		combo_top = null
+	if obs_bar and card == obs_card:
+		obs_bar.cancel()
+		obs_bar = null
+		obs_target = null
+		obs_card = null
 
 
 func _on_card_stacked(bottom, top):
 	if bottom.card_data == null or top.card_data == null:
 		return
 	if top.card_data.card_id == "LOGIC_observe" and bottom.card_data.multimedia_content:
-		ObservationSystem.start(bottom, top)
+		if not open_panels.has(bottom.card_data.card_id):
+			ObservationSystem.start(bottom, top)
 		return
 	var root = _stack_root(bottom)
 	if not root.card_data:
+		return
+	if root.card_data.card_type == CardData.CardType.SCENE:
 		return
 	var exp_config = SceneConfigRegistry.get_config(root.card_data.card_id)
 	if exp_config:
@@ -72,13 +127,10 @@ func _on_dialogue_closed() -> void:
 func _on_staging_arrange_requested(dropped_card, was_in_staging: bool) -> void:
 	arrange_staging_area(dropped_card, was_in_staging)
 
+
 func arrange_staging_area(dropped_card: Control, was_in_staging: bool) -> void:
 	var container = EventBus.get_card_container()
-	var cards: Array[Control] = []
-	for card in container.get_children():
-		if card is Control and card.is_in_group("cards") and card != dropped_card and card.global_position.y >= STAGING_Y:
-			cards.append(card)
-	cards.sort_custom(func(a, b): return a.global_position.x < b.global_position.x)
+	var cards = _collect_staging_cards(container, dropped_card)
 
 	if was_in_staging:
 		var insert_idx = cards.size()
@@ -92,31 +144,62 @@ func arrange_staging_area(dropped_card: Control, was_in_staging: bool) -> void:
 	else:
 		cards.append(dropped_card)
 
-	var x = STAGING_X_START
-	var gap = TILE_X_GAP if staging_tiled else STAGING_X_GAP
-	for card in cards:
+	_arrange_staging_cards(cards, TILE_X_GAP if staging_tiled else STAGING_X_GAP)
+
+
+func _arrange_staging_cards(cards: Array[Control], gap: int) -> void:
+	var x = STAGING_FIRST_X
+	for i in range(cards.size()):
+		var card = cards[i]
 		card.set_staging_mode(true)
-		card.arrange_staging(x)
-		container.move_child(card, container.get_child_count() - 1)
+		card.set_meta("staging_base_x", x - STAGING_BAR_LEFT)
+		if _staging_bar:
+			if card.get_parent() != _staging_bar:
+				card.reparent(_staging_bar)
+			card.position = Vector2(x - STAGING_BAR_LEFT, 20)
+		else:
+			card.global_position = Vector2(x, STAGING_Y + 20)
 		x += gap
+
+	var total_width = x - STAGING_FIRST_X
+	if _staging_scrollbar:
+		if total_width > STAGING_VISIBLE:
+			_staging_scrollbar.visible = true
+			_staging_scrollbar.max_value = total_width - STAGING_VISIBLE
+			_staging_scrollbar.page = 0
+			_staging_scrollbar.value = min(_staging_scrollbar.value, _staging_scrollbar.max_value)
+		else:
+			_staging_scrollbar.visible = false
+			_staging_scrollbar.value = 0
+			_staging_scroll_offset = 0
+
+
+func _collect_staging_cards(container: Control, exclude: Control = null) -> Array[Control]:
+	var cards: Array[Control] = []
+	for child in container.get_children():
+		if child is Control and child.is_in_group("cards") and child != exclude:
+			if _staging_bar and child.get_parent() == _staging_bar:
+				continue
+			if child.global_position.y >= STAGING_Y:
+				cards.append(child)
+	if _staging_bar:
+		for child in _staging_bar.get_children():
+			if child is Control and child.is_in_group("cards") and child != exclude:
+				cards.append(child)
+	return cards
+
+
+func arrange_all_staging() -> void:
+	var container = EventBus.get_card_container()
+	var cards = _collect_staging_cards(container)
+	_arrange_staging_cards(cards, STAGING_X_GAP)
 
 
 func toggle_staging_layout() -> void:
 	staging_tiled = not staging_tiled
 	var container = EventBus.get_card_container()
-	var cards: Array[Control] = []
-	for card in container.get_children():
-		if card is Control and card.is_in_group("cards") and card.global_position.y >= STAGING_Y:
-			cards.append(card)
-	cards.sort_custom(func(a, b): return a.global_position.x < b.global_position.x)
-
-	var x = STAGING_X_START
-	var gap = TILE_X_GAP if staging_tiled else STAGING_X_GAP
-	for card in cards:
-		card.set_staging_mode(true)
-		card.arrange_staging(x)
-		container.move_child(card, container.get_child_count() - 1)
-		x += gap
+	var cards = _collect_staging_cards(container)
+	_arrange_staging_cards(cards, TILE_X_GAP if staging_tiled else STAGING_X_GAP)
 
 
 func spawn_card(data: CardData, global_position: Vector2, source: Control = null) -> Control:

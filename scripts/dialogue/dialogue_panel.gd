@@ -1,58 +1,113 @@
-extends "res://scripts/ui/draggable_panel.gd"
+extends Control
 
+var _dragging := false
+var _drag_offset := Vector2.ZERO
 var _config: DialogueConfig
 var _dialogue_data: Dictionary = {}
 var _current_node_id: String = ""
 var _topic_card_id: String = ""
+var _current_speaker_name: String = ""
+var _type_timer: float = 0.0
+var _type_index: int = 0
+var _typing := false
+var _text_complete := false
+var _full_text: String = ""
+var _waiting_for_click := false
+var _speaker_card: Control = null
 
-@onready var content_panel: Panel = $ContentPanel
+const TYPE_SPEED := 0.035
+const POPUP_W := 700
+const POPUP_H := 300
 
-func _get_content_panel() -> Control:
-	return $ContentPanel
-@onready var title_label: Label = $ContentPanel/Title
-@onready var subtitle_label: Label = $ContentPanel/Subtitle
-@onready var text_label: Label = $ContentPanel/TextLabel
-@onready var branch_container: VBoxContainer = $ContentPanel/BranchContainer
-@onready var action_btn: Button = $ContentPanel/ActionBtn
-@onready var close_btn: Button = $ContentPanel/CloseBtn
+@onready var bg_panel: Panel = $BgPanel
+@onready var portrait_rect: TextureRect = $BgPanel/PortraitMargin/Portrait
+@onready var portrait_bg: ColorRect = $BgPanel/PortraitMargin/PortraitBg
+@onready var portrait_margin: Control = $BgPanel/PortraitMargin
+@onready var speaker_label: Label = $BgPanel/SpeakerName
+@onready var text_label: Label = $BgPanel/TextLabel
+@onready var branch_container: VBoxContainer = $BgPanel/BranchContainer
+@onready var continue_btn: Button = $BgPanel/ContinueBtn
+@onready var close_btn: Button = $BgPanel/CloseBtn
+
+
+func _is_topmost_at_pos(global_pos: Vector2) -> bool:
+	var parent = get_parent()
+	if not parent:
+		return true
+	for i in range(parent.get_child_count() - 1, -1, -1):
+		var c = parent.get_child(i)
+		if c == self:
+			return true
+		if not c.visible:
+			continue
+		var rect: Rect2
+		if c.has_method("_get_content_panel"):
+			var cp = c._get_content_panel()
+			if cp:
+				rect = Rect2(cp.global_position, cp.size)
+		elif c.has_node("BgPanel"):
+			var bp = c.get_node("BgPanel")
+			if bp:
+				rect = Rect2(bp.global_position, bp.size)
+		else:
+			continue
+		if rect.has_point(global_pos):
+			return false
+	return true
+
+func _input(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed and not _dragging:
+			var local = bg_panel.get_local_mouse_position()
+			if Rect2(Vector2.ZERO, bg_panel.size).has_point(local) and _is_topmost_at_pos(get_global_mouse_position()):
+				_dragging = true
+				_drag_offset = get_global_mouse_position() - bg_panel.global_position
+		elif not event.pressed:
+			_dragging = false
+	if event is InputEventMouseMotion and _dragging:
+		bg_panel.global_position = get_global_mouse_position() - _drag_offset
 
 
 func _ready():
-	action_btn.pressed.connect(_on_action)
+	continue_btn.pressed.connect(_on_continue)
 	close_btn.pressed.connect(_close)
+	continue_btn.hide()
+
 
 func open(config: DialogueConfig, character_name: String, topic_card_id: String) -> void:
 	_config = config
 	_topic_card_id = topic_card_id
 	_dialogue_data = _load_json("res://resources/dialogues/" + config.dialogue_id + ".json")
 	_current_node_id = ""
-	title_label.text = character_name
-	if topic_card_id.is_empty():
-		subtitle_label.hide()
-	else:
-		var topic_card = EventBus.get_card_by_id(topic_card_id)
-		var topic_name = topic_card.card_data.card_name if topic_card and topic_card.card_data else topic_card_id
-		subtitle_label.text = "← " + topic_name
-		subtitle_label.show()
+	_current_speaker_name = character_name
+	_set_speaker_by_id("")
 	text_label.text = ""
 	_clear_branches()
-	action_btn.text = "结束对话"
-	action_btn.disabled = true
-	_center_and_resize()
+	_position_popup()
 	_start_dialogue()
 
-func _center_and_resize() -> void:
+
+func _position_popup() -> void:
 	await get_tree().process_frame
 	var vp = get_viewport().size
-	var panel_w = mini(400, vp.x - 80)
-	var panel_h = mini(600, vp.y - 80)
-	content_panel.custom_minimum_size = Vector2(panel_w, panel_h)
-	content_panel.size = Vector2(panel_w, panel_h)
-	content_panel.position = Vector2((vp.x - panel_w) * 0.5, (vp.y - panel_h) * 0.5)
+	bg_panel.custom_minimum_size = Vector2(POPUP_W, POPUP_H)
+	bg_panel.size = Vector2(POPUP_W, POPUP_H)
+	global_position = Vector2(vp.x * 0.5, vp.y * 0.5)
+
 
 func _close() -> void:
 	EventBus.dialogue_closed.emit()
 	queue_free()
+
+
+func _on_continue() -> void:
+	if _typing:
+		_skip_typewriter()
+	elif _waiting_for_click:
+		if branch_container.visible:
+			return
+		_advance_dialogue()
+
 
 func _start_dialogue() -> void:
 	var start_id = _config.start_node_id
@@ -64,68 +119,136 @@ func _start_dialogue() -> void:
 	var node = _get_node(start_id)
 	if node.is_empty():
 		text_label.text = "无话可说"
-		action_btn.text = "结束对话"
-		action_btn.disabled = false
+		_waiting_for_click = true
+		continue_btn.text = "结束"
+		continue_btn.show()
 		return
 	_current_node_id = start_id
 	_show_node(node)
 
+
 func _show_node(node: Dictionary) -> void:
 	_execute_actions(node.get("actions", []))
-	text_label.text = node.get("text", "")
+	var speaker_id = node.get("speaker", "")
+	if not speaker_id.is_empty():
+		_set_speaker_by_id(speaker_id)
+	_full_text = node.get("text", "")
 	var options = node.get("options", [])
 	if options.size() > 0:
 		_show_branches(options)
-	else:
-		_clear_branches()
-		var next_id = node.get("next_node_id", "")
-		if not next_id.is_empty():
-			action_btn.text = "继续"
-			action_btn.disabled = false
-		else:
-			action_btn.text = "结束对话"
-			action_btn.disabled = false
+		return
+	_clear_branches()
+	text_label.text = _full_text
+	_start_typewriter()
 
-func _on_action() -> void:
-	if action_btn.text == "结束对话":
-		_close()
-	elif not _current_node_id.is_empty():
-		_advance_dialogue()
 
-func _advance_dialogue() -> void:
+func _start_typewriter() -> void:
+	_typing = true
+	_text_complete = false
+	_type_index = 0
+	_type_timer = 0.0
+	text_label.visible_characters = 0
+	continue_btn.hide()
+
+
+func _skip_typewriter() -> void:
+	_typing = false
+	_text_complete = true
+	text_label.visible_characters = -1
+	_try_show_continue()
+
+
+func _process(delta: float) -> void:
+	if not _typing:
+		return
+	_type_timer += delta
+	while _type_timer >= TYPE_SPEED and _typing:
+		_type_timer -= TYPE_SPEED
+		_type_index += 1
+		text_label.visible_characters = _type_index
+		if _type_index >= _full_text.length():
+			_typing = false
+			_text_complete = true
+			_try_show_continue()
+			return
+
+
+func _try_show_continue() -> void:
 	var node = _get_node(_current_node_id)
 	if node.is_empty():
 		return
 	var next_id = node.get("next_node_id", "")
+	if next_id.is_empty() and node.get("options", []).size() == 0:
+		_waiting_for_click = true
+		continue_btn.text = "结束"
+		continue_btn.show()
+		return
+	if node.get("options", []).size() > 0:
+		_waiting_for_click = false
+		return
+	_waiting_for_click = true
+	continue_btn.text = "▼"
+	continue_btn.show()
+
+
+func _advance_dialogue() -> void:
+	continue_btn.hide()
+	var node = _get_node(_current_node_id)
+	if node.is_empty():
+		_close()
+		return
+	var next_id = node.get("next_node_id", "")
 	if next_id.is_empty():
-		action_btn.text = "结束对话"
-		action_btn.disabled = false
+		_close()
 		return
 	var next_node = _get_node(next_id)
 	if next_node.is_empty():
-		text_label.text = "无话可说"
-		action_btn.text = "结束对话"
-		action_btn.disabled = false
+		_close()
 		return
 	_current_node_id = next_id
+	_waiting_for_click = false
+	_text_complete = false
 	_show_node(next_node)
+
+
+func _set_speaker_by_id(card_id: String) -> void:
+	if card_id.is_empty():
+		portrait_rect.texture = null
+		portrait_margin.hide()
+		speaker_label.text = _current_speaker_name
+		speaker_label.modulate = Color(0.5, 0.8, 1, 1)
+		_speaker_card = null
+		return
+	var card = EventBus.get_card_by_id(card_id)
+	if card and card.card_data:
+		_speaker_card = card
+		speaker_label.text = card.card_data.card_name
+		if card.card_data.art:
+			portrait_rect.texture = card.card_data.art
+			portrait_margin.show()
+		else:
+			portrait_margin.hide()
+		speaker_label.modulate = card.card_data.border_color if card.card_data.border_color != Color.BLACK else Color(0.5, 0.8, 1, 1)
+
 
 func _on_branch_selected(option_data: Dictionary) -> void:
 	var next_id = option_data.get("next_node_id", "")
 	if next_id.is_empty():
 		_clear_branches()
-		action_btn.text = "结束对话"
-		action_btn.disabled = false
+		_waiting_for_click = true
+		continue_btn.text = "结束"
+		continue_btn.show()
 		return
 	var next_node = _get_node(next_id)
 	if next_node.is_empty():
 		_clear_branches()
-		text_label.text = "无话可说"
-		action_btn.text = "结束对话"
-		action_btn.disabled = false
+		_waiting_for_click = true
+		continue_btn.text = "结束"
+		continue_btn.show()
 		return
 	_current_node_id = next_id
 	_show_node(next_node)
+
 
 func _execute_actions(actions: Array) -> void:
 	for action in actions:
@@ -147,15 +270,15 @@ func _execute_actions(actions: Array) -> void:
 					if data:
 						CardManager.spawn_card(data, _random_spawn_pos())
 
+
 func _random_spawn_pos() -> Vector2:
-	return Vector2(
-		randi_range(200, 600),
-		randi_range(300, 600)
-	)
+	return Vector2(randi_range(200, 600), randi_range(300, 600))
+
 
 func _show_branches(options: Array) -> void:
 	_clear_branches()
-	action_btn.hide()
+	text_label.hide()
+	continue_btn.hide()
 	for opt in options:
 		var btn = Button.new()
 		btn.text = opt.get("text", "")
@@ -163,14 +286,17 @@ func _show_branches(options: Array) -> void:
 		branch_container.add_child(btn)
 	branch_container.show()
 
+
 func _clear_branches() -> void:
 	for child in branch_container.get_children():
 		child.queue_free()
 	branch_container.hide()
-	action_btn.show()
+	text_label.show()
+
 
 func _get_node(node_id: String) -> Dictionary:
 	return _dialogue_data.get(node_id, {})
+
 
 func _load_json(path: String) -> Dictionary:
 	if path.is_empty():

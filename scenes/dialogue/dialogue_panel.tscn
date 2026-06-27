@@ -3,74 +3,73 @@
 [ext_resource type="Script" path="res://scripts/dialogue/dialogue_panel.gd" id="1"]
 
 [node name="DialoguePanel" type="Control"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
 mouse_filter = 2
 script = ExtResource("1")
 
-[node name="ContentPanel" type="Panel" parent="."]
-layout_mode = 0
-offset_left = 760
-offset_top = 240
-offset_right = 1160
-offset_bottom = 840
+[node name="BgPanel" type="Panel" parent="."]
 mouse_filter = 1
-
-[node name="Title" type="Label" parent="ContentPanel"]
-layout_mode = 0
-offset_left = 10
-offset_top = 10
+offset_left = -350
+offset_top = -150
 offset_right = 350
-offset_bottom = 40
-theme_override_font_sizes/font_size = 20
-text = "对话"
+offset_bottom = 150
+color = Color(0.06, 0.06, 0.1, 0.95)
 
-[node name="CloseBtn" type="Button" parent="ContentPanel"]
-layout_mode = 0
-offset_left = 355
-offset_right = 395
-offset_bottom = 30
-text = "✕"
+[node name="PortraitMargin" type="Control" parent="BgPanel"]
+offset_left = 15
+offset_top = 15
+offset_right = 145
+offset_bottom = 245
 
-[node name="Subtitle" type="Label" parent="ContentPanel"]
-layout_mode = 0
-offset_left = 10
-offset_top = 42
-offset_right = 350
-offset_bottom = 60
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1.0)
-text = ""
-visible = false
+[node name="PortraitBg" type="ColorRect" parent="BgPanel/PortraitMargin"]
+offset_right = 130
+offset_bottom = 230
+color = Color(0.12, 0.12, 0.18, 1)
 
-[node name="TextLabel" type="Label" parent="ContentPanel"]
-layout_mode = 0
-offset_left = 10
-offset_top = 65
-offset_right = 390
-offset_bottom = 350
-theme_override_font_sizes/font_size = 14
+[node name="Portrait" type="TextureRect" parent="BgPanel/PortraitMargin"]
+offset_right = 130
+offset_bottom = 230
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SpeakerName" type="Label" parent="BgPanel"]
+offset_left = 170
+offset_top = 15
+offset_right = 600
+offset_bottom = 42
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.5, 0.8, 1, 1)
+
+[node name="TextLabel" type="Label" parent="BgPanel"]
+offset_left = 170
+offset_top = 48
+offset_right = 660
+offset_bottom = 270
+theme_override_font_sizes/font_size = 15
 autowrap_mode = 2
-text = ""
-vertical_alignment = 0
-theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1.0)
+theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
 
-[node name="BranchContainer" type="VBoxContainer" parent="ContentPanel"]
-layout_mode = 0
-offset_left = 10
-offset_top = 380
-offset_right = 390
-offset_bottom = 540
+[node name="BranchContainer" type="VBoxContainer" parent="BgPanel"]
+offset_left = 170
+offset_top = 50
+offset_right = 670
+offset_bottom = 280
 visible = false
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
-[node name="ActionBtn" type="Button" parent="ContentPanel"]
-layout_mode = 0
-offset_left = 100
-offset_top = 580
-offset_right = 300
-offset_bottom = 600
-text = "结束对话"
-disabled = true
+[node name="ContinueBtn" type="Button" parent="BgPanel"]
+offset_left = 570
+offset_top = 265
+offset_right = 670
+offset_bottom = 290
+flat = true
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.5, 0.5, 0.6, 1)
+text = "▼"
+
+[node name="CloseBtn" type="Button" parent="BgPanel"]
+offset_left = 660
+offset_top = 5
+offset_right = 680
+offset_bottom = 25
+text = "✕"
+theme_override_font_sizes/font_size = 10

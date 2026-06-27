@@ -30,9 +30,10 @@ color = Color(0.1, 0.1, 0.15, 1)
 layout_mode = 0
 offset_left = 280
 offset_top = 820
-offset_right = 1920
+offset_right = 1698
 offset_bottom = 1080
 color = Color(0.06, 0.06, 0.1, 0.9)
+clip_contents = true
 
 [node name="StageLabel" type="Label" parent="GameBoard/BottomBar"]
 layout_mode = 0
@@ -44,21 +45,37 @@ theme_override_font_sizes/font_size = 11
 text = "[ 暂存区 ]"
 theme_override_colors/font_color = Color(0.4, 0.4, 0.5, 1.0)
 
-[node name="StackToggleBtn" type="Button" parent="GameBoard/BottomBar"]
+[node name="StagingSeparator" type="ColorRect" parent="GameBoard"]
 layout_mode = 0
-offset_left = 1280
-offset_top = 10
-offset_right = 1440
-offset_bottom = 40
+offset_left = 1698
+offset_top = 825
+offset_right = 1700
+offset_bottom = 1075
+color = Color(0.3, 0.3, 0.4, 0.6)
+
+[node name="ButtonBar" type="ColorRect" parent="GameBoard"]
+layout_mode = 0
+offset_left = 1700
+offset_top = 820
+offset_right = 1920
+offset_bottom = 1080
+color = Color(0.04, 0.04, 0.08, 0.95)
+
+[node name="StackToggleBtn" type="Button" parent="GameBoard/ButtonBar"]
+layout_mode = 0
+offset_left = 10
+offset_top = 15
+offset_right = 210
+offset_bottom = 50
 theme_override_font_sizes/font_size = 12
 text = "平铺模式"
 
-[node name="OrganizeBtn" type="Button" parent="GameBoard/BottomBar"]
+[node name="OrganizeBtn" type="Button" parent="GameBoard/ButtonBar"]
 layout_mode = 0
-offset_left = 1450
-offset_top = 10
-offset_right = 1610
-offset_bottom = 40
+offset_left = 10
+offset_top = 65
+offset_right = 210
+offset_bottom = 100
 theme_override_font_sizes/font_size = 12
 text = "整理桌面"
 

@@ -8,4 +8,4 @@ func start(root, top_card) -> void:
 	if config == null:
 		return
 	CardManager.dialogue_topic_card = top_card
-	EventBus.dialogue_requested.emit(config, root.card_data.card_name, top_card.card_data.card_id)
+	EventBus.dialogue_requested.emit(config, root.card_data.card_name, top_card.card_data.card_id, root, top_card)

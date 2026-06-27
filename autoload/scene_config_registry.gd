@@ -31,7 +31,7 @@ func _plant_hunter() -> ExplorationConfig:
 	branch2.required_cards = [
 		_slot(["CHAR_junior_investigator"], "需要初级调查员"),
 	] as Array[PanelSlotConfig]
-	branch2.result_recipes = [_drop(preload("res://resources/cards/ITEM_shadow.tres"), 1, 1, 1.0, 0, false, "黑影")] as Array[DropRecipe]
+	branch2.result_recipes = [_drop(preload("res://resources/cards/ITEM_shadow.tres"), 1, 1, 1.0, 0, false, "黑影", true)] as Array[DropRecipe]
 	c.branch_recipes.append(branch2)
 
 	return c
@@ -42,7 +42,7 @@ static func _slot(ids: Array[String], hint: String) -> PanelSlotConfig:
 	s.hint = hint
 	return s
 
-static func _drop(card: CardData, min_c: int, max_c: int, w: float, drops: int, stackable: bool, label: String) -> DropRecipe:
+static func _drop(card: CardData, min_c: int, max_c: int, w: float, drops: int, stackable: bool, label: String, no_dup: bool = false, uniq: bool = false) -> DropRecipe:
 	var r = DropRecipe.new()
 	r.result_card = card
 	r.min_count = min_c
@@ -51,6 +51,8 @@ static func _drop(card: CardData, min_c: int, max_c: int, w: float, drops: int, 
 	r.max_drops = drops
 	r.stackable = stackable
 	r.label = label
+	r.no_duplicate = no_dup
+	r.unique = uniq
 	return r
 
 func _library() -> ExplorationConfig:
