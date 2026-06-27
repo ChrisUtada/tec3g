@@ -1,7 +1,5 @@
 extends Control
 
-var _dragging := false
-var _drag_offset := Vector2.ZERO
 var _config: DialogueConfig
 var _dialogue_data: Dictionary = {}
 var _current_node_id: String = ""
@@ -28,44 +26,6 @@ const POPUP_H := 300
 @onready var branch_container: VBoxContainer = $BgPanel/BranchContainer
 @onready var continue_btn: Button = $BgPanel/ContinueBtn
 @onready var close_btn: Button = $BgPanel/CloseBtn
-
-
-func _is_topmost_at_pos(global_pos: Vector2) -> bool:
-	var parent = get_parent()
-	if not parent:
-		return true
-	for i in range(parent.get_child_count() - 1, -1, -1):
-		var c = parent.get_child(i)
-		if c == self:
-			return true
-		if not c.visible:
-			continue
-		var rect: Rect2
-		if c.has_method("_get_content_panel"):
-			var cp = c._get_content_panel()
-			if cp:
-				rect = Rect2(cp.global_position, cp.size)
-		elif c.has_node("BgPanel"):
-			var bp = c.get_node("BgPanel")
-			if bp:
-				rect = Rect2(bp.global_position, bp.size)
-		else:
-			continue
-		if rect.has_point(global_pos):
-			return false
-	return true
-
-func _input(event):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed and not _dragging:
-			var local = bg_panel.get_local_mouse_position()
-			if Rect2(Vector2.ZERO, bg_panel.size).has_point(local) and _is_topmost_at_pos(get_global_mouse_position()):
-				_dragging = true
-				_drag_offset = get_global_mouse_position() - bg_panel.global_position
-		elif not event.pressed:
-			_dragging = false
-	if event is InputEventMouseMotion and _dragging:
-		bg_panel.global_position = get_global_mouse_position() - _drag_offset
 
 
 func _ready():
@@ -162,7 +122,9 @@ func _process(delta: float) -> void:
 	if not _typing:
 		return
 	_type_timer += delta
-	while _type_timer >= TYPE_SPEED and _typing:
+	var steps := 0
+	while _type_timer >= TYPE_SPEED and _typing and steps < 3:
+		steps += 1
 		_type_timer -= TYPE_SPEED
 		_type_index += 1
 		text_label.visible_characters = _type_index

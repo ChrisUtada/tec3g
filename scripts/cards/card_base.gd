@@ -14,7 +14,6 @@ var _was_in_staging := false
 
 const STACK_OFFSET := Vector2(0, 30)
 const MIN_DRAG_DISTANCE := 10.0
-const STAGING_Y := 820
 const STAGING_X_START := 300
 const BOARD_MIN_X := 280
 const SIDEBAR_GAP := 20
@@ -26,6 +25,7 @@ var _press_tween: Tween
 var _is_hovered := false
 
 var _staging_mode := false
+var _CardSceneScript = load("res://scripts/cards/card_scene.gd")
 
 func _ready():
 	_container = EventBus.get_card_container()
@@ -52,6 +52,8 @@ func _exit_tree():
 
 func _on_mouse_entered():
 	_is_hovered = true
+	if not is_inside_tree() or not hover_overlay:
+		return
 	if is_dragging:
 		return
 	_kill_tween(_hover_tween)
@@ -61,6 +63,8 @@ func _on_mouse_entered():
 
 func _on_mouse_exited():
 	_is_hovered = false
+	if not is_inside_tree() or not hover_overlay:
+		return
 	_kill_tween(_hover_tween)
 	if is_dragging:
 		return
@@ -132,6 +136,8 @@ func _gui_input(event):
 		if _staging_mode:
 			return
 		if card_data and card_data.card_type == CardData.CardType.SCENE:
+			if get_script() != _CardSceneScript:
+				set_script(_CardSceneScript)
 			SceneDesktopManager.enter_scene(self)
 			return
 		if card_data and card_data.dialogue_config:
@@ -144,6 +150,8 @@ func _gui_input(event):
 
 func _input(event):
 	if get_parent() != _container:
+		return
+	if not _pressed_self:
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
 		_pressed_self = false
@@ -179,8 +187,8 @@ func start_drag() -> void:
 	set_staging_mode(false)
 	if global_position.x < BOARD_MIN_X:
 		global_position.x = BOARD_MIN_X + SIDEBAR_GAP
-	if global_position.y >= STAGING_Y:
-		global_position.y = STAGING_Y - size.y - 20
+	if global_position.y >= CardManager.STAGING_Y:
+		global_position.y = CardManager.STAGING_Y - size.y - 20
 	is_dragging = true
 	_has_moved = false
 	_drag_start_pos = global_position
@@ -192,7 +200,7 @@ func start_drag() -> void:
 	EventBus.card_drag_started.emit(self)
 
 func _start_drag():
-	_was_in_staging = global_position.y >= STAGING_Y
+	_was_in_staging = global_position.y >= CardManager.STAGING_Y
 	start_drag()
 
 func _end_drag():
@@ -205,19 +213,19 @@ func _end_drag():
 	$Corruption.resume()
 	EventBus.card_drag_ended.emit(self)
 	if _has_moved:
-		if _was_in_staging and global_position.y >= STAGING_Y - 60:
+		if _was_in_staging and global_position.y >= CardManager.STAGING_Y - 60:
 			_snap_to_staging()
-		elif not _was_in_staging and global_position.y >= STAGING_Y:
+		elif not _was_in_staging and global_position.y >= CardManager.STAGING_Y:
 			_snap_to_staging()
 		elif _was_in_staging:
 			_board_from_staging()
 		else:
 			_try_stack()
 		if get_parent() == _container:
-			if global_position.y < STAGING_Y:
-				var overlap = (global_position.y + size.y) - STAGING_Y
+			if global_position.y < CardManager.STAGING_Y:
+				var overlap = (global_position.y + size.y) - CardManager.STAGING_Y
 				if overlap > -10:
-					global_position.y = STAGING_Y - size.y - 10
+					global_position.y = CardManager.STAGING_Y - size.y - 10
 			if global_position.x < BOARD_MIN_X:
 				var eject_x = BOARD_MIN_X + SIDEBAR_GAP
 				var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
@@ -227,8 +235,8 @@ func _end_drag():
 
 func _board_from_staging() -> void:
 	var card_bottom = global_position.y + size.y
-	if card_bottom >= STAGING_Y - 20:
-		global_position.y = STAGING_Y - size.y - 20
+	if card_bottom >= CardManager.STAGING_Y - 20:
+		global_position.y = CardManager.STAGING_Y - size.y - 20
 	if global_position.x < BOARD_MIN_X:
 		global_position.x = BOARD_MIN_X + SIDEBAR_GAP
 	if global_position.y < 0:
@@ -247,23 +255,23 @@ func set_staging_mode(enabled: bool) -> void:
 func arrange_staging(x: float) -> void:
 	z_index = 0
 	var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(self, "global_position", Vector2(x, STAGING_Y + 20), 0.12)
+	tween.tween_property(self, "global_position", Vector2(x, CardManager.STAGING_Y + 20), 0.12)
 
 func _snap_to_staging() -> void:
 	if card_data and card_data.corruption_time > 0:
 		var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tween.tween_property(self, "global_position", Vector2(global_position.x, STAGING_Y - 300), 0.15)
+		tween.tween_property(self, "global_position", Vector2(global_position.x, CardManager.STAGING_Y - 300), 0.15)
 		_release_effect()
 		return
 	EventBus.staging_arrange_requested.emit(self, _was_in_staging)
 	_release_effect()
 
 func _try_stack():
-	if global_position.y >= STAGING_Y:
+	if global_position.y >= CardManager.STAGING_Y:
 		return
 	var my_rect = Rect2(global_position, size)
 	for card in _container.get_children():
-		if card == self or not card.visible or card.global_position.y >= STAGING_Y:
+		if card == self or not card.visible or card.global_position.y >= CardManager.STAGING_Y:
 			continue
 		var card_rect = Rect2(card.global_position, card.size)
 		if my_rect.intersects(card_rect):

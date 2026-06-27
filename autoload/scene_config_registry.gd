@@ -16,6 +16,7 @@ func _plant_hunter() -> ExplorationConfig:
 	c.scene_name = "植物学家的花园"
 	c.scene_description = "由 TEC 引导进入的异界花园。植物学家在此失踪。\n放入合适的卡牌探索隐藏的秘密。"
 	c.explore_duration = 3.0
+	c.layout_scene = preload("res://scenes/scene_layouts/layout_plant_hunter.tscn")
 
 	var branch1 = SlotBranchRecipe.new()
 	branch1.branch_name = "采集"
@@ -61,6 +62,7 @@ func _library() -> ExplorationConfig:
 	c.scene_name = "图书馆"
 	c.scene_description = "和朱穗一起在图书馆中研读典籍。"
 	c.explore_duration = 5.0
+	c.layout_scene = preload("res://scenes/scene_layouts/layout_library.tscn")
 
 	var branch = SlotBranchRecipe.new()
 	branch.branch_name = "研读"

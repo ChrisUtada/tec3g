@@ -18,6 +18,8 @@ const STAGING_VISIBLE := 1418
 const STAGING_BAR_LEFT := 280
 const STAGING_FIRST_X := 300
 const BarScene = preload("res://scenes/progress_bar_2d.tscn")
+const CardSceneScene = preload("res://scenes/cards/card_scene.tscn")
+const CardBaseScene = preload("res://scenes/cards/card_base.tscn")
 
 var _staging_bar: ColorRect
 var _staging_scrollbar: HScrollBar
@@ -49,8 +51,20 @@ func _setup_staging_area() -> void:
 	_staging_scrollbar.size = Vector2(STAGING_VISIBLE, 20)
 	_staging_bar.add_child(_staging_scrollbar)
 
+	_staging_bar.gui_input.connect(_on_staging_bar_gui_input)
 	container.resized.connect(_resize_staging_area)
 	arrange_all_staging()
+
+
+func _on_staging_bar_gui_input(event: InputEvent) -> void:
+	if not _staging_scrollbar.visible:
+		return
+	if event is InputEventMouseButton and event.pressed:
+		match event.button_index:
+			MOUSE_BUTTON_WHEEL_UP:
+				_staging_scrollbar.value = max(0, _staging_scrollbar.value - 100)
+			MOUSE_BUTTON_WHEEL_DOWN:
+				_staging_scrollbar.value = min(_staging_scrollbar.max_value, _staging_scrollbar.value + 100)
 
 
 func _resize_staging_area() -> void:
@@ -100,7 +114,7 @@ func _on_card_stacked(bottom, top):
 	var root = _stack_root(bottom)
 	if not root.card_data:
 		return
-	if root.card_data.card_type == CardData.CardType.SCENE:
+	if root is CardScene:
 		return
 	var exp_config = SceneConfigRegistry.get_config(root.card_data.card_id)
 	if exp_config:
@@ -171,6 +185,7 @@ func _arrange_staging_cards(cards: Array[Control], gap: int) -> void:
 		else:
 			_staging_scrollbar.visible = false
 			_staging_scrollbar.value = 0
+			_staging_scrollbar.max_value = 0
 			_staging_scroll_offset = 0
 
 
@@ -203,11 +218,15 @@ func toggle_staging_layout() -> void:
 
 
 func spawn_card(data: CardData, global_position: Vector2, source: Control = null) -> Control:
-	var scene = preload("res://scenes/cards/card_base.tscn")
+	var scene: PackedScene = data.card_scene
+	if not scene:
+		scene = CardSceneScene if data.card_type == CardData.CardType.SCENE else CardBaseScene
 	var card = scene.instantiate()
 	card.setup(data)
 	if source:
 		card.spawn_source = source
+		if card is CardScene and source is CardScene:
+			card.origin_scene = source
 	var container = EventBus.get_card_container()
 	container.add_child(card)
 	card.global_position = global_position
@@ -219,18 +238,20 @@ func spawn_card(data: CardData, global_position: Vector2, source: Control = null
 func organize_board() -> void:
 	var container = EventBus.get_card_container()
 	var scene_cards: Array[Control] = []
+	var spawn_map: Dictionary = {}
 	for card in container.get_children():
 		if card is Control and card.is_in_group("cards") and card.card_data:
-			if card.card_data.card_type == CardData.CardType.SCENE and card.global_position.y < STAGING_Y:
-				scene_cards.append(card)
+			if card.global_position.y >= CardManager.STAGING_Y:
+				continue
+		if card is CardScene:
+			scene_cards.append(card)
+		elif card.spawn_source:
+				var key = card.spawn_source
+				if not spawn_map.has(key):
+					spawn_map[key] = []
+				spawn_map[key].append(card)
 	for scene in scene_cards:
-		var spawns: Array[Control] = []
-		for card in container.get_children():
-			if card is Control and card.is_in_group("cards") and card.card_data:
-				if card.global_position.y >= STAGING_Y:
-					continue
-				if card.spawn_source == scene:
-					spawns.append(card)
+		var spawns = spawn_map.get(scene, [])
 		var target = scene
 		for s in spawns:
 			s.reparent(target)

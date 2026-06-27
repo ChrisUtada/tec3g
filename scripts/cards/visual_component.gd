@@ -35,12 +35,13 @@ func refresh(data: CardData) -> void:
 		_favor_label.text = "❤ %d/%d" % [data.favorability, data.max_favorability]
 	else:
 		_favor_label.hide()
-	if data.art:
-		_art_rect.texture = data.art
-		_art_rect.show()
-	else:
-		_art_rect.texture = null
-		_art_rect.hide()
+	if _art_rect:
+		if data.art:
+			_art_rect.texture = data.art
+			_art_rect.show()
+		else:
+			_art_rect.texture = null
+			_art_rect.hide()
 
 func update_favor_display(new_val: int, max_val: int) -> void:
 	_favor_label.text = "❤ %d/%d" % [new_val, max_val]

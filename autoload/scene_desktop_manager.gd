@@ -10,6 +10,7 @@ var _scene_bg_overlay: ColorRect = null
 var _scene_card_btn: Button = null
 var _move_all_btn: Button = null
 var _hidden_nodes: Array[Node] = []
+var _layout_loaded := false
 
 
 func _ready():
@@ -49,6 +50,7 @@ func enter_scene(scene_card: Control) -> void:
 
 	_save_main_desktop(container)
 	_restore_scene_desktop(container)
+	_load_scene_layout(container)
 	_add_scene_bg_overlay(game_board)
 	_hide_ui(game_board)
 	_add_scene_header(game_board)
@@ -219,17 +221,32 @@ func _move_all_to_staging() -> void:
 
 
 func _flatten_stack(card: Control, bar: Control) -> void:
-	var cards: Array[Control] = [card]
-	var parent = card.get_parent()
-	for i in range(card.get_child_count() - 1, -1, -1):
-		var c = card.get_child(i)
+	var children: Array[Control] = []
+	for c in card.get_children():
 		if c is Control and c.is_in_group("cards"):
-			cards.append(c)
-			c.reparent(parent)
-	for c in cards:
-		var saved_pos = c.global_position
+			children.append(c)
+	var saved_pos = card.global_position
+	card.reparent(bar)
+	card.global_position = Vector2(saved_pos.x, CardManager.STAGING_Y + 20)
+	for c in children:
+		saved_pos = c.global_position
 		c.reparent(bar)
 		c.global_position = Vector2(saved_pos.x, CardManager.STAGING_Y + 20)
+
+
+func _load_scene_layout(container: Control) -> void:
+	if _layout_loaded:
+		return
+	if not _active_config or not _active_config.layout_scene:
+		return
+	_layout_loaded = true
+	var layout = _active_config.layout_scene.instantiate()
+	for child in layout.get_children():
+		var ph := child as CardPlaceholder
+		if not ph or not ph.card_data:
+			continue
+		CardManager.spawn_card(ph.card_data, ph.global_position)
+	layout.queue_free()
 
 
 func _remove_scene_header() -> void:

@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://b3prccy6m5c6v"]
+
+[ext_resource type="Script" path="res://scripts/cards/card_placeholder.gd" id="1"]
+[ext_resource type="Resource" uid="uid://dbegsn6qmtcr3" path="res://resources/cards/CHAR_zhu_sui.tres" id="2"]
+[ext_resource type="Resource" uid="uid://b6t0fx2vv232n" path="res://resources/cards/ITEM_handwritten_note.tres" id="3"]
+[ext_resource type="Resource" uid="uid://b5rpgj7ixpkp3" path="res://resources/cards/CHAR_tec.tres" id="4"]
+
+[node name="Layout" type="Node"]
+
+[node name="ZhuSui" type="Control" parent="."]
+offset_left = 400.0
+offset_top = 320.0
+offset_right = 560.0
+offset_bottom = 540.0
+script = ExtResource("1")
+card_data = ExtResource("2")
+
+[node name="Tec" type="Control" parent="."]
+offset_left = 650.0
+offset_top = 250.0
+offset_right = 810.0
+offset_bottom = 470.0
+script = ExtResource("1")
+card_data = ExtResource("4")
+
+[node name="HandwrittenNote" type="Control" parent="."]
+offset_left = 900.0
+offset_top = 350.0
+offset_right = 1060.0
+offset_bottom = 570.0
+script = ExtResource("1")
+card_data = ExtResource("3")

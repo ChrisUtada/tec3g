@@ -7,3 +7,4 @@ class_name ExplorationConfig extends Resource
 @export var result_recipes: Array[DropRecipe] = []
 @export var branch_recipes: Array[SlotBranchRecipe] = []
 @export var rest_mode: bool = false
+@export var layout_scene: PackedScene

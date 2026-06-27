@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/multimedia/mm_plant_hunter.tres" id="2"]
+[ext_resource type="PackedScene" uid="uid://bgw2eayj4pd1k" path="res://scenes/cards/card_scenes/plant_hunter_card.tscn" id="3"]
 
 [resource]
 script = ExtResource("1")
@@ -15,3 +16,4 @@ bg_color = Color(0.1, 0.4, 0.25, 1)
 border_color = Color(0.2, 0.7, 0.45, 1)
 icon = "🌿"
 multimedia_content = ExtResource("2")
+card_scene = ExtResource("3")

@@ -1,10 +1,11 @@
-[gd_scene format=3 uid="uid://c3miea3o8rage"]
+[gd_scene format=3 uid="uid://bgw2eayj4pd1k"]
 
-[ext_resource type="Script" uid="uid://d1efnjmetm0yr" path="res://scripts/cards/card_base.gd" id="1"]
+[ext_resource type="Script" uid="uid://dorrem2r2y7ki" path="res://scripts/cards/card_scene.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/cards/visual_component.gd" id="2"]
 [ext_resource type="Script" path="res://scripts/cards/corruption_component.gd" id="3"]
+[ext_resource type="Texture2D" uid="uid://dg1c3r26eacoh" path="res://assets/zs.png" id="4"]
 
-[node name="CardBase" type="Control" unique_id=1696835157]
+[node name="CardScene" type="Control"]
 custom_minimum_size = Vector2(160, 220)
 layout_mode = 3
 anchors_preset = 0
@@ -33,8 +34,14 @@ offset_bottom = 220.0
 mouse_filter = 2
 expand_mode = 3
 stretch_mode = 5
+visible = false
 
-[node name="Title" type="Label" parent="." unique_id=1675661902]
+[node name="ArtSprite" type="Sprite2D" parent="."]
+centered = false
+scale = Vector2(0.1786, 0.1858)
+texture = ExtResource("4")
+
+[node name="Title" type="Label" parent="."]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 8.0
@@ -43,7 +50,7 @@ offset_bottom = 36.0
 theme_override_font_sizes/font_size = 14
 horizontal_alignment = 1
 
-[node name="Description" type="Label" parent="." unique_id=2038118951]
+[node name="Description" type="Label" parent="."]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 42.0
@@ -54,7 +61,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="TypeLabel" type="Label" parent="." unique_id=1100681221]
+[node name="TypeLabel" type="Label" parent="."]
 layout_mode = 0
 offset_left = 8.0
 offset_top = 180.0
@@ -71,6 +78,26 @@ offset_right = 152.0
 offset_bottom = 210.0
 theme_override_font_sizes/font_size = 10
 horizontal_alignment = 2
+
+[node name="SceneTag" type="ColorRect" parent="."]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 50.0
+offset_bottom = 18.0
+color = Color(0.4, 0.2, 0.6, 0.85)
+mouse_filter = 2
+
+[node name="SceneTagLabel" type="Label" parent="SceneTag"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 1.0
+offset_right = 46.0
+offset_bottom = 15.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 9
+text = "场景"
+horizontal_alignment = 1
 
 [node name="Visual" type="Node" parent="."]
 script = ExtResource("2")
