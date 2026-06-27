@@ -13,7 +13,7 @@ var open_panels: Dictionary = {}
 
 const STAGING_Y := 820
 const STAGING_X_GAP := 40
-const TILE_X_GAP := 180
+const TILE_X_GAP := 20
 const STAGING_VISIBLE := 1418
 const STAGING_BAR_LEFT := 280
 const STAGING_FIRST_X := 300
@@ -169,7 +169,7 @@ func _arrange_staging_cards(cards: Array[Control], gap: int) -> void:
 			card.position = Vector2(x - STAGING_BAR_LEFT, 20)
 		else:
 			card.global_position = Vector2(x, STAGING_Y + 20)
-		x += gap
+		x += card.size.x + gap
 
 	var total_width = x - STAGING_FIRST_X
 	if _staging_scrollbar:
