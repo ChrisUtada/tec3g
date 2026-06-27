@@ -131,10 +131,6 @@ func _on_spawn_card_requested(data: CardData, global_position: Vector2) -> void:
 
 
 func _on_dialogue_closed() -> void:
-	if dialogue_topic_card and is_instance_valid(dialogue_topic_card) and dialogue_topic_card.is_inside_tree():
-		var container = EventBus.get_card_container()
-		dialogue_topic_card.reparent(container)
-		dialogue_topic_card.global_position = Vector2(randi_range(200, 600), randi_range(300, 600))
 	dialogue_topic_card = null
 
 
@@ -218,7 +214,7 @@ func toggle_staging_layout() -> void:
 
 
 func spawn_card(data: CardData, global_position: Vector2, source: Control = null) -> Control:
-	var scene: PackedScene = data.card_scene
+	var scene: PackedScene = data.get_card_scene()
 	if not scene:
 		scene = CardSceneScene if data.card_type == CardData.CardType.SCENE else CardBaseScene
 	var card = scene.instantiate()

@@ -200,7 +200,7 @@ func start_drag() -> void:
 	EventBus.card_drag_started.emit(self)
 
 func _start_drag():
-	_was_in_staging = global_position.y >= CardManager.STAGING_Y
+	_was_in_staging = _staging_mode
 	start_drag()
 
 func _end_drag():
@@ -213,19 +213,18 @@ func _end_drag():
 	$Corruption.resume()
 	EventBus.card_drag_ended.emit(self)
 	if _has_moved:
-		if _was_in_staging and global_position.y >= CardManager.STAGING_Y - 60:
+		var card_bottom = global_position.y + size.y
+		if _was_in_staging and card_bottom >= CardManager.STAGING_Y - 60:
 			_snap_to_staging()
-		elif not _was_in_staging and global_position.y >= CardManager.STAGING_Y:
+		elif not _was_in_staging and card_bottom >= CardManager.STAGING_Y:
 			_snap_to_staging()
 		elif _was_in_staging:
 			_board_from_staging()
 		else:
 			_try_stack()
 		if get_parent() == _container:
-			if global_position.y < CardManager.STAGING_Y:
-				var overlap = (global_position.y + size.y) - CardManager.STAGING_Y
-				if overlap > -10:
-					global_position.y = CardManager.STAGING_Y - size.y - 10
+			if card_bottom > CardManager.STAGING_Y:
+				global_position.y = CardManager.STAGING_Y - size.y - 10
 			if global_position.x < BOARD_MIN_X:
 				var eject_x = BOARD_MIN_X + SIDEBAR_GAP
 				var tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)

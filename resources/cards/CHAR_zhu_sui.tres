@@ -17,4 +17,5 @@ border_color = Color(0.65, 0.4, 0.2, 1)
 art = ExtResource("4")
 icon = "📜"
 multimedia_content = ExtResource("3")
+card_scene_path = "res://scenes/cards/card_scenes/zhu_sui_card.tscn"
 dialogue_config = ExtResource("2")

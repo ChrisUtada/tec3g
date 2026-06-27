@@ -221,14 +221,17 @@ func _move_all_to_staging() -> void:
 
 
 func _flatten_stack(card: Control, bar: Control) -> void:
-	var children: Array[Control] = []
-	for c in card.get_children():
+	var all_cards: Array[Control] = []
+	var to_check: Array[Node] = card.get_children()
+	while to_check.size() > 0:
+		var c = to_check.pop_back()
 		if c is Control and c.is_in_group("cards"):
-			children.append(c)
+			all_cards.append(c)
+			to_check.append_array(c.get_children())
 	var saved_pos = card.global_position
 	card.reparent(bar)
 	card.global_position = Vector2(saved_pos.x, CardManager.STAGING_Y + 20)
-	for c in children:
+	for c in all_cards:
 		saved_pos = c.global_position
 		c.reparent(bar)
 		c.global_position = Vector2(saved_pos.x, CardManager.STAGING_Y + 20)
