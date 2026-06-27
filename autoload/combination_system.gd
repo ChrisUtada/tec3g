@@ -25,6 +25,7 @@ func _do_combine(root, top, hits: Array[StackRecipe]) -> void:
 	CardManager.combo_top = top
 	var bar = CardManager.BarScene.instantiate()
 	bar.set_fill_color(Color(0.3, 0.8, 0.3))
+	bar.set_label("组合中...")
 	CardManager.combo_bar = bar
 
 	if chosen.destroys_target:

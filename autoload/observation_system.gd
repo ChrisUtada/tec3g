@@ -6,6 +6,7 @@ func start(target, observe_card) -> void:
 		return
 	var bar = CardManager.BarScene.instantiate()
 	bar.set_fill_color(Color(0.5, 0.3, 1.0))
+	bar.set_label("观察中...")
 	CardManager.obs_bar = bar
 	CardManager.obs_target = target
 	CardManager.obs_card = observe_card

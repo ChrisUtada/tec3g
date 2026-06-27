@@ -223,7 +223,8 @@ func _end_drag():
 		else:
 			_try_stack()
 		if get_parent() == _container:
-			if card_bottom > CardManager.STAGING_Y:
+			var final_bottom = global_position.y + size.y
+			if final_bottom > CardManager.STAGING_Y:
 				global_position.y = CardManager.STAGING_Y - size.y - 10
 			if global_position.x < BOARD_MIN_X:
 				var eject_x = BOARD_MIN_X + SIDEBAR_GAP

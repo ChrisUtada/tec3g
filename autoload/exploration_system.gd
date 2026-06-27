@@ -21,6 +21,7 @@ func start(root, config) -> void:
 	CardManager.exploring = true
 	var bar = CardManager.BarScene.instantiate()
 	bar.set_fill_color(Color(0.3, 0.8, 0.3))
+	bar.set_label("探索中...")
 	CardManager.combo_bar = bar
 	bar.attach_to(root, config.explore_duration, func():
 		bar.queue_free()
@@ -102,6 +103,7 @@ func _process_rest(root, config, branch) -> void:
 	if fatigue_count > 1:
 		var bar = CardManager.BarScene.instantiate()
 		bar.set_fill_color(Color(0.3, 0.8, 0.3))
+		bar.set_label("恢复中...")
 		CardManager.combo_bar = bar
 		bar.attach_to(root, config.explore_duration, func():
 			bar.queue_free()
