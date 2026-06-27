@@ -143,11 +143,12 @@ func arrange_staging_area(dropped_card: Control, was_in_staging: bool) -> void:
 	var cards = _collect_staging_cards(container, dropped_card)
 
 	if was_in_staging:
-		var insert_idx = cards.size()
+		var gap = TILE_X_GAP if staging_tiled else STAGING_X_GAP
 		var drop_center = dropped_card.global_position.x + dropped_card.size.x / 2
+		var insert_idx = cards.size()
 		for i in range(cards.size()):
-			var mid_x = cards[i].global_position.x + cards[i].size.x / 2
-			if drop_center < mid_x:
+			var theoretical_center = STAGING_FIRST_X + i * gap - _staging_scroll_offset + dropped_card.size.x / 2
+			if drop_center < theoretical_center:
 				insert_idx = i
 				break
 		cards.insert(insert_idx, dropped_card)
