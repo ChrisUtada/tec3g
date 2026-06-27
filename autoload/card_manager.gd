@@ -170,6 +170,11 @@ func _arrange_staging_cards(cards: Array[Control], gap: int) -> void:
 		else:
 			card.global_position = Vector2(x, STAGING_Y + 20)
 		x += gap
+	# 修正 z-order：reparent 会把卡牌追加到末尾（最顶层），
+	# 需要按数组顺序重排子节点，让左侧卡牌在底层、右侧在顶层。
+	if _staging_bar:
+		for i in range(cards.size()):
+			_staging_bar.move_child(cards[i], i)
 
 	var total_width = x - STAGING_FIRST_X
 	if _staging_scrollbar:
