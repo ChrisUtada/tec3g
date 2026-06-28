@@ -15,6 +15,9 @@ func start(target, observe_card) -> void:
 		CardManager.obs_bar = null
 		CardManager.obs_target = null
 		CardManager.obs_card = null
+		# 卡牌可能被外部机制销毁 → 跳过观察
+		if not is_instance_valid(target) or not is_instance_valid(observe_card):
+			return
 		var panel = preload("res://scenes/multimedia_panel.tscn").instantiate()
 		var scene = get_tree().current_scene
 		if scene:

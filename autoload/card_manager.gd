@@ -5,6 +5,7 @@ var combo_bottom = null
 var combo_top = null
 var dialogue_topic_card = null
 var dialogue_root_card = null
+var dialogue_bar = null
 var staging_tiled := false
 var obs_bar = null
 var obs_target = null
@@ -46,6 +47,9 @@ func cancel_observation() -> void:
 
 
 func cancel_dialogue() -> void:
+	if dialogue_bar:
+		dialogue_bar.cancel()
+	dialogue_bar = null
 	if is_instance_valid(dialogue_root_card):
 		dialogue_root_card.state = CardBase.CardState.IDLE
 	if is_instance_valid(dialogue_topic_card):
@@ -134,6 +138,8 @@ func _on_card_broken(card):
 		cancel_combination()
 	if obs_bar and card == obs_card:
 		cancel_observation()
+	if dialogue_bar and card == dialogue_topic_card:
+		cancel_dialogue()
 
 
 func _on_card_stacked(bottom, top):
@@ -171,15 +177,14 @@ func _on_staging_arrange_requested(dropped_card, was_in_staging: bool) -> void:
 
 
 func arrange_staging_area(dropped_card: Control, was_in_staging: bool) -> void:
-	var container = EventBus.get_card_container()
-	var cards = _collect_staging_cards(container, dropped_card)
+	var cards = _collect_staging_cards(null, dropped_card)
 
 	var gap = TILE_X_GAP if staging_tiled else STAGING_X_GAP
 	var drop_center = dropped_card.global_position.x + dropped_card.size.x / 2
 	var insert_idx = cards.size()
 	for i in range(cards.size()):
-		var theoretical_center = STAGING_FIRST_X + i * gap - _staging_scroll_offset + dropped_card.size.x / 2
-		if drop_center < theoretical_center:
+		var real_center = cards[i].global_position.x + cards[i].size.x / 2
+		if drop_center < real_center:
 			insert_idx = i
 			break
 	cards.insert(insert_idx, dropped_card)
@@ -220,31 +225,30 @@ func _arrange_staging_cards(cards: Array[Control], gap: int) -> void:
 			_staging_scroll_offset = 0
 
 
-func _collect_staging_cards(container: Control, exclude: Control = null) -> Array[Control]:
-	var cards: Array[Control] = []
-	for child in container.get_children():
-		if child is Control and child.is_in_group("cards") and child != exclude:
-			if _staging_bar and child.get_parent() == _staging_bar:
-				continue
-			if child.global_position.y >= STAGING_Y:
-				cards.append(child)
+func _collect_staging_cards(_container: Control = null, exclude: Control = null) -> Array[Control]:
+	var result: Array[Control] = []
+	var container = EventBus.get_card_container()
+	if container:
+		for card in container.get_children():
+			if card is Control and card.is_in_group("cards") and card != exclude:
+				if card.global_position.y >= STAGING_Y:
+					result.append(card)
 	if _staging_bar:
-		for child in _staging_bar.get_children():
-			if child is Control and child.is_in_group("cards") and child != exclude:
-				cards.append(child)
-	return cards
+		for card in _staging_bar.get_children():
+			if card is Control and card.is_in_group("cards") and card != exclude:
+				if card not in result:
+					result.append(card)
+	return result
 
 
 func arrange_all_staging() -> void:
-	var container = EventBus.get_card_container()
-	var cards = _collect_staging_cards(container)
-	_arrange_staging_cards(cards, STAGING_X_GAP)
+	var cards = _collect_staging_cards()
+	_arrange_staging_cards(cards, TILE_X_GAP if staging_tiled else STAGING_X_GAP)
 
 
 func toggle_staging_layout() -> void:
 	staging_tiled = not staging_tiled
-	var container = EventBus.get_card_container()
-	var cards = _collect_staging_cards(container)
+	var cards = _collect_staging_cards()
 	_arrange_staging_cards(cards, TILE_X_GAP if staging_tiled else STAGING_X_GAP)
 
 

@@ -30,6 +30,12 @@ func _do_combine(root, top, hits: Array[StackRecipe], stack_cards: Array) -> voi
 	CardManager.combo_bar = bar
 
 	bar.attach_to(root, 3.0, func():
+		# 卡牌可能被外部机制销毁（如腐化计时器）→ 跳过合成
+		if not is_instance_valid(root) or not is_instance_valid(top):
+			CardManager.combo_bar = null
+			CardManager.combo_bottom = null
+			CardManager.combo_top = null
+			return
 		EventBus.mark_drop_consumed(chosen)
 		var container = EventBus.get_card_container()
 

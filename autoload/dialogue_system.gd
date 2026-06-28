@@ -17,8 +17,10 @@ func start(root, top_card) -> void:
 	var bar = CardManager.BarScene.instantiate()
 	bar.set_fill_color(Color(0.3, 0.5, 1.0))
 	bar.set_label("交谈中...")
+	CardManager.dialogue_bar = bar
 	bar.attach_to(root, 1.5, func():
 		bar.queue_free()
+		CardManager.dialogue_bar = null
 		# 进度条期间卡牌被拖走/断链 → 取消
 		if CardManager.dialogue_topic_card == null:
 			return
