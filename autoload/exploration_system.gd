@@ -4,7 +4,7 @@ extends Node
 func start(root, config) -> void:
 	if CardManager.combo_bar != null:
 		return
-	var stack_ids = _collect_stack_ids(root)
+	var stack_ids = CardManager.collect_stack_ids(root)
 	var ingredient_ids = stack_ids.duplicate()
 	ingredient_ids.erase(root.card_data.card_id)
 
@@ -19,6 +19,7 @@ func start(root, config) -> void:
 	CardManager.combo_bottom = root
 	CardManager.combo_top = null
 	CardManager.exploring = true
+	root.state = CardBase.CardState.EXPLORING
 	var bar = CardManager.BarScene.instantiate()
 	bar.set_fill_color(Color(0.3, 0.8, 0.3))
 	bar.set_label("探索中...")
@@ -37,6 +38,7 @@ func _on_exploration_complete(root, config, branch) -> void:
 
 	CardManager.exploring = false
 	CardManager.combo_bottom = null
+	root.state = CardBase.CardState.IDLE
 
 	var base_pos = root.global_position + Vector2(180, 0)
 	var drops_info = []
@@ -56,16 +58,13 @@ func _on_exploration_complete(root, config, branch) -> void:
 		var data = recipe.result_card
 		if data == null:
 			continue
-		if recipe.unique and EventBus.has_dropped_unique(data.card_id):
-			continue
-		if recipe.no_duplicate and EventBus.has_card_on_board(data.card_id):
-			continue
 		EventBus.mark_drop_consumed(recipe)
 		var count = randi_range(recipe.min_count, recipe.max_count)
 		for i in range(count):
 			var pos = base_pos + Vector2(i * 30, 0)
-			CardManager.spawn_card(data, pos, root)
-			drops_info.append(data.card_name)
+			var spawned = CardManager.spawn_card(data, pos, root)
+			if spawned:
+				drops_info.append(data.card_name)
 
 	var fatigue_spawned = false
 	if randf() < 0.25:
@@ -113,6 +112,7 @@ func _process_rest(root, config, branch) -> void:
 		return
 	CardManager.exploring = false
 	CardManager.combo_bottom = null
+	root.state = CardBase.CardState.IDLE
 	EventBus.exploration_requested.emit(config, {
 		"branch_name": branch.branch_name,
 		"drops": [],
@@ -133,15 +133,3 @@ static func _branch_matches(branch, ingredient_ids: Array) -> bool:
 		if not found:
 			return false
 	return true
-
-
-static func _collect_stack_ids(root: Control) -> Array[String]:
-	var ids: Array[String] = [root.card_data.card_id]
-	var queue: Array = root.get_children()
-	while queue.size() > 0:
-		var child = queue.pop_front()
-		if child is Control and child.is_in_group("cards"):
-			ids.append(child.card_data.card_id)
-			for gc in child.get_children():
-				queue.append(gc)
-	return ids

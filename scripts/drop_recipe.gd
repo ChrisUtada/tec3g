@@ -6,6 +6,4 @@ class_name DropRecipe extends Resource
 @export_range(0.0, 10.0, 0.1) var weight: float = 1.0
 @export_range(0, 100) var max_drops: int = 0
 @export var stackable: bool = false
-@export var no_duplicate: bool = false
-@export var unique: bool = false
 @export var label: String = ""

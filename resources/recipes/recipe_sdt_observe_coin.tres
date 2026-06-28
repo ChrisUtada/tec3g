@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StackRecipe" format=3]
+
+[ext_resource type="Script" path="res://scripts/stack_recipe.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/cards/LOGIC_observe.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/cards/ITEM_coin.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+group_key = "ITEM_sdt"
+target_cards = Array[CardData]([ExtResource("2")])
+result_card = ExtResource("3")
+min_count = 1
+max_count = 3
+weight = 0.4
+max_drops = 0
+destroys_target = false
+label = "因果律之币"

@@ -11,6 +11,7 @@ card_name = "初级调查员"
 description = "刚从调查员学院毕业的新人。虽然经验不足，但对异常事件有着敏锐的嗅觉。"
 card_type = 1
 tags = Array[String](["char", "investigator"])
+initial_zone = 2
 bg_color = Color(0.3, 0.25, 0.15, 1.0)
 border_color = Color(0.7, 0.55, 0.25, 1.0)
 icon = "🔍"

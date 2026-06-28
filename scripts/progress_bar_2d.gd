@@ -4,6 +4,7 @@ var _pending_color: Color = Color(0.3, 0.8, 0.3, 1)
 var _tween: Tween
 var _on_complete: Callable = func(): pass
 var _duration: float = 0.0
+var _remaining_ratio: float = 1.0
 
 func _ready():
 	$Fill.color = _pending_color
@@ -54,17 +55,18 @@ func _start_tween(duration: float, auto_free: bool) -> void:
 
 func pause() -> void:
 	if _tween and _tween.is_valid():
+		if size.x > 0:
+			_remaining_ratio = 1.0 - ($Fill.size.x / size.x)
 		_tween.kill()
 		_tween = null
 
 func resume() -> void:
 	if _tween:
 		return
-	var remaining = 1.0 - ($Fill.size.x / size.x)
-	if remaining <= 0.001:
+	if _remaining_ratio <= 0.001:
 		_on_complete.call()
 		return
-	_start_tween(_duration * remaining, false)
+	_start_tween(_duration * _remaining_ratio, false)
 
 func cancel() -> void:
 	if _tween and _tween.is_valid():

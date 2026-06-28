@@ -8,6 +8,10 @@ func start(root, top_card) -> void:
 	if config == null:
 		return
 	CardManager.dialogue_topic_card = top_card
+	CardManager.dialogue_root_card = root
+	root.state = CardBase.CardState.IN_DIALOGUE
+	if top_card:
+		top_card.state = CardBase.CardState.IN_DIALOGUE
 
 	# 进度条前置，避免瞬间弹窗
 	var bar = CardManager.BarScene.instantiate()

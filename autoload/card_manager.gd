@@ -5,11 +5,13 @@ var combo_bottom = null
 var combo_top = null
 var exploring := false
 var dialogue_topic_card = null
+var dialogue_root_card = null
 var staging_tiled := false
 var obs_bar = null
 var obs_target = null
 var obs_card = null
 var open_panels: Dictionary = {}
+var _per_game_spawned: Dictionary = {}  # card_id -> true, tracks UNIQUE_PER_GAME spawns
 
 const STAGING_Y := 820
 const STAGING_X_GAP := 40
@@ -24,6 +26,52 @@ const CardBaseScene = preload("res://scenes/cards/card_base.tscn")
 var _staging_bar: ColorRect
 var _staging_scrollbar: HScrollBar
 var _staging_scroll_offset := 0.0
+
+
+# ── Pending Operation Lifecycle ──
+
+func cancel_combination() -> void:
+	if combo_bar:
+		combo_bar.cancel()
+	combo_bar = null
+	combo_bottom = null
+	combo_top = null
+	exploring = false
+
+
+func cancel_observation() -> void:
+	if obs_bar:
+		obs_bar.cancel()
+	obs_bar = null
+	obs_target = null
+	obs_card = null
+
+
+func cancel_dialogue() -> void:
+	if is_instance_valid(dialogue_root_card):
+		dialogue_root_card.state = CardBase.CardState.IDLE
+	if is_instance_valid(dialogue_topic_card):
+		dialogue_topic_card.state = CardBase.CardState.IDLE
+	dialogue_topic_card = null
+	dialogue_root_card = null
+
+
+func cancel_all_pending() -> void:
+	cancel_combination()
+	cancel_observation()
+	cancel_dialogue()
+
+
+func is_combo_in_progress() -> bool:
+	return combo_bar != null
+
+
+func is_dialogue_in_progress() -> bool:
+	return dialogue_topic_card != null
+
+
+func is_panel_open(card_id: String) -> bool:
+	return open_panels.has(card_id)
 
 
 func _ready():
@@ -85,44 +133,38 @@ func _on_staging_scrolled(value: float) -> void:
 
 func _on_card_broken(card):
 	if exploring:
-		if combo_bar:
-			combo_bar.cancel()
-		combo_bar = null
-		combo_bottom = null
-		combo_top = null
-		exploring = false
+		cancel_combination()
 		return
 	if combo_bar and card == combo_top:
-		combo_bar.cancel()
-		combo_bar = null
-		combo_bottom = null
-		combo_top = null
+		cancel_combination()
 	if obs_bar and card == obs_card:
-		obs_bar.cancel()
-		obs_bar = null
-		obs_target = null
-		obs_card = null
+		cancel_observation()
 
 
 func _on_card_stacked(bottom, top):
 	if bottom.card_data == null or top.card_data == null:
 		return
+	# 1. 观察：top 是 LOGIC_observe 且 bottom 有多媒体内容 → 观察系统
 	if top.card_data.card_id == "LOGIC_observe" and bottom.card_data.multimedia_content:
-		if not open_panels.has(bottom.card_data.card_id):
+		if not is_panel_open(bottom.card_data.card_id):
 			ObservationSystem.start(bottom, top)
 		return
 	var root = _stack_root(bottom)
 	if not root.card_data:
 		return
+	# 2. 场景卡不可堆叠（双击进入，不走堆叠路由）
 	if root is CardScene:
 		return
+	# 3. 探索：root 有注册的探索配置 → 探索系统
 	var exp_config = SceneConfigRegistry.get_config(root.card_data.card_id)
 	if exp_config:
 		ExplorationSystem.start(root, exp_config)
 		return
+	# 4. 对话：root 有对话配置 → 对话系统
 	if root.card_data.dialogue_config:
 		DialogueSystem.start(root, top)
 		return
+	# 5. 兜底：组合系统（配方匹配）
 	CombinationSystem.start(root, top)
 
 
@@ -131,7 +173,7 @@ func _on_spawn_card_requested(data: CardData, global_position: Vector2) -> void:
 
 
 func _on_dialogue_closed() -> void:
-	dialogue_topic_card = null
+	cancel_dialogue()
 
 
 func _on_staging_arrange_requested(dropped_card, was_in_staging: bool) -> void:
@@ -216,7 +258,24 @@ func toggle_staging_layout() -> void:
 	_arrange_staging_cards(cards, TILE_X_GAP if staging_tiled else STAGING_X_GAP)
 
 
+func can_spawn(data: CardData) -> bool:
+	match data.spawn_policy:
+		CardData.SpawnPolicy.UNIQUE_ON_BOARD:
+			return not EventBus.has_card_on_board(data.card_id)
+		CardData.SpawnPolicy.UNIQUE_PER_GAME:
+			return not _per_game_spawned.has(data.card_id)
+	return true
+
+
+func reset_spawn_tracking() -> void:
+	_per_game_spawned.clear()
+
+
 func spawn_card(data: CardData, global_position: Vector2, source: Control = null) -> Control:
+	if not can_spawn(data):
+		return null
+	if data.spawn_policy == CardData.SpawnPolicy.UNIQUE_PER_GAME:
+		_per_game_spawned[data.card_id] = true
 	var scene: PackedScene = data.get_card_scene()
 	if not scene:
 		scene = CardSceneScene if data.card_type == CardData.CardType.SCENE else CardBaseScene
@@ -263,3 +322,15 @@ static func _stack_root(card: Control) -> Control:
 	if parent is Control and parent.is_in_group("cards"):
 		return _stack_root(parent)
 	return card
+
+
+static func collect_stack_ids(root: Control) -> Array[String]:
+	var ids: Array[String] = [root.card_data.card_id]
+	var queue: Array = root.get_children()
+	while queue.size() > 0:
+		var child = queue.pop_front()
+		if child is Control and child.is_in_group("cards"):
+			ids.append(child.card_data.card_id)
+			for gc in child.get_children():
+				queue.append(gc)
+	return ids

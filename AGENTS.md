@@ -7,6 +7,20 @@
 - Corruption timer null-safety — `corruption_component.gd` checks `is_inside_tree()` and scene validity
 - Scene null checks in `PanelManager._close_group()` and `ObservationSystem`
 - `STAGING_Y` deduplicated in `card_manager.gd`
+- CardManager state encapsulation — added `cancel_combination()`, `cancel_observation()`, `cancel_dialogue()`, `cancel_all_pending()` lifecycle methods; `is_combo_in_progress()`, `is_dialogue_in_progress()`, `is_panel_open()` query helpers. `SceneDesktopManager._cleanup_card_manager_state()` reduced from 12 lines of direct field manipulation to single `cancel_all_pending()` call. `CardManager._on_card_broken()` uses cancel methods instead of scattered cleanup.
+- `collect_stack_ids()` deduplicated — moved from `combination_system.gd` and `exploration_system.gd` (identical static methods) to `CardManager.collect_stack_ids()` public static method alongside `_stack_root()`
+- `_pressed_self` safety valve in `card_base.gd` `_process()` — resets stuck press state when mouse button is no longer held (e.g. card reparented mid-press). Prevents "ghost drag" on next click.
+- `register_card` dedup — `_enter_tree()` now self-resolves `_container` and is the sole registration point (paired with `_exit_tree()` unregister). Removed duplicate `register_card` call from `_ready()`. Eliminates stale entry in `_all_cards` array.
+- Progress bar `resume()` — `pause()` now records `_remaining_ratio` at kill time; `resume()` uses recorded value instead of recalculating from visual width. Safe against size changes during pause.
+- `_on_card_stacked` routing priority — documented 5-step dispatch chain: observe → scene guard → explore → dialogue → combination fallback.
+- `_scene_bg_overlay` insertion — uses `bg.get_index() + 1` instead of hardcoded index 1, resilient to main.tscn node order changes.
+- `class_name CardBase` added to `card_base.gd` — enables `is CardBase` type checks; `CardScene` inherits via path reference, unaffected.
+- Card registry multi-instance — `EventBus._cards_by_id` changed from `card_id -> card` to `card_id -> Array[card]`, preventing silent overwrite when multiple cards share the same ID. `get_card_by_id()` returns latest instance (backward compatible), new `get_all_cards_by_id()` returns all instances. `unregister_card()` correctly removes single instance from array, only erases key when empty.
+- Card instance ID — `CardBase` has `static var _next_instance_id` counter and `var instance_id: int`, assigned in `_ready()` (stable through reparenting). Sidebar and main.gd log messages now include `[#id]` suffix for debugging.
+- Spawn Policy centralization — `CardData.SpawnPolicy` enum (`UNLIMITED`, `UNIQUE_ON_BOARD`, `UNIQUE_PER_GAME`) replaces dead fields `allow_duplicate`/`drop_once`. `CardManager.can_spawn(data)` gates all `spawn_card()` calls; `_per_game_spawned` dict tracks per-session limits; `reset_spawn_tracking()` clears it for new game. Callers in `combination_system.gd` and `exploration_system.gd` guard against null return (spawn rejected → skip emit/log).
+- Data-driven initial spawn — `CardData.InitialZone` enum (`NONE`, `BOARD`, `STAGING`) + `initial_position: Vector2` on CardData. `main.gd._spawn_initial_cards()` scans `resources/cards/` directory, spawns cards with `initial_zone != NONE` at their configured positions. No more hardcoded preload lists. 10 cards configured: SCENE_plant_hunter on BOARD at (1220,80), 9 others in STAGING.
+- DropRecipe → SpawnPolicy migration — `unique`/`no_duplicate` fields removed from `DropRecipe`; spawn gating now handled by `CardData.spawn_policy` on result cards. `ITEM_shadow.tres` set to `UNIQUE_PER_GAME`. `EventBus.can_drop()` simplified (removed `unique` special case), `has_dropped_unique()` removed. `exploration_system.gd` no longer checks `recipe.unique`/`recipe.no_duplicate`.
+- Card state tracking — `CardBase.CardState` enum (`IDLE`, `DRAGGING`, `STACKED`, `STAGING`, `EXPLORING`, `IN_DIALOGUE`) + `var state` on CardBase. Transitions: `start_drag()`→DRAGGING, `_end_drag()`→IDLE, `_try_stack()`→STACKED, `set_staging_mode()`→STAGING/IDLE, `exploration_system`→EXPLORING/IDLE, `dialogue_system`→IN_DIALOGUE. `CardManager` tracks `dialogue_root_card` for cleanup; `cancel_dialogue()` resets both root and topic states.
 
 ### CardBase Refactor (scripts/card_base/)
 - `visual_component.gd` — StyleBoxFlat, labels, art, icon (620 lines → component)
@@ -52,6 +66,28 @@
 
 ### Scene Desktop
 - `_flatten_stack` changed to recursive traversal for nested card stacks when moving all cards to staging
+
+### Data-Driven SceneConfigRegistry
+- `scene_config_registry.gd` — replaced hardcoded factory functions with `@export var configs: Array[ExplorationConfig]`
+- `scene_config_registry.tscn` — new scene-based autoload (replaces `.gd` autoload), enables inspector editing
+- `resources/exploration/` — directory for individual ExplorationConfig `.tres` files
+  - `SCENE_plant_hunter.tres` — 2 branches (采集→plant, 调查→shadow), layout_plant_hunter
+  - `SCENE_library.tres` — 1 branch (研读→+10 favorability), layout_library
+  - `LOGIC_rest.tres` — rest_mode=true, 1 branch (休息→fatigue card)
+- Adding new scenes: create ExplorationConfig `.tres` → drag into registry inspector array
+
+### Data-Driven RecipeRegistry
+- `recipe_registry.gd` — replaced hardcoded `_register()` + `preload()` with `@export var recipes: Array[StackRecipe]`
+- `recipe_registry.tscn` — new scene-based autoload (replaces `.gd` autoload), enables inspector editing
+- `stack_recipe.gd` — added `group_key: String` field for registry grouping (previously implicit in `_register(key, ...)` call)
+- `resources/recipes/` — directory for individual StackRecipe `.tres` files
+  - `recipe_sdt_observe_peek.tres` — group_key=ITEM_sdt, LOGIC_observe→ITEM_peek_truth (w:1.0, unlimited)
+  - `recipe_sdt_observe_coin.tres` — group_key=ITEM_sdt, LOGIC_observe→ITEM_coin (w:0.4, unlimited)
+  - `recipe_sdt_coin_plant.tres` — group_key=ITEM_sdt, ITEM_coin→ITEM_plant (w:1.0, 1 drop)
+  - `recipe_sdt_peek_corrupt.tres` — group_key=ITEM_sdt, ITEM_peek_truth→ITEM_corrupted_sample (w:1.0, 1 drop)
+  - `recipe_sdt_shadow_purify.tres` — group_key=ITEM_sdt, ITEM_shadow→destroys target (w:1.0, unlimited)
+  - `recipe_capture_zhusui.tres` — group_key=LOGIC_capture, CHAR_zhu_sui→ITEM_handwritten_note (w:1.0, 1 drop)
+- Adding new recipes: create StackRecipe `.tres` → set group_key → drag into registry inspector array
 
 ### Dialogue System — Redesigned as AVG-Style Bottom Panel
 - `scenes/dialogue/dialogue_panel.tscn` — full-screen overlay with bottom-anchored text box

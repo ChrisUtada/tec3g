@@ -18,8 +18,8 @@ config/features=PackedStringArray("4.7", "Forward Plus")
 [autoload]
 
 EventBus="*res://autoload/event_bus.gd"
-SceneConfigRegistry="*res://autoload/scene_config_registry.gd"
-RecipeRegistry="*res://autoload/recipe_registry.gd"
+SceneConfigRegistry="*res://autoload/scene_config_registry.tscn"
+RecipeRegistry="*res://autoload/recipe_registry.tscn"
 CardManager="*res://autoload/card_manager.gd"
 ExplorationSystem="*res://autoload/exploration_system.gd"
 DialogueSystem="*res://autoload/dialogue_system.gd"

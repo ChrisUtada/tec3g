@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="ExplorationConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/exploration/exploration_config.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/exploration/slot_branch_recipe.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/panel_slot_config.gd" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/scene_layouts/layout_library.tscn" id="4"]
+
+[sub_resource type="Resource" id="slot_1"]
+script = ExtResource("3")
+accept_card_ids = Array[String](["CHAR_zhu_sui"])
+hint = "需要朱穗"
+
+[sub_resource type="Resource" id="branch_1"]
+script = ExtResource("2")
+branch_name = "研读"
+required_cards = Array[PanelSlotConfig]([SubResource("slot_1")])
+add_favorability = 10
+favorability_target_slot = 0
+
+[resource]
+script = ExtResource("1")
+scene_card_id = "SCENE_library"
+scene_name = "图书馆"
+scene_description = "和朱穗一起在图书馆中研读典籍。"
+explore_duration = 5.0
+branch_recipes = Array[SlotBranchRecipe]([SubResource("branch_1")])
+layout_scene = ExtResource("4")

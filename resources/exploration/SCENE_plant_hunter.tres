@@ -1,0 +1,66 @@
+[gd_resource type="Resource" script_class="ExplorationConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/exploration/exploration_config.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/exploration/slot_branch_recipe.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/panel_slot_config.gd" id="3"]
+[ext_resource type="Script" path="res://scripts/drop_recipe.gd" id="4"]
+[ext_resource type="Resource" path="res://resources/cards/ITEM_plant.tres" id="5"]
+[ext_resource type="Resource" path="res://resources/cards/ITEM_shadow.tres" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/scene_layouts/layout_plant_hunter.tscn" id="7"]
+
+[sub_resource type="Resource" id="slot_1"]
+script = ExtResource("3")
+accept_card_ids = Array[String](["ITEM_sdt"])
+hint = "需要手电筒"
+
+[sub_resource type="Resource" id="slot_2"]
+script = ExtResource("3")
+accept_card_ids = Array[String](["ITEM_coin"])
+hint = "需要因果律"
+
+[sub_resource type="Resource" id="slot_3"]
+script = ExtResource("3")
+accept_card_ids = Array[String](["CHAR_junior_investigator"])
+hint = "需要初级调查员"
+
+[sub_resource type="Resource" id="drop_1"]
+script = ExtResource("4")
+result_card = ExtResource("5")
+min_count = 1
+max_count = 1
+weight = 1.0
+max_drops = 1
+stackable = false
+label = "采集植物"
+
+[sub_resource type="Resource" id="drop_2"]
+script = ExtResource("4")
+result_card = ExtResource("6")
+min_count = 1
+max_count = 1
+weight = 1.0
+max_drops = 0
+stackable = false
+label = "黑影"
+
+[sub_resource type="Resource" id="branch_1"]
+script = ExtResource("2")
+branch_name = "采集"
+required_cards = Array[PanelSlotConfig]([SubResource("slot_1"), SubResource("slot_2")])
+result_recipes = Array[DropRecipe]([SubResource("drop_1")])
+
+[sub_resource type="Resource" id="branch_2"]
+script = ExtResource("2")
+branch_name = "调查"
+required_cards = Array[PanelSlotConfig]([SubResource("slot_3")])
+result_recipes = Array[DropRecipe]([SubResource("drop_2")])
+
+[resource]
+script = ExtResource("1")
+scene_card_id = "SCENE_plant_hunter"
+scene_name = "植物学家的花园"
+scene_description = "由 TEC 引导进入的异界花园。植物学家在此失踪。
+放入合适的卡牌探索隐藏的秘密。"
+explore_duration = 3.0
+branch_recipes = Array[SlotBranchRecipe]([SubResource("branch_1"), SubResource("branch_2")])
+layout_scene = ExtResource("7")

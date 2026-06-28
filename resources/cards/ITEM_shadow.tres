@@ -8,6 +8,7 @@ card_id = "ITEM_shadow"
 card_name = "黑影"
 description = "一个神秘的黑影，似乎在窥视着什么。5秒后将消失。"
 tags = Array[String](["shadow"])
+spawn_policy = 2
 bg_color = Color(0.05, 0.05, 0.1, 1)
 border_color = Color(0.3, 0.2, 0.5, 1)
 icon = "👤"

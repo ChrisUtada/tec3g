@@ -2,7 +2,7 @@ extends Node
 
 
 func start(root, top) -> void:
-	var stack_ids = _collect_stack_ids(root)
+	var stack_ids = CardManager.collect_stack_ids(root)
 	var hits: Array[StackRecipe] = []
 	for r in RecipeRegistry.get_recipes(root.card_data.card_id):
 		if _recipe_matches_stack(r, stack_ids) and EventBus.can_drop(r):
@@ -52,24 +52,13 @@ func _do_combine(root, top, hits: Array[StackRecipe]) -> void:
 		for i in range(count):
 			var pos = base_pos + Vector2(i * 30, 0)
 			var new_card = CardManager.spawn_card(data, pos)
-			EventBus.card_combined.emit(root, top, new_card)
+			if new_card:
+				EventBus.card_combined.emit(root, top, new_card)
 		bar.queue_free()
 		CardManager.combo_bar = null
 		CardManager.combo_bottom = null
 		CardManager.combo_top = null
 	)
-
-
-static func _collect_stack_ids(root: Control) -> Array[String]:
-	var ids: Array[String] = [root.card_data.card_id]
-	var queue: Array = root.get_children()
-	while queue.size() > 0:
-		var child = queue.pop_front()
-		if child is Control and child.is_in_group("cards"):
-			ids.append(child.card_data.card_id)
-			for gc in child.get_children():
-				queue.append(gc)
-	return ids
 
 
 static func _recipe_matches_stack(r: StackRecipe, stack_ids: Array[String]) -> bool:

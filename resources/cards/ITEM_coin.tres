@@ -8,6 +8,7 @@ card_id = "ITEM_coin"
 card_name = "因果律"
 description = "可用于改变事件概率或购买特殊物品的因果货币。"
 tags = Array[String](["item", "currency"])
+initial_zone = 2
 consumable = true
 bg_color = Color(0.8, 0.7, 0.15, 1)
 border_color = Color(0.9, 0.8, 0.3, 1)

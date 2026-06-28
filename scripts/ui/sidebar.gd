@@ -25,10 +25,10 @@ func add_news(text: String) -> void:
 	scroll.scroll_vertical = scroll.get_v_scroll_bar().max_value
 
 func _on_card_stacked(bottom, top):
-	add_news("%s 堆叠到 %s 上" % [top.card_data.card_name, bottom.card_data.card_name])
+	add_news("%s[#%d] 堆叠到 %s[#%d] 上" % [top.card_data.card_name, top.instance_id, bottom.card_data.card_name, bottom.instance_id])
 
 func _on_card_combined(bottom, top, result):
-	add_news("合成完成: %s" % result.card_data.card_name)
+	add_news("合成完成: %s[#%d]" % [result.card_data.card_name, result.instance_id])
 
 func _on_exploration(config, _result):
 	add_news("进入探索: %s" % config.scene_name)

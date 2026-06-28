@@ -9,6 +9,7 @@ card_name = "休息处"
 description = "让调查员在此休息，消除疲劳。\n双击打开休息面板。"
 card_type = 3
 tags = Array[String](["logic", "rest"])
+initial_zone = 2
 bg_color = Color(0.15, 0.3, 0.2, 1)
 border_color = Color(0.3, 0.6, 0.4, 1)
 icon = "🏕️"

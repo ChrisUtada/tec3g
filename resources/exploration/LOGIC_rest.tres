@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="ExplorationConfig" format=3]
+
+[ext_resource type="Script" path="res://scripts/exploration/exploration_config.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/exploration/slot_branch_recipe.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/panel_slot_config.gd" id="3"]
+
+[sub_resource type="Resource" id="slot_1"]
+script = ExtResource("3")
+accept_card_ids = Array[String](["ITEM_fatigue"])
+hint = "需要疲劳卡"
+
+[sub_resource type="Resource" id="branch_1"]
+script = ExtResource("2")
+branch_name = "休息"
+required_cards = Array[PanelSlotConfig]([SubResource("slot_1")])
+
+[resource]
+script = ExtResource("1")
+scene_card_id = "LOGIC_rest"
+scene_name = "休息处"
+scene_description = "消除疲劳，恢复状态。"
+explore_duration = 5.0
+rest_mode = true
+branch_recipes = Array[SlotBranchRecipe]([SubResource("branch_1")])

@@ -87,18 +87,7 @@ func exit_scene() -> void:
 
 
 func _cleanup_card_manager_state() -> void:
-	if CardManager.exploring and CardManager.combo_bar:
-		CardManager.combo_bar.cancel()
-	CardManager.combo_bar = null
-	CardManager.combo_bottom = null
-	CardManager.combo_top = null
-	CardManager.exploring = false
-	CardManager.dialogue_topic_card = null
-	if CardManager.obs_bar:
-		CardManager.obs_bar.cancel()
-	CardManager.obs_bar = null
-	CardManager.obs_target = null
-	CardManager.obs_card = null
+	CardManager.cancel_all_pending()
 
 
 func _save_main_desktop(container: Control) -> void:
@@ -160,7 +149,9 @@ func _add_scene_bg_overlay(game_board: Control) -> void:
 		tex.mouse_filter = Control.MOUSE_FILTER_PASS
 		_scene_bg_overlay.add_child(tex)
 	game_board.add_child(_scene_bg_overlay)
-	game_board.move_child(_scene_bg_overlay, 1)
+	var bg = game_board.get_node_or_null("Background")
+	var insert_idx = bg.get_index() + 1 if bg else 1
+	game_board.move_child(_scene_bg_overlay, insert_idx)
 
 
 func _remove_scene_bg_overlay() -> void:

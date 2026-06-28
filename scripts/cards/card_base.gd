@@ -1,5 +1,12 @@
+class_name CardBase
 extends Control
 
+enum CardState { IDLE, DRAGGING, STACKED, STAGING, EXPLORING, IN_DIALOGUE }
+
+static var _next_instance_id: int = 0
+
+var instance_id: int = -1
+var state: CardState = CardState.IDLE
 var card_data: CardData : set = set_card_data
 var spawn_source: Control
 
@@ -28,9 +35,10 @@ var _staging_mode := false
 var _CardSceneScript = load("res://scripts/cards/card_scene.gd")
 
 func _ready():
+	instance_id = _next_instance_id
+	_next_instance_id += 1
 	_container = EventBus.get_card_container()
 	add_to_group("cards")
-	EventBus.register_card(self)
 	EventBus.favorability_changed.connect(_on_favorability_changed)
 	if card_data:
 		$Visual.refresh(card_data)
@@ -39,10 +47,13 @@ func _ready():
 	_try_start_corruption()
 
 func _enter_tree():
+	if _container == null:
+		_container = EventBus.get_card_container()
 	if card_data == null or _container == null:
 		return
 	EventBus.register_card(self)
-	$Visual.refresh(card_data)
+	if is_node_ready() and card_data:
+		$Visual.refresh(card_data)
 
 func _exit_tree():
 	EventBus.unregister_card(self)
@@ -161,6 +172,11 @@ func _input(event):
 			_release_effect()
 
 func _process(delta):
+	# Safety valve: _pressed_self stuck without mouse held (e.g. card reparented mid-press)
+	if _pressed_self and not is_dragging and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		_pressed_self = false
+		_release_effect()
+		return
 	if _pressed_self and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and not is_dragging:
 		var dist = get_global_mouse_position().distance_to(_drag_start_pos)
 		if dist > MIN_DRAG_DISTANCE:
@@ -190,6 +206,7 @@ func start_drag() -> void:
 	if global_position.y >= CardManager.STAGING_Y:
 		global_position.y = CardManager.STAGING_Y - size.y - 20
 	is_dragging = true
+	state = CardState.DRAGGING
 	_has_moved = false
 	_drag_start_pos = global_position
 	_prev_z_index = z_index
@@ -207,6 +224,7 @@ func _end_drag():
 	if not is_dragging:
 		return
 	is_dragging = false
+	state = CardState.IDLE
 	z_index = _prev_z_index
 	scale = Vector2.ONE
 	hover_overlay.color.a = 0.0
@@ -249,6 +267,7 @@ func _board_from_staging() -> void:
 
 func set_staging_mode(enabled: bool) -> void:
 	_staging_mode = enabled
+	state = CardState.STAGING if enabled else CardState.IDLE
 	if enabled:
 		$Corruption.pause()
 
@@ -278,6 +297,7 @@ func _try_stack():
 			var target = _top_of_stack(card)
 			reparent(target)
 			position = STACK_OFFSET
+			state = CardState.STACKED
 			EventBus.card_stacked.emit(target, self)
 			return
 
