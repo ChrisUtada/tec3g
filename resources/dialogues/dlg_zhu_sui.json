@@ -1,7 +1,6 @@
 {
   "topics": {
-	"_default": "topic_curious",
-	"CHAR_junior_investigator": "where_to_go"
+	"_default": "topic_curious"
   },
   "start": {
 	"speaker": "CHAR_zhu_sui",
@@ -43,11 +42,6 @@
 	  { "type": "favorability", "target_id": "CHAR_zhu_sui", "amount": 10 },
 	  { "type": "spawn_card", "card_id": "SCENE_library" }
 	],
-	"next_node_id": "lib_investigator_reply"
-  },
-  "lib_investigator_reply": {
-	"speaker": "CHAR_junior_investigator",
-	"text": "图书馆？那地方早就被封了。\n听说里面有……不干净的东西。",
 	"next_node_id": "lib_zhu_reply"
   },
   "lib_zhu_reply": {
@@ -57,11 +51,6 @@
   "tec_hq": {
 	"speaker": "CHAR_zhu_sui",
 	"text": "下次吧。",
-	"next_node_id": "tec_investigator_reply"
-  },
-  "tec_investigator_reply": {
-	"speaker": "CHAR_junior_investigator",
-	"text": "等等，TEC总部？我听说过那个地方……\n据说那里有一个巨大的熔炉。",
 	"next_node_id": "tec_zhu_reply"
   },
   "tec_zhu_reply": {

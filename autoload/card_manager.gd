@@ -145,23 +145,24 @@ func _on_card_broken(card):
 func _on_card_stacked(bottom, top):
 	if bottom.card_data == null or top.card_data == null:
 		return
-	# 1. 观察：top 是 LOGIC_observe 且 bottom 有多媒体内容 → 观察系统
-	if top.card_data.card_id == "LOGIC_observe" and bottom.card_data.multimedia_content:
-		if not is_panel_open(bottom.card_data.card_id):
-			ObservationSystem.start(bottom, top)
-		return
 	var root = _stack_root(bottom)
 	if not root.card_data:
 		return
-	# 2. 场景卡不可堆叠（双击进入，不走堆叠路由）
+	# 1. 场景卡不可堆叠（双击进入，不走堆叠路由）
 	if root is CardScene:
 		return
-	# 3. 对话：root 有对话配置 → 对话系统
-	if root.card_data.dialogue_config:
-		DialogueSystem.start(root, top)
+	# 2. 观察：LOGIC_observe 叠到有多媒体内容的卡上（严格：堆叠只有 root + observe）
+	if top.card_data.card_id == "LOGIC_observe" and bottom.card_data.multimedia_content:
+		if collect_stack_ids(root).size() == 2 and not is_panel_open(bottom.card_data.card_id):
+			ObservationSystem.start(bottom, top)
 		return
-	# 4. 兜底：组合系统（配方匹配）
-	CombinationSystem.start(root, top)
+	# 3. 组合系统（配方严格匹配：捕获、合成等）
+	if CombinationSystem.start(root, top):
+		return
+	# 4. 对话 fallback：root 有对话配置，且堆叠严格只有 root + top
+	var _dlg_stack_ids = collect_stack_ids(root)
+	if root.card_data.dialogue_config and _dlg_stack_ids.size() == 2:
+		DialogueSystem.start(root, top)
 
 
 func _on_spawn_card_requested(data: CardData, global_position: Vector2) -> void:

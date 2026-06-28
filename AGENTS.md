@@ -12,7 +12,7 @@
 - `_pressed_self` safety valve in `card_base.gd` `_process()` — resets stuck press state when mouse button is no longer held (e.g. card reparented mid-press). Prevents "ghost drag" on next click.
 - `register_card` dedup — `_enter_tree()` now self-resolves `_container` and is the sole registration point (paired with `_exit_tree()` unregister). Removed duplicate `register_card` call from `_ready()`. Eliminates stale entry in `_all_cards` array.
 - Progress bar `resume()` — `pause()` now records `_remaining_ratio` at kill time; `resume()` uses recorded value instead of recalculating from visual width. Safe against size changes during pause.
-- `_on_card_stacked` routing priority — documented 4-step dispatch chain: observe → scene guard → dialogue → combination fallback.
+- `_on_card_stacked` routing priority — documented 4-step dispatch chain: scene guard → observation (LOGIC_observe + multimedia) → combination (strict recipe match, returns bool) → dialogue fallback. Recipes require exact stack composition (no extra cards).
 - `_scene_bg_overlay` insertion — uses `bg.get_index() + 1` instead of hardcoded index 1, resilient to main.tscn node order changes.
 - `class_name CardBase` added to `card_base.gd` — enables `is CardBase` type checks; `CardScene` inherits via path reference, unaffected.
 - Card registry multi-instance — `EventBus._cards_by_id` changed from `card_id -> card` to `card_id -> Array[card]`, preventing silent overwrite when multiple cards share the same ID. `get_card_by_id()` returns latest instance (backward compatible), new `get_all_cards_by_id()` returns all instances. `unregister_card()` correctly removes single instance from array, only erases key when empty.
@@ -86,7 +86,7 @@
 - Deleted files: `exploration_system.gd`, `scene_config_registry.gd/.tscn`, `exploration_config.gd`, `slot_branch_recipe.gd`, `panel_slot_config.gd`, `drop_recipe.gd`, `exploration_panel.gd/.tscn`, 3 exploration `.tres` configs
 - `CardData.layout_scene` replaces `ExplorationConfig.layout_scene`; `SceneDesktopManager` checks `card_data.layout_scene` instead of `SceneConfigRegistry.get_config()`
 - Exploration branches migrated to `StackRecipe` `.tres`: `recipe_scene_ph_gather.tres` (采集: sdt+coin→plant, 1次), `recipe_scene_ph_investigate.tres` (调查: junior_investigator+sdt→shadow)
-- Routing chain simplified: observe → scene guard → dialogue → combination (4 steps, was 5)
+- Routing chain: scene guard → observation (LOGIC_observe + multimedia) → combination (strict recipe match, returns bool) → dialogue fallback (4 steps). Recipes require exact stack composition.
 - `CardState.EXPLORING` removed from enum; `CardManager.exploring` variable removed
 - `EventBus.exploration_requested` signal removed; `PanelManager` no longer handles exploration panels
 - `RecipeRegistry` converted from scene-based autoload (inspector array) to script-based autoload with `DirAccess` directory scanning of `resources/recipes/`; `recipe_registry.tscn` deleted; added `reload()` method

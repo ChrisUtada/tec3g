@@ -1,11 +1,13 @@
 extends Node
 
 
-func start(root, top) -> void:
+func start(root, top) -> bool:
 	var stack_ids = CardManager.collect_stack_ids(root)
 	var stack_cards = _collect_stack_cards(root)
 	var hits: Array[StackRecipe] = []
 	for r in RecipeRegistry.get_recipes(root.card_data.card_id):
+		if r.top_only:
+			continue
 		if _recipe_matches_stack(r, stack_ids, stack_cards) and EventBus.can_drop(r):
 			hits.append(r)
 	if hits.is_empty():
@@ -13,8 +15,9 @@ func start(root, top) -> void:
 			if _recipe_matches_stack(r, stack_ids, stack_cards) and EventBus.can_drop(r):
 				hits.append(r)
 	if hits.is_empty():
-		return
+		return false
 	_do_combine(root, top, hits, stack_cards)
+	return true
 
 
 func _do_combine(root, top, hits: Array[StackRecipe], stack_cards: Array) -> void:
@@ -79,9 +82,17 @@ func _do_combine(root, top, hits: Array[StackRecipe], stack_cards: Array) -> voi
 # ── Recipe Matching ──
 
 static func _recipe_matches_stack(r: StackRecipe, stack_ids: Array[String], stack_cards: Array) -> bool:
-	# Target cards must all be present in the stack
+	# 严格匹配：堆叠总数必须恰好等于 root + target_cards，多一张都不行
+	if stack_ids.size() != 1 + r.target_cards.size():
+		return false
+	# 每个 target card_id 必须在堆叠中出现足够次数
+	var expected: Dictionary = {}
 	for tc in r.target_cards:
-		if tc == null or tc.card_id not in stack_ids:
+		if tc == null:
+			return false
+		expected[tc.card_id] = expected.get(tc.card_id, 0) + 1
+	for card_id in expected:
+		if stack_ids.count(card_id) < expected[card_id]:
 			return false
 	# Tag condition: at least one card in the stack must carry each required tag
 	for tag in r.require_tags:

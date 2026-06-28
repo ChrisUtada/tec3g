@@ -21,6 +21,9 @@ class_name StackRecipe extends Resource
 ## 条件：堆叠链中 CHAR 卡牌的好感度须 ≥ 此值
 @export var require_favorability_min: int = 0
 
+## 仅当 group_key 卡牌在堆叠顶部（top）时才触发，root 匹配时跳过
+@export var top_only: bool = false
+
 ## 连锁标识：同一 chain_id 的配方属于同一条进化/阶段链（元数据，用于总览分组）
 @export var chain_id: String = ""
 
