@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="StackRecipe" format=3]
+
+[ext_resource type="Script" uid="uid://e3xq336dh163" path="res://scripts/stack_recipe.gd" id="1"]
+[ext_resource type="Resource" uid="uid://brpx0gyrhq3sj" path="res://resources/cards/ITEM_coin.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/cards/ITEM_plant.tres" id="3"]
+
+[resource]
+script = ExtResource("1")
+group_key = "ITEM_sdt"
+target_cards = Array[CardData]([ExtResource("2")])
+result_card = ExtResource("3")
+min_count = 1
+max_count = 1
+weight = 1.0
+max_drops = 1
+destroys_target = false
+label = "采集植物"

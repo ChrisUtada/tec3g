@@ -32,16 +32,7 @@ enum InitialZone { NONE, BOARD, STAGING }
 @export var fatigue_trigger: bool = false
 @export var is_gift: bool = false
 @export var art: Texture2D = null
-@export var card_scene_path: String = ""
-var _card_scene_cache: PackedScene = null
-
-func get_card_scene() -> PackedScene:
-	if _card_scene_cache:
-		return _card_scene_cache
-	if not card_scene_path.is_empty():
-		_card_scene_cache = load(card_scene_path)
-		return _card_scene_cache
-	return null
+@export var layout_scene: PackedScene = null
 
 @export var multimedia_content: MultimediaContent = null
 

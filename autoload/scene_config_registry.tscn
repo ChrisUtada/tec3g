@@ -1,10 +1,11 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://xrpjefc1g6ck"]
 
 [ext_resource type="Script" path="res://autoload/scene_config_registry.gd" id="1"]
 [ext_resource type="Resource" path="res://resources/exploration/SCENE_plant_hunter.tres" id="2"]
+[ext_resource type="Script" path="res://scripts/exploration/exploration_config.gd" id="2_h88ot"]
 [ext_resource type="Resource" path="res://resources/exploration/SCENE_library.tres" id="3"]
 [ext_resource type="Resource" path="res://resources/exploration/LOGIC_rest.tres" id="4"]
 
-[node name="SceneConfigRegistry" type="Node"]
+[node name="SceneConfigRegistry" type="Node" unique_id=281320334]
 script = ExtResource("1")
-configs = [ExtResource("2"), ExtResource("3"), ExtResource("4")]
+configs = Array[ExtResource("2_h88ot")]([ExtResource("2"), ExtResource("3"), ExtResource("4")])

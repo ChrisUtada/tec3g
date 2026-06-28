@@ -3,7 +3,6 @@ extends Node
 var combo_bar = null
 var combo_bottom = null
 var combo_top = null
-var exploring := false
 var dialogue_topic_card = null
 var dialogue_root_card = null
 var staging_tiled := false
@@ -36,7 +35,6 @@ func cancel_combination() -> void:
 	combo_bar = null
 	combo_bottom = null
 	combo_top = null
-	exploring = false
 
 
 func cancel_observation() -> void:
@@ -132,9 +130,6 @@ func _on_staging_scrolled(value: float) -> void:
 
 
 func _on_card_broken(card):
-	if exploring:
-		cancel_combination()
-		return
 	if combo_bar and card == combo_top:
 		cancel_combination()
 	if obs_bar and card == obs_card:
@@ -155,16 +150,11 @@ func _on_card_stacked(bottom, top):
 	# 2. 场景卡不可堆叠（双击进入，不走堆叠路由）
 	if root is CardScene:
 		return
-	# 3. 探索：root 有注册的探索配置 → 探索系统
-	var exp_config = SceneConfigRegistry.get_config(root.card_data.card_id)
-	if exp_config:
-		ExplorationSystem.start(root, exp_config)
-		return
-	# 4. 对话：root 有对话配置 → 对话系统
+	# 3. 对话：root 有对话配置 → 对话系统
 	if root.card_data.dialogue_config:
 		DialogueSystem.start(root, top)
 		return
-	# 5. 兜底：组合系统（配方匹配）
+	# 4. 兜底：组合系统（配方匹配）
 	CombinationSystem.start(root, top)
 
 
@@ -276,9 +266,7 @@ func spawn_card(data: CardData, global_position: Vector2, source: Control = null
 		return null
 	if data.spawn_policy == CardData.SpawnPolicy.UNIQUE_PER_GAME:
 		_per_game_spawned[data.card_id] = true
-	var scene: PackedScene = data.get_card_scene()
-	if not scene:
-		scene = CardSceneScene if data.card_type == CardData.CardType.SCENE else CardBaseScene
+	var scene: PackedScene = CardSceneScene if data.card_type == CardData.CardType.SCENE else CardBaseScene
 	var card = scene.instantiate()
 	card.setup(data)
 	if source:

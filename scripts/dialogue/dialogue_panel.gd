@@ -265,6 +265,84 @@ func _load_json(path: String) -> Dictionary:
 		return {}
 	var text = FileAccess.get_file_as_string(path)
 	if text.is_empty():
+		push_warning("DialoguePanel: empty file '%s'" % path)
 		return {}
 	var json = JSON.parse_string(text)
-	return json if json is Dictionary else {}
+	if not json is Dictionary:
+		push_warning("DialoguePanel: '%s' is not a valid JSON object" % path)
+		return {}
+	var errors = _validate_dialogue(json, path)
+	for e in errors:
+		push_warning(e)
+	return json
+
+
+static func _validate_dialogue(data: Dictionary, path: String) -> Array[String]:
+	var errors: Array[String] = []
+	var tag = "[Dialogue %s]" % path.get_file()
+
+	# 1. Check start node exists
+	if not data.has("start"):
+		errors.append("%s Missing 'start' node" % tag)
+
+	# Collect all node IDs (everything except "topics")
+	var node_ids: Dictionary = {}
+	for key in data:
+		if key == "topics":
+			continue
+		node_ids[key] = true
+
+	# 2. Validate topic references
+	var topics = data.get("topics", {})
+	for topic_key in topics:
+		var target = topics[topic_key]
+		if not node_ids.has(target):
+			errors.append("%s topics['%s'] → '%s' not found" % [tag, topic_key, target])
+
+	# 3. Validate each node
+	var referenced: Dictionary = {"start": true}
+	for node_id in node_ids:
+		var node = data[node_id]
+		if not node is Dictionary:
+			errors.append("%s Node '%s' is not an object" % [tag, node_id])
+			continue
+		# text field
+		if not node.has("text") or node.get("text", "") == "":
+			errors.append("%s Node '%s' missing 'text'" % [tag, node_id])
+		# next_node_id reference
+		var next_id = node.get("next_node_id", "")
+		if not next_id.is_empty():
+			referenced[next_id] = true
+			if not node_ids.has(next_id):
+				errors.append("%s Node '%s' → next '%s' not found" % [tag, node_id, next_id])
+		# options references
+		var options = node.get("options", [])
+		for opt in options:
+			var opt_next = opt.get("next_node_id", "")
+			if opt_next.is_empty():
+				errors.append("%s Node '%s' option '%s' has no next_node_id" % [tag, node_id, opt.get("text", "?")])
+			elif not node_ids.has(opt_next):
+				errors.append("%s Node '%s' option '%s' → '%s' not found" % [tag, node_id, opt.get("text", "?"), opt_next])
+			else:
+				referenced[opt_next] = true
+		# actions validation
+		var actions = node.get("actions", [])
+		for action in actions:
+			var type = action.get("type", "")
+			match type:
+				"favorability":
+					if action.get("target_id", "").is_empty():
+						errors.append("%s Node '%s' favorability action missing target_id" % [tag, node_id])
+				"spawn_card":
+					if action.get("card_id", "").is_empty():
+						errors.append("%s Node '%s' spawn_card action missing card_id" % [tag, node_id])
+				_:
+					if not type.is_empty():
+						errors.append("%s Node '%s' unknown action type '%s'" % [tag, node_id, type])
+
+	# 4. Warn about unreachable nodes
+	for node_id in node_ids:
+		if not referenced.has(node_id):
+			errors.append("%s Node '%s' is unreachable" % [tag, node_id])
+
+	return errors

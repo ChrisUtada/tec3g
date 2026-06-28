@@ -1,13 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://b1irso0xvnqlt"]
 
-[ext_resource type="Script" path="res://autoload/recipe_registry.gd" id="1"]
-[ext_resource type="Resource" path="res://resources/recipes/recipe_sdt_observe_peek.tres" id="2"]
-[ext_resource type="Resource" path="res://resources/recipes/recipe_sdt_observe_coin.tres" id="3"]
-[ext_resource type="Resource" path="res://resources/recipes/recipe_sdt_coin_plant.tres" id="4"]
-[ext_resource type="Resource" path="res://resources/recipes/recipe_sdt_peek_corrupt.tres" id="5"]
-[ext_resource type="Resource" path="res://resources/recipes/recipe_sdt_shadow_purify.tres" id="6"]
-[ext_resource type="Resource" path="res://resources/recipes/recipe_capture_zhusui.tres" id="7"]
+[ext_resource type="Script" uid="uid://bk5qsme26cefr" path="res://autoload/recipe_registry.gd" id="1"]
 
-[node name="RecipeRegistry" type="Node"]
+[node name="RecipeRegistry" type="Node" unique_id=1035477889]
 script = ExtResource("1")
-recipes = [ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7")]

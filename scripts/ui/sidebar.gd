@@ -10,7 +10,6 @@ extends Control
 func _ready():
 	EventBus.card_stacked.connect(_on_card_stacked)
 	EventBus.card_combined.connect(_on_card_combined)
-	EventBus.exploration_requested.connect(_on_exploration)
 	EventBus.dialogue_requested.connect(_on_dialogue)
 	EventBus.corruption_triggered.connect(_on_corruption)
 
@@ -29,9 +28,6 @@ func _on_card_stacked(bottom, top):
 
 func _on_card_combined(bottom, top, result):
 	add_news("合成完成: %s[#%d]" % [result.card_data.card_name, result.instance_id])
-
-func _on_exploration(config, _result):
-	add_news("进入探索: %s" % config.scene_name)
 
 func _on_dialogue(_config, character_name, _topic_card_id, _root_card, _topic_card):
 	add_news("开始与 %s 对话" % character_name)

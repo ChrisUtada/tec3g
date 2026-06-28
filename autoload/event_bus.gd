@@ -27,10 +27,6 @@ signal card_broken(card)
 signal card_combined(bottom, top, result)
 
 
-# ── Exploration Events ──
-signal exploration_requested(config, result)
-
-
 # ── Card Registry ──
 var _cards_by_id: Dictionary = {}  # card_id -> Array of cards
 var _all_cards: Array = []
@@ -133,7 +129,7 @@ signal favorability_changed(card_id, old_value, new_value, delta)
 
 
 # ── Scene Desktop ──
-signal scene_desktop_entered(config)
+signal scene_desktop_entered(card_data)
 signal scene_desktop_exited()
 
 

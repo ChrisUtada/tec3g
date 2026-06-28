@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CardData" format=3]
+
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+card_id = "ITEM_bench"
+card_name = "长凳"
+description = "一张老旧的木长凳。坐下来歇一会儿，疲劳就会消散。"
+card_type = 1
+tags = Array[String](["furniture"])
+initial_zone = 2
+bg_color = Color(0.35, 0.25, 0.15, 1)
+border_color = Color(0.6, 0.45, 0.3, 1)
+icon = "🪑"

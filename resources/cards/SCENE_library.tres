@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CardData" format=3]
 
 [ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://bk6ba1jndn25w" path="res://scenes/scene_layouts/layout_library.tscn" id="2"]
 
 [resource]
 script = ExtResource("1")
@@ -15,3 +16,4 @@ border_color = Color(0.4, 0.3, 0.7, 1)
 corruption_time = 20
 corruption_bar_label = "距离关门还有"
 icon = "📚"
+layout_scene = ExtResource("2")

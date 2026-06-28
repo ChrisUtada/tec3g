@@ -1,7 +1,6 @@
 extends Node
 
 var _active_scene_card: Control = null
-var _active_config: ExplorationConfig = null
 var _hidden_container: Node = null
 var _main_desktop_cards: Array[Control] = []
 var _scene_desktop_cards: Array[Control] = []
@@ -25,8 +24,7 @@ func is_in_scene() -> bool:
 func enter_scene(scene_card: Control) -> void:
 	if not scene_card or not scene_card.card_data:
 		return
-	var config = SceneConfigRegistry.get_config(scene_card.card_data.card_id)
-	if config == null:
+	if not scene_card.card_data.layout_scene:
 		return
 	var scene = get_tree().current_scene
 	if not scene:
@@ -44,7 +42,6 @@ func enter_scene(scene_card: Control) -> void:
 		_main_bg_color = bg.color
 
 	_active_scene_card = scene_card
-	_active_config = config
 
 	_cleanup_card_manager_state()
 
@@ -55,7 +52,7 @@ func enter_scene(scene_card: Control) -> void:
 	_hide_ui(game_board)
 	_add_scene_header(game_board)
 
-	EventBus.scene_desktop_entered.emit(config)
+	EventBus.scene_desktop_entered.emit(scene_card.card_data)
 
 
 func exit_scene() -> void:
@@ -65,7 +62,7 @@ func exit_scene() -> void:
 	var container = EventBus.get_card_container()
 	var game_board = get_tree().current_scene.get_node_or_null("GameBoard")
 
-	for group in ["dialogue_panel", "exploration_panel"]:
+	for group in ["dialogue_panel"]:
 		for node in get_tree().get_nodes_in_group(group):
 			if is_instance_valid(node):
 				node.queue_free()
@@ -82,7 +79,6 @@ func exit_scene() -> void:
 			bg.color = _main_bg_color
 
 	_active_scene_card = null
-	_active_config = null
 	EventBus.scene_desktop_exited.emit()
 
 
@@ -139,7 +135,7 @@ func _add_scene_bg_overlay(game_board: Control) -> void:
 	_scene_bg_overlay.color = Color(0.08, 0.08, 0.12)
 	_scene_bg_overlay.anchors_preset = Control.PRESET_FULL_RECT
 	_scene_bg_overlay.mouse_filter = Control.MOUSE_FILTER_PASS
-	var art_path = "res://assets/scenes/%s.png" % _active_config.scene_card_id
+	var art_path = "res://assets/scenes/%s.png" % _active_scene_card.card_data.card_id
 	if ResourceLoader.exists(art_path):
 		var tex = TextureRect.new()
 		tex.texture = load(art_path)
@@ -161,7 +157,7 @@ func _remove_scene_bg_overlay() -> void:
 
 
 func _hide_ui(game_board: Control) -> void:
-	for group in ["dialogue_panel", "exploration_panel"]:
+	for group in ["dialogue_panel"]:
 		for node in get_tree().get_nodes_in_group(group):
 			if is_instance_valid(node):
 				node.queue_free()
@@ -231,10 +227,11 @@ func _flatten_stack(card: Control, bar: Control) -> void:
 func _load_scene_layout(container: Control) -> void:
 	if _layout_loaded:
 		return
-	if not _active_config or not _active_config.layout_scene:
+	var layout_packed = _active_scene_card.card_data.layout_scene
+	if not layout_packed:
 		return
 	_layout_loaded = true
-	var layout = _active_config.layout_scene.instantiate()
+	var layout = layout_packed.instantiate()
 	for child in layout.get_children():
 		var ph := child as CardPlaceholder
 		if not ph or not ph.card_data:

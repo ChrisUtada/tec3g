@@ -1,7 +1,7 @@
 class_name CardBase
 extends Control
 
-enum CardState { IDLE, DRAGGING, STACKED, STAGING, EXPLORING, IN_DIALOGUE }
+enum CardState { IDLE, DRAGGING, STACKED, STAGING, IN_DIALOGUE }
 
 static var _next_instance_id: int = 0
 
@@ -32,7 +32,6 @@ var _press_tween: Tween
 var _is_hovered := false
 
 var _staging_mode := false
-var _CardSceneScript = load("res://scripts/cards/card_scene.gd")
 
 func _ready():
 	instance_id = _next_instance_id
@@ -147,8 +146,6 @@ func _gui_input(event):
 		if _staging_mode:
 			return
 		if card_data and card_data.card_type == CardData.CardType.SCENE:
-			if get_script() != _CardSceneScript:
-				set_script(_CardSceneScript)
 			SceneDesktopManager.enter_scene(self)
 			return
 		if card_data and card_data.dialogue_config:

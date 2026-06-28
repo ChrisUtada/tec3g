@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="StackRecipe" format=3 uid="uid://c5nsu1fpwqinw"]
+
+[ext_resource type="Script" uid="uid://e3xq336dh163" path="res://scripts/stack_recipe.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/cards/ITEM_fatigue.tres" id="2"]
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="2_3bd24"]
+
+[resource]
+script = ExtResource("1")
+group_key = "ITEM_bench"
+target_cards = Array[ExtResource("2_3bd24")]([ExtResource("2")])
+consumes_top = true
+label = "坐下休息"
