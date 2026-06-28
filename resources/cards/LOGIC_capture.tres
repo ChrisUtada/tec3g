@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="CardData" format=3]
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://cq7u1pjajv8ei"]
 
 [ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="1"]
 
@@ -9,7 +9,6 @@ card_name = "捕获"
 description = "叠放在人物卡上，获取该人物的线索。"
 card_type = 3
 tags = Array[String](["logic", "capture"])
-initial_zone = 2
 bg_color = Color(0.35, 0.2, 0.1, 1)
 border_color = Color(0.7, 0.45, 0.2, 1)
 icon = "🔍"

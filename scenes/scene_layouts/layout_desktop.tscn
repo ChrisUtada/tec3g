@@ -1,0 +1,112 @@
+[gd_scene format=3 uid="uid://dasab7vqfiqk"]
+
+[ext_resource type="Script" uid="uid://1tttdfd7gc35" path="res://scripts/cards/card_placeholder.gd" id="1"]
+[ext_resource type="Resource" uid="uid://bwdhmd7c8e44c" path="res://resources/cards/SCENE_plant_hunter.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/cards/CHAR_tec.tres" id="3"]
+[ext_resource type="Resource" uid="uid://1vfwpxm4jb0o" path="res://resources/cards/ITEM_sdt.tres" id="4"]
+[ext_resource type="Resource" uid="uid://7q0ev57bsdh1" path="res://resources/cards/CHAR_zhu_sui.tres" id="5"]
+[ext_resource type="Resource" uid="uid://brpx0gyrhq3sj" path="res://resources/cards/ITEM_coin.tres" id="6"]
+[ext_resource type="Resource" uid="uid://drch4g1ut3id4" path="res://resources/cards/LOGIC_observe.tres" id="7"]
+[ext_resource type="Resource" uid="uid://dqyybahb4rwvo" path="res://resources/cards/ITEM_peek_truth.tres" id="8"]
+[ext_resource type="Resource" uid="uid://dukrshqmueyqx" path="res://resources/cards/ITEM_bench.tres" id="9"]
+[ext_resource type="Resource" path="res://resources/cards/LOGIC_capture.tres" id="10"]
+
+[node name="LayoutDesktop" type="Node" unique_id=1180292034]
+
+[node name="PlantHunter" type="Control" parent="." unique_id=1378199962]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 1220.0
+offset_top = 80.0
+offset_right = 1380.0
+offset_bottom = 300.0
+script = ExtResource("1")
+card_data = ExtResource("2")
+
+[node name="Tec" type="Control" parent="." unique_id=1487133849]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 260.0
+offset_bottom = 320.0
+script = ExtResource("1")
+card_data = ExtResource("3")
+zone = 1
+
+[node name="Sdt" type="Control" parent="." unique_id=1344503387]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 260.0
+offset_bottom = 320.0
+script = ExtResource("1")
+card_data = ExtResource("4")
+zone = 1
+
+[node name="ZhuSui" type="Control" parent="." unique_id=810311183]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 385.0
+offset_top = 91.0
+offset_right = 545.0
+offset_bottom = 311.0
+script = ExtResource("1")
+card_data = ExtResource("5")
+zone = 1
+
+[node name="Coin" type="Control" parent="." unique_id=2104719883]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 260.0
+offset_bottom = 320.0
+script = ExtResource("1")
+card_data = ExtResource("6")
+zone = 1
+
+[node name="Observe" type="Control" parent="." unique_id=410486797]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 678.0
+offset_top = 72.0
+offset_right = 838.0
+offset_bottom = 292.0
+script = ExtResource("1")
+card_data = ExtResource("7")
+zone = 1
+
+[node name="PeekTruth" type="Control" parent="." unique_id=2087948376]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 260.0
+offset_bottom = 320.0
+script = ExtResource("1")
+card_data = ExtResource("8")
+zone = 1
+
+[node name="Bench" type="Control" parent="." unique_id=898826156]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 260.0
+offset_bottom = 320.0
+script = ExtResource("1")
+card_data = ExtResource("9")
+zone = 1
+
+[node name="Capture" type="Control" parent="." unique_id=598315143]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 260.0
+offset_bottom = 320.0
+script = ExtResource("1")
+card_data = ExtResource("10")
+zone = 1

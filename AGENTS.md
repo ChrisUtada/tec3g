@@ -18,7 +18,7 @@
 - Card registry multi-instance — `EventBus._cards_by_id` changed from `card_id -> card` to `card_id -> Array[card]`, preventing silent overwrite when multiple cards share the same ID. `get_card_by_id()` returns latest instance (backward compatible), new `get_all_cards_by_id()` returns all instances. `unregister_card()` correctly removes single instance from array, only erases key when empty.
 - Card instance ID — `CardBase` has `static var _next_instance_id` counter and `var instance_id: int`, assigned in `_ready()` (stable through reparenting). Sidebar and main.gd log messages now include `[#id]` suffix for debugging.
 - Spawn Policy centralization — `CardData.SpawnPolicy` enum (`UNLIMITED`, `UNIQUE_ON_BOARD`, `UNIQUE_PER_GAME`) replaces dead fields `allow_duplicate`/`drop_once`. `CardManager.can_spawn(data)` gates all `spawn_card()` calls; `_per_game_spawned` dict tracks per-session limits; `reset_spawn_tracking()` clears it for new game. `combination_system.gd` guards against null return (spawn rejected → skip emit).
-- Data-driven initial spawn — `CardData.InitialZone` enum (`NONE`, `BOARD`, `STAGING`) + `initial_position: Vector2` on CardData. `main.gd._spawn_initial_cards()` scans `resources/cards/` directory, spawns cards with `initial_zone != NONE` at their configured positions. No more hardcoded preload lists. 10 cards configured: SCENE_plant_hunter on BOARD at (1220,80), 9 others in STAGING.
+- Visual desktop layout — `scenes/scene_layouts/layout_desktop.tscn` + enhanced `CardPlaceholder` (with `PlaceholderZone` enum: BOARD/STAGING). `main.gd._spawn_initial_cards()` instantiates layout scene, reads CardPlaceholder children's `zone`/`card_data`/`global_position`, spawns BOARD cards at designed positions and STAGING cards via `arrange_all_staging()`. `CardData.InitialZone`/`initial_position` removed — layout scene is single source of truth. BOARD placeholders show blue + position coords in editor, STAGING show green. To add/remove/reposition initial cards: edit `layout_desktop.tscn` in Godot editor.
 - DropRecipe → SpawnPolicy migration — `unique`/`no_duplicate` fields removed from `DropRecipe`; spawn gating now handled by `CardData.spawn_policy` on result cards. `ITEM_shadow.tres` set to `UNIQUE_PER_GAME`. `EventBus.can_drop()` simplified (removed `unique` special case), `has_dropped_unique()` removed.
 - Card state tracking — `CardBase.CardState` enum (`IDLE`, `DRAGGING`, `STACKED`, `STAGING`, `IN_DIALOGUE`) + `var state` on CardBase. Transitions: `start_drag()`→DRAGGING, `_end_drag()`→IDLE, `_try_stack()`→STACKED, `set_staging_mode()`→STAGING/IDLE, `dialogue_system`→IN_DIALOGUE. `CardManager` tracks `dialogue_root_card` for cleanup; `cancel_dialogue()` resets both root and topic states.
 
@@ -28,7 +28,7 @@
 
 ### Card Catalog (@tool)
 - `scenes/tools/catalog.tscn` + `scripts/tools/catalog.gd` — editor-only `@tool` scene for visual card overview. Open in Godot editor to see:
-  - All cards grouped by type (CHAR/ITEM/LOGIC/SCENE/CLUE/DEBUFF) with properties, initial zone, spawn policy
+  - All cards grouped by type (CHAR/ITEM/LOGIC/SCENE/CLUE/DEBUFF) with properties, spawn policy
   - Per-card relationship summary: recipes (as input/output), dialogue configs, corruption timers
   - Full recipe list with group keys, targets, results, weights, drop limits
   - Dialogue file summary with node counts and inline validation warnings

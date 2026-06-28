@@ -3,7 +3,6 @@ class_name CardData extends Resource
 enum CardType { ITEM, CHAR, CLUE, LOGIC, SCENE, DEBUFF }
 enum SenseType { NONE, TASTE, TOUCH, SMELL, HEARING, VISION }
 enum SpawnPolicy { UNLIMITED, UNIQUE_ON_BOARD, UNIQUE_PER_GAME }
-enum InitialZone { NONE, BOARD, STAGING }
 
 @export var card_id: String = ""
 @export var card_name: String = "未命名"
@@ -13,8 +12,6 @@ enum InitialZone { NONE, BOARD, STAGING }
 
 @export var consumable: bool = false
 @export var spawn_policy: SpawnPolicy = SpawnPolicy.UNLIMITED
-@export var initial_zone: InitialZone = InitialZone.NONE
-@export var initial_position: Vector2 = Vector2.ZERO
 
 @export var bg_color: Color = Color(0.15, 0.35, 0.7, 1.0)
 @export var border_color: Color = Color(0.3, 0.55, 0.9, 1.0)

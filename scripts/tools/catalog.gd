@@ -3,7 +3,6 @@ extends ScrollContainer
 
 var TYPE_LABELS: Dictionary
 var TYPE_COLORS: Dictionary
-var ZONE_LABELS: Dictionary
 var POLICY_LABELS: Dictionary
 
 var _root: VBoxContainer
@@ -25,7 +24,6 @@ func _init_labels() -> void:
 		2: Color(0.55, 0.35, 0.8), 3: Color(0.3, 0.7, 0.45),
 		4: Color(0.6, 0.6, 0.3), 5: Color(0.8, 0.3, 0.3),
 	}
-	ZONE_LABELS = {0: "—", 1: "桌面", 2: "暂存区"}
 	POLICY_LABELS = {0: "无限", 1: "场上唯一", 2: "全局唯一"}
 
 
@@ -118,11 +116,10 @@ func _add_card_entry(data: CardData, recipes_by_group: Dictionary, dialogue_data
 
 	# Card name + basic info
 	var name_lbl = Label.new()
-	var zone_text = ZONE_LABELS.get(data.initial_zone, "?")
 	var policy_text = POLICY_LABELS.get(data.spawn_policy, "?")
-	name_lbl.text = "%s%s  [%s]  初始:%s  生成:%s" % [
+	name_lbl.text = "%s%s  [%s]  生成:%s" % [
 		data.icon + " " if not data.icon.is_empty() else "",
-		data.card_name, data.card_id, zone_text, policy_text
+		data.card_name, data.card_id, policy_text
 	]
 	name_lbl.add_theme_font_size_override("font_size", 14)
 	name_lbl.add_theme_color_override("font_color", Color(0.9, 0.9, 0.95))

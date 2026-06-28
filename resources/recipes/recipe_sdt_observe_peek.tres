@@ -1,17 +1,14 @@
-[gd_resource type="Resource" script_class="StackRecipe" format=3]
+[gd_resource type="Resource" script_class="StackRecipe" format=3 uid="uid://bedkwd0x2ts7r"]
 
-[ext_resource type="Script" path="res://scripts/stack_recipe.gd" id="1"]
-[ext_resource type="Resource" path="res://resources/cards/LOGIC_observe.tres" id="2"]
-[ext_resource type="Resource" path="res://resources/cards/ITEM_peek_truth.tres" id="3"]
+[ext_resource type="Script" uid="uid://e3xq336dh163" path="res://scripts/stack_recipe.gd" id="1"]
+[ext_resource type="Resource" uid="uid://drch4g1ut3id4" path="res://resources/cards/LOGIC_observe.tres" id="2"]
+[ext_resource type="Resource" uid="uid://dqyybahb4rwvo" path="res://resources/cards/ITEM_peek_truth.tres" id="3"]
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="3_6r8fd"]
 
 [resource]
 script = ExtResource("1")
 group_key = "ITEM_sdt"
-target_cards = Array[CardData]([ExtResource("2")])
+target_cards = Array[ExtResource("3_6r8fd")]([ExtResource("2")])
 result_card = ExtResource("3")
-min_count = 1
 max_count = 2
-weight = 1.0
-max_drops = 0
-destroys_target = false
 label = "窥视真相"

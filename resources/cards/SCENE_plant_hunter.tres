@@ -12,10 +12,8 @@ description = "由 TEC 引导进入的异界花园。植物学家在此失踪。
 双击打开探索面板。"
 card_type = 4
 tags = Array[String](["scene"])
-initial_zone = 1
-initial_position = Vector2(1220, 80)
 bg_color = Color(0.1, 0.4, 0.25, 1)
 border_color = Color(0.2, 0.7, 0.45, 1)
 icon = "🌿"
-multimedia_content = ExtResource("2")
 layout_scene = ExtResource("3")
+multimedia_content = ExtResource("2")

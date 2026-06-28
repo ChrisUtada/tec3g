@@ -9,7 +9,6 @@ card_id = "ITEM_sdt"
 card_name = "手电筒"
 description = "强干涉物理光源。空间跃迁的基础。"
 tags = Array[String](["item", "gift"])
-initial_zone = 2
 consumable = true
 icon = "🔦"
 is_gift = true

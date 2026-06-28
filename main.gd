@@ -1,5 +1,8 @@
 extends Node2D
 
+const DesktopLayoutScene = preload("res://scenes/scene_layouts/layout_desktop.tscn")
+
+
 func _ready():
 	EventBus.set_card_container($GameBoard/CardContainer)
 	EventBus.set_staging_bar($GameBoard/BottomBar)
@@ -14,23 +17,29 @@ func _ready():
 
 
 func _spawn_initial_cards() -> void:
-	var dir = DirAccess.open("res://resources/cards/")
-	if dir == null:
-		push_warning("main: cannot open res://resources/cards/")
+	var container = EventBus.get_card_container()
+	if not container:
+		push_warning("main: no card container available")
 		return
-	dir.list_dir_begin()
-	var file = dir.get_next()
-	while file != "":
-		if not dir.current_is_dir() and file.ends_with(".tres"):
-			var data = load("res://resources/cards/" + file) as CardData
-			if data and data.initial_zone != CardData.InitialZone.NONE:
-				match data.initial_zone:
-					CardData.InitialZone.BOARD:
-						var pos = data.initial_position if data.initial_position != Vector2.ZERO else Vector2(400, 200)
-						CardManager.spawn_card(data, pos)
-					CardData.InitialZone.STAGING:
-						CardManager.spawn_card(data, Vector2(300, CardManager.STAGING_Y + 20))
-		file = dir.get_next()
+	var layout = DesktopLayoutScene.instantiate()
+	container.add_child(layout)
+
+	var board_spawns: Array[Dictionary] = []
+	var staging_cards: Array[CardData] = []
+	for child in layout.get_children():
+		var ph := child as CardPlaceholder
+		if not ph or not ph.card_data:
+			continue
+		if ph.zone == CardPlaceholder.PlaceholderZone.BOARD:
+			board_spawns.append({"data": ph.card_data, "pos": ph.global_position})
+		else:
+			staging_cards.append(ph.card_data)
+	layout.queue_free()
+
+	for entry in board_spawns:
+		CardManager.spawn_card(entry.data, entry.pos)
+	for data in staging_cards:
+		CardManager.spawn_card(data, Vector2(300, CardManager.STAGING_Y + 20))
 	CardManager.arrange_all_staging()
 
 func _on_card_stacked(bottom, top):
