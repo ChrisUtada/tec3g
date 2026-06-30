@@ -61,6 +61,7 @@ func _resize_and_center(text_y: int):
 	content_panel.custom_minimum_size.y = panel_h
 	content_panel.size.y = panel_h
 	content_panel.position = Vector2((vp.x - content_panel.size.x) * 0.5, (vp.y - panel_h) * 0.5)
+	visible = true
 
 func _toggle_audio():
 	if _audio_player == null:
