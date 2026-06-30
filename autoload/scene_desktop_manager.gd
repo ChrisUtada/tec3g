@@ -255,18 +255,18 @@ func _show_scene_banner(game_board: Control) -> void:
 	banner.anchor_right = 0.0
 	banner.anchor_bottom = 0.0
 	banner.size = Vector2(600, 100)
-	banner.position = Vector2(-620, 100)
+	banner.position = Vector2(1920, 100)
 	banner.mouse_filter = Control.MOUSE_FILTER_PASS
 
 	var border = StyleBoxFlat.new()
 	border.bg_color = Color(0.1, 0.1, 0.15, 0.85)
 	border.border_color = data.border_color
-	border.border_width_left = 4
-	border.border_width_right = 0
+	border.border_width_left = 0
+	border.border_width_right = 4
 	border.border_width_top = 0
 	border.border_width_bottom = 2
-	border.corner_radius_top_right = 6
-	border.corner_radius_bottom_right = 6
+	border.corner_radius_top_left = 6
+	border.corner_radius_bottom_left = 6
 	banner.add_theme_stylebox_override("panel", border)
 
 	var title = Label.new()
@@ -289,7 +289,7 @@ func _show_scene_banner(game_board: Control) -> void:
 	game_board.add_child(banner)
 
 	var tween = create_tween().bind_node(banner).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(banner, "position:x", 10, 0.5)
+	tween.tween_property(banner, "position:x", 1310, 0.5)
 	tween.tween_interval(3.5)
 	tween.tween_property(banner, "modulate:a", 0.0, 0.4)
 	tween.tween_callback(banner.queue_free)
