@@ -1,13 +1,17 @@
 [gd_scene format=3 uid="uid://b3prccy6m5c6v"]
 
-[ext_resource type="Script" path="res://scripts/cards/card_placeholder.gd" id="1"]
-[ext_resource type="Resource" uid="uid://dbegsn6qmtcr3" path="res://resources/cards/CHAR_zhu_sui.tres" id="2"]
-[ext_resource type="Resource" uid="uid://b6t0fx2vv232n" path="res://resources/cards/ITEM_handwritten_note.tres" id="3"]
-[ext_resource type="Resource" uid="uid://b5rpgj7ixpkp3" path="res://resources/cards/CHAR_tec.tres" id="4"]
+[ext_resource type="Script" uid="uid://1tttdfd7gc35" path="res://scripts/cards/card_placeholder.gd" id="1"]
+[ext_resource type="Resource" uid="uid://7q0ev57bsdh1" path="res://resources/cards/CHAR_zhu_sui.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/cards/ITEM_handwritten_note.tres" id="3"]
+[ext_resource type="Resource" uid="uid://n78k2pb2847p" path="res://resources/cards/CHAR_tec.tres" id="4"]
+[ext_resource type="Resource" uid="uid://n65g4qf4ylss" path="res://resources/cards/ITEM_hslm.tres" id="5_o802n"]
+[ext_resource type="Resource" uid="uid://ctigpxdnm2g7g" path="res://resources/cards/ITEM_zw.tres" id="6_xs2rb"]
 
-[node name="Layout" type="Node"]
+[node name="Layout" type="Node" unique_id=352767556]
 
-[node name="ZhuSui" type="Control" parent="."]
+[node name="ZhuSui" type="Control" parent="." unique_id=293066159]
+layout_mode = 3
+anchors_preset = 0
 offset_left = 400.0
 offset_top = 320.0
 offset_right = 560.0
@@ -15,18 +19,42 @@ offset_bottom = 540.0
 script = ExtResource("1")
 card_data = ExtResource("2")
 
-[node name="Tec" type="Control" parent="."]
-offset_left = 650.0
-offset_top = 250.0
-offset_right = 810.0
-offset_bottom = 470.0
+[node name="Tec" type="Control" parent="." unique_id=1020768105]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 589.0
+offset_top = 322.0
+offset_right = 749.0
+offset_bottom = 542.0
 script = ExtResource("1")
 card_data = ExtResource("4")
 
-[node name="HandwrittenNote" type="Control" parent="."]
-offset_left = 900.0
-offset_top = 350.0
-offset_right = 1060.0
-offset_bottom = 570.0
+[node name="HandwrittenNote" type="Control" parent="." unique_id=578088322]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 780.0
+offset_top = 322.0
+offset_right = 940.0
+offset_bottom = 542.0
 script = ExtResource("1")
 card_data = ExtResource("3")
+
+[node name="hslm" type="Control" parent="." unique_id=1873235021]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 966.0
+offset_top = 325.0
+offset_right = 1126.0
+offset_bottom = 545.0
+script = ExtResource("1")
+card_data = ExtResource("5_o802n")
+
+[node name="zw" type="Control" parent="." unique_id=245211755]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 1149.0
+offset_top = 326.0
+offset_right = 1309.0
+offset_bottom = 546.0
+script = ExtResource("1")
+card_data = ExtResource("6_xs2rb")

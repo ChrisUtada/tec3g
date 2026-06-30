@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="CardData" format=3 uid="uid://ctigpxdnm2g7g"]
+
+[ext_resource type="Script" uid="uid://du7ipx78pjsjt" path="res://scripts/multimedia_content.gd" id="1_441ui"]
+[ext_resource type="Script" uid="uid://0fwt5ohrn74" path="res://scripts/card_data.gd" id="2_v0naw"]
+
+[sub_resource type="Resource" id="Resource_o802n"]
+script = ExtResource("1_441ui")
+text = "常见或不常见的植物被放置在不同的地方，有的被打翻在地，有的甚至已经被踩烂。它们被遗落在此地，自生自灭。"
+metadata/_custom_type_script = "uid://du7ipx78pjsjt"
+
+[resource]
+script = ExtResource("2_v0naw")
+card_id = "ITEM_zw"
+card_name = "植物"
+description = "常见或不常见的植物被放置在不同的地方，有的被打翻在地，有的甚至已经被踩烂。它们被遗落在此地，自生自灭。"
+tags = Array[String](["zw"])
+bg_color = Color(0.35, 0.25, 0.15, 1)
+border_color = Color(0.6, 0.45, 0.3, 1)
+icon = "🪑"
+multimedia_content = SubResource("Resource_o802n")
