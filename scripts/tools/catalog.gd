@@ -165,10 +165,9 @@ func _add_card_entry(data: CardData, recipes_by_group: Dictionary, dialogue_data
 					var result = r.result_card.card_name if r.result_card else "销毁"
 					rels.append("  被用于: [%s] → %s" % [group_key, result])
 	# Dialogue
-	if data.dialogue_config:
-		var dlg_id = data.dialogue_config.dialogue_id
-		var node_count = dialogue_data.get(dlg_id, {}).size()
-		rels.append("  对话: %s (%d节点)" % [dlg_id, node_count])
+	if not data.dialogue_id.is_empty():
+		var node_count = dialogue_data.get(data.dialogue_id, {}).size()
+		rels.append("  对话: %s (%d节点)" % [data.dialogue_id, node_count])
 	# Corruption
 	if data.corruption_time > 0:
 		rels.append("  腐化: %d秒" % data.corruption_time)

@@ -12,3 +12,4 @@ tags = Array[String](["logic", "observe"])
 bg_color = Color(0.25, 0.15, 0.5, 1)
 border_color = Color(0.55, 0.35, 0.9, 1)
 icon = "👁"
+spawn_policy = 2

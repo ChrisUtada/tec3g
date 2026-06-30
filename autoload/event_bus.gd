@@ -112,7 +112,7 @@ func mark_drop_consumed(recipe) -> void:
 
 
 # ── Dialogue Events ──
-signal dialogue_requested(config, character_name, topic_card_id, root_card, topic_card)
+signal dialogue_requested(dialogue_id, character_name, topic_card_id, root_card, topic_card)
 signal dialogue_closed()
 
 

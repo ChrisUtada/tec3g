@@ -9,7 +9,7 @@ func _ready():
 	EventBus.dialogue_requested.connect(_on_dialogue_requested)
 	EventBus.card_broken.connect(_on_card_broken)
 
-func _on_dialogue_requested(config, character_name, topic_card_id, root_card, topic_card) -> void:
+func _on_dialogue_requested(dialogue_id, character_name, topic_card_id, root_card, topic_card) -> void:
 	_close_group("dialogue_panel")
 	_dialogue_root_card = root_card
 	_dialogue_topic_card = topic_card
@@ -18,7 +18,7 @@ func _on_dialogue_requested(config, character_name, topic_card_id, root_card, to
 	var scene = get_tree().current_scene
 	if scene:
 		scene.add_child(panel)
-		panel.open(config, character_name, topic_card_id)
+		panel.open(dialogue_id, character_name, topic_card_id)
 
 func _on_card_broken(card) -> void:
 	if _dialogue_topic_card and card == _dialogue_topic_card:

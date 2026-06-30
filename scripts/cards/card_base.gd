@@ -148,8 +148,8 @@ func _gui_input(event):
 		if card_data and card_data.card_type == CardData.CardType.SCENE:
 			SceneDesktopManager.enter_scene(self)
 			return
-		if card_data and card_data.dialogue_config:
-			EventBus.dialogue_requested.emit(card_data.dialogue_config, card_data.card_name, "", self, null)
+		if card_data and not card_data.dialogue_id.is_empty():
+			EventBus.dialogue_requested.emit(card_data.dialogue_id, card_data.card_name, "", self, null)
 			return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		_pressed_self = true

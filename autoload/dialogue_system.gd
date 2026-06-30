@@ -4,8 +4,8 @@ extends Node
 func start(root, top_card) -> void:
 	if CardManager.dialogue_topic_card != null:
 		return
-	var config = root.card_data.dialogue_config
-	if config == null:
+	var dlg_id = root.card_data.dialogue_id
+	if dlg_id.is_empty():
 		return
 	CardManager.dialogue_topic_card = top_card
 	CardManager.dialogue_root_card = root
@@ -30,5 +30,5 @@ func start(root, top_card) -> void:
 		if not root.is_inside_tree() or not top_card.is_inside_tree():
 			CardManager.dialogue_topic_card = null
 			return
-		EventBus.dialogue_requested.emit(config, root.card_data.card_name, top_card.card_data.card_id, root, top_card)
+		EventBus.dialogue_requested.emit(dlg_id, root.card_data.card_name, top_card.card_data.card_id, root, top_card)
 	)

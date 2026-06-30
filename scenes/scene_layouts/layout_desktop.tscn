@@ -6,10 +6,8 @@
 [ext_resource type="Resource" uid="uid://1vfwpxm4jb0o" path="res://resources/cards/ITEM_sdt.tres" id="4"]
 [ext_resource type="Resource" uid="uid://7q0ev57bsdh1" path="res://resources/cards/CHAR_zhu_sui.tres" id="5"]
 [ext_resource type="Resource" uid="uid://brpx0gyrhq3sj" path="res://resources/cards/ITEM_coin.tres" id="6"]
-[ext_resource type="Resource" uid="uid://drch4g1ut3id4" path="res://resources/cards/LOGIC_observe.tres" id="7"]
 [ext_resource type="Resource" uid="uid://dqyybahb4rwvo" path="res://resources/cards/ITEM_peek_truth.tres" id="8"]
 [ext_resource type="Resource" uid="uid://dukrshqmueyqx" path="res://resources/cards/ITEM_bench.tres" id="9"]
-[ext_resource type="Resource" path="res://resources/cards/LOGIC_capture.tres" id="10"]
 
 [node name="LayoutDesktop" type="Node" unique_id=1180292034]
 
@@ -67,17 +65,6 @@ script = ExtResource("1")
 card_data = ExtResource("6")
 zone = 1
 
-[node name="Observe" type="Control" parent="." unique_id=410486797]
-layout_mode = 3
-anchors_preset = 0
-offset_left = 678.0
-offset_top = 72.0
-offset_right = 838.0
-offset_bottom = 292.0
-script = ExtResource("1")
-card_data = ExtResource("7")
-zone = 1
-
 [node name="PeekTruth" type="Control" parent="." unique_id=2087948376]
 layout_mode = 3
 anchors_preset = 0
@@ -98,15 +85,4 @@ offset_right = 260.0
 offset_bottom = 320.0
 script = ExtResource("1")
 card_data = ExtResource("9")
-zone = 1
-
-[node name="Capture" type="Control" parent="." unique_id=598315143]
-layout_mode = 3
-anchors_preset = 0
-offset_left = 100.0
-offset_top = 100.0
-offset_right = 260.0
-offset_bottom = 320.0
-script = ExtResource("1")
-card_data = ExtResource("10")
 zone = 1

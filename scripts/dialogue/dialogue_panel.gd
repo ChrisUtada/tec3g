@@ -1,6 +1,6 @@
 extends Control
 
-var _config: DialogueConfig
+var _dialogue_id: String = ""
 var _dialogue_data: Dictionary = {}
 var _current_node_id: String = ""
 var _topic_card_id: String = ""
@@ -12,6 +12,8 @@ var _text_complete := false
 var _full_text: String = ""
 var _waiting_for_click := false
 var _speaker_card: Control = null
+var _dragging := false
+var _drag_offset: Vector2
 
 const TYPE_SPEED := 0.035
 const POPUP_W := 700
@@ -34,10 +36,10 @@ func _ready():
 	continue_btn.hide()
 
 
-func open(config: DialogueConfig, character_name: String, topic_card_id: String) -> void:
-	_config = config
+func open(dialogue_id: String, character_name: String, topic_card_id: String) -> void:
+	_dialogue_id = dialogue_id
 	_topic_card_id = topic_card_id
-	_dialogue_data = _load_json("res://resources/dialogues/" + config.dialogue_id + ".json")
+	_dialogue_data = _load_json("res://resources/dialogues/" + dialogue_id + ".json")
 	_current_node_id = ""
 	_current_speaker_name = character_name
 	_set_speaker_by_id("")
@@ -55,6 +57,19 @@ func _position_popup() -> void:
 	global_position = Vector2(vp.x * 0.5, vp.y * 0.5)
 
 
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed and not _dragging:
+			var local = bg_panel.get_local_mouse_position()
+			if Rect2(Vector2.ZERO, bg_panel.size).has_point(local):
+				_dragging = true
+				_drag_offset = event.global_position - global_position
+		elif not event.pressed:
+			_dragging = false
+	elif event is InputEventMouseMotion and _dragging:
+		global_position = event.global_position - _drag_offset
+
+
 func _close() -> void:
 	EventBus.dialogue_closed.emit()
 	queue_free()
@@ -70,7 +85,7 @@ func _on_continue() -> void:
 
 
 func _start_dialogue() -> void:
-	var start_id = _config.start_node_id
+	var start_id = "start"
 	var topics = _dialogue_data.get("topics", {})
 	if topics.has(_topic_card_id):
 		start_id = topics[_topic_card_id]

@@ -161,7 +161,7 @@ func _on_card_stacked(bottom, top):
 		return
 	# 4. 对话 fallback：root 有对话配置，且堆叠严格只有 root + top
 	var _dlg_stack_ids = collect_stack_ids(root)
-	if root.card_data.dialogue_config and _dlg_stack_ids.size() == 2:
+	if not root.card_data.dialogue_id.is_empty() and _dlg_stack_ids.size() == 2:
 		DialogueSystem.start(root, top)
 
 

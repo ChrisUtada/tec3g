@@ -33,4 +33,4 @@ enum SpawnPolicy { UNLIMITED, UNIQUE_ON_BOARD, UNIQUE_PER_GAME }
 
 @export var multimedia_content: MultimediaContent = null
 
-@export var dialogue_config: DialogueConfig = null
+@export var dialogue_id: String = ""
