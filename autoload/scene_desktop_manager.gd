@@ -52,6 +52,8 @@ func enter_scene(scene_card: Control) -> void:
 	_hide_ui(game_board)
 	_add_scene_header(game_board)
 
+	_show_scene_banner(game_board)
+
 	EventBus.scene_desktop_entered.emit(scene_card.card_data)
 
 
@@ -72,6 +74,7 @@ func exit_scene() -> void:
 	_remove_scene_bg_overlay()
 	_restore_ui()
 	_remove_scene_header()
+	_remove_scene_banner(game_board)
 
 	if game_board:
 		var bg = game_board.get_node_or_null("Background")
@@ -240,6 +243,58 @@ func _load_scene_layout(container: Control) -> void:
 	layout.queue_free()
 
 
+func _show_scene_banner(game_board: Control) -> void:
+	var data = _active_scene_card.card_data
+	if not data:
+		return
+
+	var banner = Panel.new()
+	banner.name = "SceneBanner"
+	banner.anchor_left = 0.0
+	banner.anchor_top = 0.0
+	banner.anchor_right = 0.0
+	banner.anchor_bottom = 0.0
+	banner.size = Vector2(600, 100)
+	banner.position = Vector2(-620, 100)
+	banner.mouse_filter = Control.MOUSE_FILTER_PASS
+
+	var border = StyleBoxFlat.new()
+	border.bg_color = Color(0.1, 0.1, 0.15, 0.85)
+	border.border_color = data.border_color
+	border.border_width_left = 4
+	border.border_width_right = 0
+	border.border_width_top = 0
+	border.border_width_bottom = 2
+	border.corner_radius_top_right = 6
+	border.corner_radius_bottom_right = 6
+	banner.add_theme_stylebox_override("panel", border)
+
+	var title = Label.new()
+	title.text = data.card_name
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", data.border_color)
+	title.position = Vector2(16, 12)
+	title.size = Vector2(568, 30)
+	banner.add_child(title)
+
+	var desc = Label.new()
+	desc.text = data.description
+	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	desc.add_theme_font_size_override("font_size", 13)
+	desc.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
+	desc.position = Vector2(16, 46)
+	desc.size = Vector2(568, 50)
+	banner.add_child(desc)
+
+	game_board.add_child(banner)
+
+	var tween = create_tween().bind_node(banner).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(banner, "position:x", 10, 0.5)
+	tween.tween_interval(3.5)
+	tween.tween_property(banner, "modulate:a", 0.0, 0.4)
+	tween.tween_callback(banner.queue_free)
+
+
 func _remove_scene_header() -> void:
 	if _scene_card_btn and _scene_card_btn.is_inside_tree():
 		_scene_card_btn.queue_free()
@@ -247,6 +302,14 @@ func _remove_scene_header() -> void:
 	if _move_all_btn and _move_all_btn.is_inside_tree():
 		_move_all_btn.queue_free()
 	_move_all_btn = null
+
+
+func _remove_scene_banner(game_board: Control) -> void:
+	if not game_board:
+		return
+	var banner = game_board.get_node_or_null("SceneBanner")
+	if banner:
+		banner.queue_free()
 
 
 func _input(event):
